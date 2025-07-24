@@ -183,3 +183,12 @@ export const deleteAllProducts = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Erreur lors de la suppression des produits", error });
   }
 };
+
+export const createProduct = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.create(req.body);
+    res.status(201).json(product);
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur lors de la création du produit', error: err });
+  }
+};

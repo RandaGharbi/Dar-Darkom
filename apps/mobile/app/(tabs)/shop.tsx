@@ -40,11 +40,22 @@ const ShopScreen: React.FC = () => {
   const { isFavorite, addFavorite, removeFavorite } = useFavoritesStore();
 
   const handleBasketPress = async (item: any) => {
+    console.log('handleBasketPress appelé avec item:', item);
+    console.log('isAuthenticated:', isAuthenticated);
+    
     if (isAuthenticated) {
       try {
-        await addToCart(item.id.toString()); // Convertir en string
+        // Utilise d'abord l'ID numérique, sinon le _id MongoDB
+        const productId = item.id || item._id;
+        console.log('ProductID à envoyer:', productId);
+        console.log('Type de productId:', typeof productId);
+        
+        await addToCart(productId);
+        console.log('addToCart terminé avec succès');
+        Alert.alert('Succès', 'Produit ajouté au panier');
       } catch (error) {
         console.error('Erreur ajout panier:', error);
+        Alert.alert('Erreur', 'Impossible d\'ajouter le produit au panier');
       }
     } else {
       router.push('/login');

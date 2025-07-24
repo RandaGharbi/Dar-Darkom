@@ -13,31 +13,33 @@ export const addToCart = async (req: Request, res: Response) => {
   }
   
   try {
-    // D'abord, trouver le produit par son id numérique pour obtenir son _id MongoDB
-    const product = await Product.findOne({ id: productId });
+    let product = null;
+    // Si productId ressemble à un ObjectId, cherche par _id
+    if (/^[0-9a-fA-F]{24}$/.test(productId)) {
+      product = await Product.findById(productId);
+    }
+    // Sinon, tente par id numérique
     if (!product) {
-      console.log('Produit non trouvé avec id:', productId);
+      product = await Product.findOne({ id: productId });
+    }
+    if (!product) {
       return res.status(404).json({ message: 'Produit non trouvé' });
     }
-    
+
     const mongoProductId = product._id;
-    console.log('Produit trouvé:', product.name, 'MongoDB ID:', mongoProductId);
-    
+
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = await Cart.create({ userId, items: [{ productId: mongoProductId, quantity }] });
-      console.log('Nouveau panier créé:', cart);
     } else {
       const itemIndex = cart.items.findIndex(item => item.productId.toString() === mongoProductId.toString());
       if (itemIndex > -1) {
         cart.items[itemIndex].quantity += quantity;
-        console.log('Quantité mise à jour pour le produit existant');
       } else {
         cart.items.push({ productId: mongoProductId, quantity });
       }
       await cart.save();
     }
-    // Renvoie le panier peuplé
     const populatedCart = await Cart.findById(cart._id).populate('items.productId');
     res.json(populatedCart);
   } catch (err) {

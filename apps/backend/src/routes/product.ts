@@ -8,7 +8,8 @@ import {
     getProductsByPriceRange,
     getProductsByType,
     deleteProductById,
-    deleteAllProducts
+    deleteAllProducts,
+    createProduct
 } from '../controllers/productController';
 import { importAllProducts } from '../controllers/importProduct';
 
@@ -16,6 +17,9 @@ const router = express.Router();
 
 // Route pour importer les produits
 router.post('/import', importAllProducts);
+
+// Route POST pour créer un produit (alternative explicite)
+router.post('/addProduct', createProduct);
 
 // Route GET pour récupérer tous les produits
 router.get('/', getAllProducts);

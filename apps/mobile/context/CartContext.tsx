@@ -50,20 +50,69 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addToCart = async (productId: string) => {
-    if (!user || !user._id) return;
+    console.log('addToCart appelé avec productId:', productId);
+    console.log('user:', user);
+    
+    if (!user || !user._id) {
+      console.log('Utilisateur non connecté ou sans ID');
+      return;
+    }
+
+    console.log('Début optimistic update');
+    // 1. Optimistic update : MAJ immédiate du panier local
+    setCart((prev) => {
+      console.log('État précédent du panier:', prev);
+      if (!prev) {
+        const newCart = { userId: user._id!, items: [{ productId, quantity: 1 }] };
+        console.log('Nouveau panier créé:', newCart);
+        return newCart;
+      }
+      // Vérifie si le produit est déjà dans le panier
+      const existing = prev.items.find(item => item.productId === productId);
+      if (existing) {
+        console.log('Produit existant trouvé, incrémentation');
+        // Incrémente la quantité localement
+        return {
+          ...prev,
+          items: prev.items.map(item =>
+            item.productId === productId
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          ),
+        };
+      } else {
+        console.log('Nouveau produit ajouté');
+        // Ajoute le produit
+        return {
+          ...prev,
+          items: [...prev.items, { productId, quantity: 1 }],
+        };
+      }
+    });
+
     setLoading(true);
     try {
-      await httpClient.post(API_CONFIG.ENDPOINTS.CART_ADD, {
+      console.log('Envoi requête au serveur:', {
+        userId: user._id,
+        productId,
+        endpoint: API_CONFIG.ENDPOINTS.CART_ADD
+      });
+      
+      const response = await httpClient.post(API_CONFIG.ENDPOINTS.CART_ADD, {
         userId: user._id,
         productId
       });
-      console.log('Produit ajouté, rechargement du panier...');
-      // Recharger le panier complet depuis le serveur
-      await fetchCart();
+      
+      console.log('Réponse serveur:', response.data);
+      // Optionnel : tu peux re-synchroniser avec le serveur ici si tu veux
+      // await fetchCart();
     } catch (e: any) {
-      console.error('Erreur ajout panier:', e);
-      Alert.alert('Erreur', e?.message || 'Impossible d\'ajouter au panier');
-      throw e; // Relancer l'erreur pour le catch dans shop.tsx
+      console.error('Erreur lors de l\'ajout au panier:', e);
+      console.error('Détails de l\'erreur:', e.response?.data);
+      // Rollback si erreur
+      await fetchCart();
+      Alert.alert('Erreur', e?.response?.data?.message || e?.message || 'Impossible d\'ajouter au panier');
+      throw e;
     }
     setLoading(false);
   };
