@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Base de données MongoDB
+  mongodb:
+    image: mongo:6.0
+    container_name: guerlain-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: guerlain123
+      MONGO_INITDB_DATABASE: guerlain
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - guerlain-network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile.final
+    container_name: guerlain-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      MONGODB_URI: mongodb://admin:guerlain123@mongodb:27017/guerlain?authSource=admin
+      JWT_SECRET: guerlain-jwt-secret-2024
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./apps/backend/uploads:/app/uploads
+      - ./apps/backend/exports:/app/exports
+    depends_on:
+      - mongodb
+    networks:
+      - guerlain-network
+
+  # Frontend Web
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    container_name: guerlain-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://backend:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - guerlain-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: guerlain-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+      - backend
+    networks:
+      - guerlain-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  guerlain-network:
+    driver: bridge 

@@ -1,0 +1,239 @@
+{
+  "navigation": {
+    "dashboard": "Tableau de Bord",
+    "products": "Produits",
+    "orders": "Commandes",
+    "customers": "Clients",
+    "analytics": "Analyses",
+    "discounts": "Réductions",
+    "marketing": "Marketing"
+  },
+  "dashboard": {
+    "title": "Tableau de Bord",
+    "subtitle": "Bienvenue ! Voici un aperçu de vos performances e-commerce.",
+    "stats": {
+      "totalSales": "Ventes Totales",
+      "totalOrders": "Commandes Totales",
+      "totalProducts": "Produits Totaux",
+      "totalCustomers": "Clients Totaux"
+    },
+    "quickActions": {
+      "title": "Actions Rapides",
+      "addProduct": "Ajouter un Produit",
+      "viewOrders": "Voir les Commandes",
+      "manageInventory": "Gérer l'Inventaire"
+    }
+  },
+  "products": {
+    "title": "PRODUITS",
+    "subtitle": "Gérez les produits de votre boutique",
+    "addNew": "Ajouter un Produit",
+    "search": "Rechercher",
+    "filters": {
+      "status": "Statut",
+      "category": "Catégorie",
+      "all": "Tous",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "face": "Visage",
+      "body": "Corps",
+      "hair": "Cheveux"
+    },
+    "table": {
+      "product": "Produit",
+      "status": "Statut",
+      "category": "Catégorie",
+      "price": "Prix",
+      "inventory": "Inventaire"
+    },
+    "actions": {
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "deleteAll": "Supprimer Tout",
+      "deleteSelected": "Supprimer la Sélection"
+    },
+    "modals": {
+      "deleteTitle": "Actions Produit",
+      "deleteSelectedTitle": "Confirmer la suppression",
+      "deleteSelectedMessage": "Voulez-vous vraiment supprimer {{count}} produit(s) ?",
+      "cancel": "Annuler",
+      "confirm": "Confirmer"
+    }
+  },
+  "orders": {
+    "title": "Commandes",
+    "subtitle": "Gérez les commandes de vos clients",
+    "search": "Rechercher une commande...",
+    "tabs": {
+      "all": "Toutes",
+      "pending": "En attente",
+      "processing": "En cours",
+      "shipped": "Expédiées",
+      "delivered": "Livrées",
+      "cancelled": "Annulées"
+    },
+    "table": {
+      "order": "Commande",
+      "customer": "Client",
+      "date": "Date",
+      "status": "Statut",
+      "total": "Total"
+    }
+  },
+  "users": {
+    "title": "Clients",
+    "subtitle": "Gérez votre base de clients",
+    "search": "Rechercher un client...",
+    "table": {
+      "customer": "Client",
+      "email": "Email",
+      "orders": "Commandes",
+      "totalSpent": "Total Dépensé",
+      "lastOrder": "Dernière Commande"
+    }
+  },
+  "analytics": {
+    "title": "Analyses",
+    "subtitle": "Analysez vos performances commerciales",
+    "sales": {
+      "title": "Tendances de Ventes",
+      "totalRevenue": "Revenus Totaux",
+      "averageOrder": "Commande Moyenne",
+      "conversionRate": "Taux de Conversion"
+    },
+    "products": {
+      "title": "Produits les Plus Vendus"
+    },
+    "categories": {
+      "title": "Ventes par Catégorie"
+    },
+    "customers": {
+      "title": "Analyses Clients",
+      "lifetimeValue": "Valeur Vie Client",
+      "retentionRate": "Taux de Rétention",
+      "newCustomers": "Nouveaux Clients"
+    }
+  },
+  "discounts": {
+    "title": "Réductions",
+    "subtitle": "Gérez vos codes de réduction et promotions",
+    "addNew": "Ajouter une Réduction",
+    "search": "Rechercher une réduction...",
+    "filters": {
+      "status": "Statut",
+      "type": "Type",
+      "all": "Tous",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "form": {
+      "title": "Titre",
+      "code": "Code",
+      "discount": "Réduction",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "description": "Description",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    }
+  },
+  "marketing": {
+    "title": "Marketing",
+    "subtitle": "Gérez vos campagnes marketing et promotions",
+    "addNew": "Nouvelle Campagne",
+    "search": "Rechercher une campagne...",
+    "filters": {
+      "status": "Statut",
+      "type": "Type",
+      "all": "Tous",
+      "active": "Actif",
+      "scheduled": "Programmé",
+      "draft": "Brouillon",
+      "completed": "Terminé",
+      "email": "Email",
+      "promotion": "Promotion",
+      "newsletter": "Newsletter"
+    },
+    "campaign": {
+      "type": "Type",
+      "target": "Cible",
+      "period": "Période",
+      "budget": "Budget",
+      "status": "Statut"
+    },
+    "stats": {
+      "openRate": "Taux d'ouverture",
+      "clickRate": "Taux de clic",
+      "conversionRate": "Conversion"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "copy": "Copier",
+      "delete": "Supprimer"
+    },
+    "messages": {
+      "copied": "Copié dans le presse-papiers",
+      "editSuccess": "Modification de la campagne",
+      "deleteSuccess": "Suppression de la campagne"
+    }
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "clear": "Effacer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "status": "Statut",
+    "actions": "Actions",
+    "date": "Date",
+    "price": "Prix",
+    "quantity": "Quantité",
+    "total": "Total",
+    "name": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "city": "Ville",
+    "country": "Pays",
+    "postalCode": "Code Postal"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "signup": "Inscription",
+    "email": "Email",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "rememberMe": "Se souvenir de moi"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "Aucune notification",
+    "markAllRead": "Tout marquer comme lu"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "toggle": "Basculer le thème"
+  },
+  "language": {
+    "fr": "Français",
+    "en": "English",
+    "select": "Sélectionner la langue"
+  }
+} 

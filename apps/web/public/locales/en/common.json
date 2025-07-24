@@ -1,0 +1,239 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "orders": "Orders",
+    "customers": "Customers",
+    "analytics": "Analytics",
+    "discounts": "Discounts",
+    "marketing": "Marketing"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome! Here's an overview of your e-commerce performance.",
+    "stats": {
+      "totalSales": "Total Sales",
+      "totalOrders": "Total Orders",
+      "totalProducts": "Total Products",
+      "totalCustomers": "Total Customers"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "addProduct": "Add Product",
+      "viewOrders": "View Orders",
+      "manageInventory": "Manage Inventory"
+    }
+  },
+  "products": {
+    "title": "PRODUCTS",
+    "subtitle": "Manage your store's products",
+    "addNew": "Add New Product",
+    "search": "Search",
+    "filters": {
+      "status": "Status",
+      "category": "Category",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "face": "Face",
+      "body": "Body",
+      "hair": "Hair"
+    },
+    "table": {
+      "product": "Product",
+      "status": "Status",
+      "category": "Category",
+      "price": "Price",
+      "inventory": "Inventory"
+    },
+    "actions": {
+      "delete": "Delete",
+      "edit": "Edit",
+      "deleteAll": "Delete All",
+      "deleteSelected": "Delete Selected"
+    },
+    "modals": {
+      "deleteTitle": "Product Actions",
+      "deleteSelectedTitle": "Confirm Deletion",
+      "deleteSelectedMessage": "Do you really want to delete {{count}} product(s)?",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "subtitle": "Manage your customer orders",
+    "search": "Search orders...",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "table": {
+      "order": "Order",
+      "customer": "Customer",
+      "date": "Date",
+      "status": "Status",
+      "total": "Total"
+    }
+  },
+  "users": {
+    "title": "Customers",
+    "subtitle": "Manage your customer base",
+    "search": "Search customers...",
+    "table": {
+      "customer": "Customer",
+      "email": "Email",
+      "orders": "Orders",
+      "totalSpent": "Total Spent",
+      "lastOrder": "Last Order"
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Analyze your business performance",
+    "sales": {
+      "title": "Sales Trends",
+      "totalRevenue": "Total Revenue",
+      "averageOrder": "Average Order",
+      "conversionRate": "Conversion Rate"
+    },
+    "products": {
+      "title": "Top Selling Products"
+    },
+    "categories": {
+      "title": "Sales by Category"
+    },
+    "customers": {
+      "title": "Customer Analytics",
+      "lifetimeValue": "Lifetime Value",
+      "retentionRate": "Retention Rate",
+      "newCustomers": "New Customers"
+    }
+  },
+  "discounts": {
+    "title": "Discounts",
+    "subtitle": "Manage your discount codes and promotions",
+    "addNew": "Add Discount",
+    "search": "Search discounts...",
+    "filters": {
+      "status": "Status",
+      "type": "Type",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "title": "Title",
+      "code": "Code",
+      "discount": "Discount",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "description": "Description",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "marketing": {
+    "title": "Marketing",
+    "subtitle": "Manage your marketing campaigns and promotions",
+    "addNew": "New Campaign",
+    "search": "Search campaigns...",
+    "filters": {
+      "status": "Status",
+      "type": "Type",
+      "all": "All",
+      "active": "Active",
+      "scheduled": "Scheduled",
+      "draft": "Draft",
+      "completed": "Completed",
+      "email": "Email",
+      "promotion": "Promotion",
+      "newsletter": "Newsletter"
+    },
+    "campaign": {
+      "type": "Type",
+      "target": "Target",
+      "period": "Period",
+      "budget": "Budget",
+      "status": "Status"
+    },
+    "stats": {
+      "openRate": "Open Rate",
+      "clickRate": "Click Rate",
+      "conversionRate": "Conversion"
+    },
+    "actions": {
+      "edit": "Edit",
+      "copy": "Copy",
+      "delete": "Delete"
+    },
+    "messages": {
+      "copied": "Copied to clipboard",
+      "editSuccess": "Editing campaign",
+      "deleteSuccess": "Deleting campaign"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "active": "Active",
+    "inactive": "Inactive",
+    "status": "Status",
+    "actions": "Actions",
+    "date": "Date",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "postalCode": "Postal Code"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "markAllRead": "Mark all as read"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  },
+  "language": {
+    "fr": "Français",
+    "en": "English",
+    "select": "Select language"
+  }
+} 

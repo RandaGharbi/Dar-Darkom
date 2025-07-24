@@ -1,0 +1,40 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Crème Hydratante",
+      "price": 45.99,
+      "description": "Crème hydratante pour le visage",
+      "category": "skincare",
+      "image": "/images/creme.jpg"
+    },
+    {
+      "id": "2",
+      "name": "Sérum Anti-âge",
+      "price": 89.99,
+      "description": "Sérum anti-âge avancé",
+      "category": "skincare",
+      "image": "/images/serum.jpg"
+    }
+  ],
+  "orders": [
+    {
+      "id": "1",
+      "customerName": "Jean Dupont",
+      "total": 135.98,
+      "status": "pending",
+      "date": "2024-01-15"
+    }
+  ],
+  "analytics": {
+    "sales": {
+      "total": 263.6,
+      "trend": "+0%",
+      "period": "30 days"
+    },
+    "products": {
+      "total": 156,
+      "active": 142
+    }
+  }
+} 

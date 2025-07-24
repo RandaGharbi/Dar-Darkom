@@ -1,0 +1,156 @@
+[
+  {
+    "category": "Huiles végétales",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Huile d’argan",
+        "description": "Huile riche en vitamine E, nourrissante et régénérante.",
+        "image": "https://media1.propos-bio.com/4367-thickbox_default/argan-bio-huile-vegetale-vierge-100-ml.jpg"
+      },
+      {
+        "id": 2,
+        "name": "Huile de figue de barbarie",
+        "description": "Précieuse pour ses propriétés anti-âge et raffermissantes.",
+        "image": "https://www.bionoble.co/cdn/shop/products/Bionoble-huile-vegetale-huile-de-pepins-de-figue-de-barbarie-bio-gamme-fiche-produit_750x.jpg?v=1666601790"
+      },
+      {
+        "id": 3,
+        "name": "Huile de coco",
+        "description": "Hydratante, adoucissante et légèrement parfumée.",
+        "image": "https://www.fitnessboutique.fr/cdn/shop/files/inshape-nutrition-huile-coco-Detail.jpg?v=1737734695&width=536"
+      }
+    ]
+  },
+  {
+    "category": "Beurres",
+    "ingredients": [
+      {
+        "id": 4,
+        "name": "Beurre de karité",
+        "description": "Beurre nourrissant, réparateur et protecteur.",
+        "image": "https://comptoirdeshuiles.com/cdn/shop/files/beurre_karite_bois.webp?v=1732186701"
+      }
+    ]
+  },
+  {
+    "category": "Produits de la ruche",
+    "ingredients": [
+      {
+        "id": 5,
+        "name": "Cire d’abeille jaune",
+        "description": "Utilisée pour épaissir et protéger la peau.",
+        "image": "https://m.media-amazon.com/images/I/91Uymnpo-gL._UF1000,1000_QL80_.jpg"
+      },
+      {
+        "id": 6,
+        "name": "Gelée royale en poudre",
+        "description": "Riche en nutriments, revitalisante pour la peau.",
+        "image": "https://divinebox.fr/wp-content/uploads/2022/02/Gele%CC%81e-Royale-Bio-Abbaye-Notre-Dame-de-Sept-Fons-Divine-Box.jpeg"
+      },
+      {
+        "id": 7,
+        "name": "Miel de jebel",
+        "description": "Miel naturel de montagne, hydratant et antiseptique.",
+        "image": "https://www.melilot.fr/1-large_default/miel-montagne.jpg"
+      },
+      {
+        "id": 8,
+        "name": "Miel de sidir",
+        "description": "Miel rare, nourrissant et cicatrisant.",
+        "image": "https://m.media-amazon.com/images/I/51FHeYsumSL._UF350,350_QL80_.jpg"
+      },
+      {
+        "id": 9,
+        "name": "Miel de zaatar",
+        "description": "Miel aromatique aux propriétés purifiantes.",
+        "image": "https://www.nicolebernard.fr/9335-large_default/miel-de-thym-origine-espagne.jpg"
+      }
+    ]
+  },
+  {
+    "category": "Huiles essentielles",
+    "ingredients": [
+      {
+        "id": 10,
+        "name": "HE Rose de Damas",
+        "description": "Huile précieuse, tonifiante et apaisante.",
+        "image": "https://www.essenciagua.fr/pim2/main/main-rose-de-damas-1.jpg"
+      },
+      {
+        "id": 11,
+        "name": "HE Néroli",
+        "description": "Huile relaxante et régénérante pour la peau.",
+        "image": "https://img.passeportsante.net/1200x675/2024-06-19/huile-essentielle-neroli.jpg"
+      }
+    ]
+  },
+  {
+    "category": "Absolue",
+    "ingredients": [
+      {
+        "id": 12,
+        "name": "Jasmin Sambac",
+        "description": "Extrait floral très parfumé, relaxant et harmonisant.",
+        "image": "https://static.aujardin.info/cache/th/par/jasminum-sambac-600x450.webp"
+      }
+    ]
+  },
+  {
+    "category": "Extraits",
+    "ingredients": [
+      {
+        "id": 13,
+        "name": "Gel d’aloe vera natif",
+        "description": "Hydratant, apaisant et réparateur naturel.",
+        "image": "https://www.green-shop.ch/img/styles/blog/cms/Blog/blog_comment-utiliser-le-gel-d-aloe-vera.webp?p=ec13bf6d"
+      }
+    ]
+  },
+  {
+    "category": "Conservateurs & antioxydants",
+    "ingredients": [
+      {
+        "id": 14,
+        "name": "Cosgard",
+        "description": "Conservateur doux pour les préparations cosmétiques.",
+        "image": "https://www.slolie.fr/cdn/shop/articles/quest-ce-que-le-cosgard-et-comment-utiliser-ce-conservateur-214839.jpg?v=1681496845&width=900"
+      },
+      {
+        "id": 15,
+        "name": "Vitamine E",
+        "description": "Antioxydant naturel qui prolonge la durée de vie des huiles.",
+        "image": "https://www.ericfavre.com/lifestyle/wp-content/uploads/2020/03/VITAMINE-E.jpg"
+      }
+    ]
+  },
+  {
+    "category": "Autres ingrédients naturels",
+    "ingredients": [
+      {
+        "id": 16,
+        "name": "Avoine",
+        "description": "Apaisant et adoucissant pour les peaux sensibles.",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdg4wmbLMLzIJPq88mbP6DxSNCJ28QjIaohQ&s"
+      },
+      {
+        "id": 17,
+        "name": "Citron (frais)",
+        "description": "Astringent, purifiant et éclaircissant naturel.",
+        "image": "https://media.istockphoto.com/id/471141162/fr/photo/lemons-sur-gris-fond-en-bois.jpg?s=612x612&w=0&k=20&c=64TMiAtNtd3cbTeJho9VEB4ut17Z5sWKgY6D4iwmpdI="
+      },
+      {
+        "id": 18,
+        "name": "Café",
+        "description": "Tonifiant, exfoliant naturel pour la peau.",
+        "image": "https://www.le-guide-sante.org/sites/default/files/styles/full_size_10_cols/public/resources/news/cafe-bienfaits-mefaits-sante.jpg?itok=uozPwnJv"
+      },
+      {
+        "id": 19,
+        "name": "Cerise",
+        "description": "Riche en antioxydants et vitamines, apporte éclat.",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS6A0hPUC43fiNcz-8uP15Rj4yW9RPaziFXscbHurjFGvMo0clahnncLLngVF4gMO2OVw&usqp=CAU"
+      }
+    ]
+  }
+]
