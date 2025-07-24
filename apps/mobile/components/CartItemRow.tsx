@@ -1,5 +1,14 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { useCart } from "../context/CartContext";
+import { getCorrectImageUrl } from "../utils/imageUtils";
 
 type CartItem = {
   id: string | number;
@@ -18,7 +27,7 @@ type Props = {
 
 const CartItemRow: React.FC<Props> = ({ item, onChangeQuantity, onDelete }) => (
   <View style={styles.itemRow}>
-    <Image source={{ uri: item.image }} style={styles.image} />
+    <Image source={{ uri: getCorrectImageUrl(item.image) || item.image }} style={styles.image} />
     <View style={{ flex: 1 }}>
       <Text style={styles.itemName}>{item.name}</Text>
       <Text style={styles.itemVolume}>{item.volume}</Text>

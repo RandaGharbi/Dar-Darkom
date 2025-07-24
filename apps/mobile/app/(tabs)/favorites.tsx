@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import goBackIcon from '../../assets/images/back.png';
+import { getCorrectImageUrl } from '../../utils/imageUtils';
 
 export default function FavoritesScreen() {
   const { favorites, hydrate } = useFavoritesStore();
@@ -60,7 +61,7 @@ export default function FavoritesScreen() {
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24 }}
         renderItem={({ item }: { item: any }) => (
           <View style={styles.itemRow}>
-            <Image source={{ uri: item.image_url }} style={styles.image} />
+            <Image source={{ uri: getCorrectImageUrl(item.image_url) || item.image_url }} style={styles.image} />
             <View style={styles.textBlock}>
               <Text style={styles.itemTitle}>{item.title}</Text>
               <Text style={styles.itemPrice}>${item.price?.toFixed(2) ?? '0.00'}</Text>

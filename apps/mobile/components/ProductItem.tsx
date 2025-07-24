@@ -10,6 +10,7 @@ import {
 import favoritesIconInactive from "../assets/images/inactiveFavorites.png";
 import favoritesIconActive from "../assets/images/activeFavorites.png";
 import basket from "../assets/images/basket.png";
+import { getCorrectImageUrl } from "../utils/imageUtils";
 
 type Product = {
   id: number;
@@ -37,7 +38,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
     <View style={styles.card}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: product.image_url }}
+          source={{ uri: getCorrectImageUrl(product.image_url) || product.image_url }}
           style={styles.image}
           resizeMode="cover"
         />

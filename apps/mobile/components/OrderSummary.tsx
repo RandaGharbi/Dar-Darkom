@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
+import { getCorrectImageUrl } from '../utils/imageUtils';
 
 interface Product {
   name: string;
@@ -22,7 +23,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ products = [], subtotal, sh
       {products.filter(item => item && item.name).map((item, idx) => (
         <View key={item.name} style={styles.productRow}>
           {item.image && typeof item.image === 'string' && item.image.length > 0 ? (
-            <Image source={{ uri: item.image }} style={styles.productImg} />
+            <Image source={{ uri: getCorrectImageUrl(item.image) || item.image }} style={styles.productImg} />
           ) : null}
           <View style={{ flex: 1 }}>
             <Text style={styles.productName}>{item.name}</Text>

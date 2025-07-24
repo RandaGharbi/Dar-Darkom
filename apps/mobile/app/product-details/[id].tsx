@@ -1,8 +1,10 @@
+import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useProducts } from '../../hooks/useProducts';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { getCorrectImageUrl } from '../../utils/imageUtils';
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -60,7 +62,7 @@ export default function ProductDetailsScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Image produit */}
         <Image
-          source={{ uri: product.image_url || product.image || 'https://via.placeholder.com/150' }}
+          source={{ uri: getCorrectImageUrl(product.image_url || product.image || null) || product.image_url || product.image || 'https://via.placeholder.com/150' }}
           style={styles.image}
         />
 

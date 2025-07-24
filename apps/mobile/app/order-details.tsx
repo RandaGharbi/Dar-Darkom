@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import VisaIcon from "../assets/images/visa.png";
 import MastercardIcon from "../assets/images/masterCard.png";
 import CardIcon from "../assets/images/card.png";
+import { getCorrectImageUrl } from '../utils/imageUtils';
 
 export default function OrderDetailsScreen() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function OrderDetailsScreen() {
         {products.map((item: any, idx: number) => (
           <View key={idx} style={styles.productBlock}>
             {item.image ? (
-              <Image source={{ uri: item.image }} style={styles.productImg} />
+              <Image source={{ uri: getCorrectImageUrl(item.image) || item.image }} style={styles.productImg} />
             ) : null}
             <View style={{ flex: 1 }}>
               <Text style={styles.productName}>{item.name}</Text>
