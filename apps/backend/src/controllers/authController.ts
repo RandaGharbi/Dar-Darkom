@@ -6,6 +6,23 @@ import { Request, Response, NextFunction } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import multer from 'multer';
 import path from 'path';
+import os from 'os';
+
+// Fonction pour obtenir l'adresse IP de l'ordinateur
+const getLocalIPAddress = (): string => {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    const iface = interfaces[name];
+    if (iface) {
+      for (const alias of iface) {
+        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+          return alias.address;
+        }
+      }
+    }
+  }
+  return 'localhost';
+};
 
 // Configurer multer pour stocker les images dans /uploads
 const storage = multer.diskStorage({
@@ -27,9 +44,17 @@ export const uploadProfileImage = [
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
+    
     // Construire l'URL d'accès à l'image
-    const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+    // Utiliser BASE_URL si défini, sinon détecter automatiquement l'IP
+    let baseUrl = process.env.BASE_URL;
+    if (!baseUrl) {
+      const localIP = getLocalIPAddress();
+      baseUrl = `http://${localIP}:5000`;
+    }
+    
     const imageUrl = `${baseUrl}/uploads/${req.file!.filename}`;
+    console.log('Image uploaded with URL:', imageUrl);
     res.json({ url: imageUrl });
   }
 ];

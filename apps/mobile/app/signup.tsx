@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +17,7 @@ import uploadImg from '../assets/images/upload.png';
 import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerResult, ImagePickerAsset } from 'expo-image-picker';
 import API_CONFIG, { getFullUrl } from '../config/api';
+import { getCorrectImageUrl } from '../utils/imageUtils';
 
 type SignupProps = object;
 const SignupScreen: React.FC<SignupProps> = () => {
@@ -71,11 +73,9 @@ const SignupScreen: React.FC<SignupProps> = () => {
         try {
           const data = JSON.parse(text);
           if (data.url) {
-            // Utiliser l'URL retournée par le backend (déjà complète ou relative)
-            const fullImageUrl = data.url.startsWith('http') 
-              ? data.url 
-              : `${API_CONFIG.BASE_URL}${data.url}`;
-            setProfileImage(fullImageUrl);
+            // Utiliser l'URL retournée par le backend et la corriger si nécessaire
+            const correctedImageUrl = getCorrectImageUrl(data.url);
+            setProfileImage(correctedImageUrl);
           } else {
             Alert.alert('Erreur', 'Réponse inattendue du serveur');
           }
@@ -146,7 +146,7 @@ const SignupScreen: React.FC<SignupProps> = () => {
           <View style={styles.uploadRow}>
             <View style={styles.uploadIconBg}>
               {profileImage ? (
-                <Image source={{ uri: profileImage }} style={styles.uploadImage} resizeMode="cover" />
+                <Image source={{ uri: getCorrectImageUrl(profileImage) || profileImage }} style={styles.uploadImage} resizeMode="cover" />
               ) : (
                 <Image source={uploadImg} style={styles.uploadImage} resizeMode="contain" />
               )}

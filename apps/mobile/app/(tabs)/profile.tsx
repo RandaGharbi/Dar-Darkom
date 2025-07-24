@@ -4,23 +4,13 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import GoBackIcon from '../../assets/images/back.png';
 import ChevronIcon from '../../assets/images/chevron.png';
+import { getCorrectImageUrl } from '../../utils/imageUtils';
+import Constants from 'expo-constants';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, logout, isAuthenticated } = useAuth();
   const [imageError, setImageError] = useState(false);
-
-  // Fonction pour corriger l'URL d'image sur Android
-  const getCorrectImageUrl = (imageUrl: string | null) => {
-    if (!imageUrl) return null;
-    
-    // Sur Android, remplacer localhost par 10.0.2.2
-    if (Platform.OS === 'android' && imageUrl.includes('localhost')) {
-      return imageUrl.replace('localhost', '10.0.2.2');
-    }
-    
-    return imageUrl;
-  };
 
   React.useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -61,24 +51,22 @@ export default function ProfileScreen() {
         <View style={styles.header}>
           <Image 
             source={
-              user.profileImage && !imageError 
-                ? { uri: getCorrectImageUrl(user.profileImage) } 
+              user.profileImage 
+                ? { uri: getCorrectImageUrl(user.profileImage || null) || user.profileImage } 
                 : require('../../assets/images/avatar.png')
             } 
             style={styles.profileImage}
             onError={() => {
-              console.log('Image error for:', getCorrectImageUrl(user.profileImage));
+              console.log('❌ Image failed to load');
               setImageError(true);
             }}
             onLoad={() => {
-              console.log('Image loaded successfully:', getCorrectImageUrl(user.profileImage));
+              console.log('✅ Image loaded successfully');
+              setImageError(false);
             }}
           />
           <Text style={styles.profileName}>{user.name}</Text>
           <Text style={styles.profileEmail}>{user.email}</Text>
-          {user.phoneNumber && (
-            <Text style={styles.profilePhone}>{user.phoneNumber}</Text>
-          )}
         </View>
 
         {/* Account Section */}

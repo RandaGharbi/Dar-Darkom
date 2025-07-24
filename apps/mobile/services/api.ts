@@ -51,7 +51,6 @@ class ApiService {
           'Cache-Control': 'no-cache',
           ...options?.headers,
         },
-        timeout: 15000, // 15 second timeout
         ...options,
       });
 
