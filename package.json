@@ -5,7 +5,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "dev/Nourane"
+    "dev/Guerlain"
   ],
   "scripts": {
     "build": "turbo build",

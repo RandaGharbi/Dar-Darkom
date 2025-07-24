@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "NouraneTests.xctest"
-               BlueprintName = "NouraneTests"
-               ReferencedContainer = "container:Nourane.xcodeproj">
+               BuildableName = "GuerlainTests.xctest"
+               BlueprintName = "GuerlainTests"
+               ReferencedContainer = "container:Guerlain.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

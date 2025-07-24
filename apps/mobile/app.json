@@ -1,7 +1,7 @@
 {
   "expo": {
       "name": "Guerlain",
-  "slug": "Guerlain",
+  "slug": "Nourane",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logoGuerlain.png",
@@ -10,14 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rindaa.Guerlain",
+      "bundleIdentifier": "com.rindaa.Nourane",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
       "edgeToEdgeEnabled": true,
-      "package": "com.rindaa.Guerlain",
+      "package": "com.rindaa.Nourane",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logoGuerlain.png",
         "backgroundColor": "#ffffff"

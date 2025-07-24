@@ -21,7 +21,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ product, size = 24, col
   const handleToggle = async () => {
     let token: string | undefined = undefined;
     if (isAuthenticated) {
-      token = await AsyncStorage.getItem('authToken') || undefined;
+      token = (await AsyncStorage.getItem('authToken')) || undefined;
     }
     if (isFavorite(product.id)) {
       // Si déjà favori, on propose la suppression

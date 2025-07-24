@@ -1,12 +1,10 @@
 {
-  "name": "guerlain",
+  "name": "guerlain-mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest",
@@ -15,8 +13,6 @@
     "build:dev": "eas build --profile development --platform all",
     "build:preview": "eas build --profile preview --platform all",
     "build:production": "eas build --profile production --platform all",
-    "build:android": "eas build --profile production --platform android",
-    "build:ios": "eas build --profile production --platform ios",
     "submit": "eas submit --profile production --platform all",
     "typecheck": "tsc --noEmit"
   },
@@ -34,7 +30,6 @@
     "expo-auth-session": "~6.2.1",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.7",
-    "expo-dev-client": "~5.2.4",
     "expo-font": "~13.3.2",
     "expo-haptics": "~14.1.4",
     "expo-image": "~2.3.2",

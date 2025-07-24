@@ -669,10 +669,24 @@ export default function DiscountsPage() {
   const queryClient = useQueryClient();
 
   // Remplacer la récupération de tous les discounts par la collection soldes_france
-  const { data: discounts = [], isLoading } = useQuery({
+  const { data: discountsData, isLoading } = useQuery({
     queryKey: ["discounts", "soldes_france"],
-    queryFn: () => discountsAPI.getByCollection("soldes_france").then(res => res.data),
+    queryFn: async () => {
+      const response = await discountsAPI.getByCollection("soldes_france");
+      console.log('API Response:', response);
+      console.log('Response data:', response.data);
+      // L'API retourne { success: true, data: [...] }, nous retournons l'objet complet
+      return response.data;
+    },
   });
+
+  // S'assurer que discounts est toujours un tableau en extrayant de discountsData.data
+  const discounts = Array.isArray(discountsData?.data) ? discountsData.data : [];
+  
+  // Debug: afficher les données reçues
+  console.log('discountsData:', discountsData);
+  console.log('discounts:', discounts);
+  console.log('isLoading:', isLoading);
 
   const createMutation = useMutation({
     mutationFn: (newDiscount: Omit<Discount, '_id' | 'usedCount' | 'createdAt' | 'updatedAt'>) => 
@@ -780,7 +794,7 @@ export default function DiscountsPage() {
     }
   };
 
-  const filteredDiscounts = discounts.filter((discount) => {
+  const filteredDiscounts = (Array.isArray(discounts) ? discounts : []).filter((discount) => {
     const matchesSearch = 
       discount.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       discount.code.toLowerCase().includes(searchTerm.toLowerCase());

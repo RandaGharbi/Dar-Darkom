@@ -7,11 +7,18 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "ios": {
+        "simulator": true,
+        "image": "macos-sonoma-14.6-xcode-16.1"
+      }
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview",
+      "ios": {
+        "image": "macos-sonoma-14.6-xcode-16.1"
+      },
       "env": {
         "NODE_ENV": "staging"
       }
@@ -19,6 +26,9 @@
     "production": {
       "autoIncrement": true,
       "channel": "production",
+      "ios": {
+        "image": "macos-sonoma-14.6-xcode-16.1"
+      },
       "env": {
         "NODE_ENV": "production"
       }
