@@ -13,7 +13,7 @@ import { LanguageSelector } from "../LanguageSelector";
 import NotificationDropdown from "../NotificationDropdown";
 import NotificationToastManager from "../NotificationToastManager";
 import NotificationPermissionRequest from "../NotificationPermissionRequest";
-import { MessageDropdown } from "../MessageDropdown";
+
 import Image from "next/image";
 import { removeToken } from "../../utils/auth";
 import { ThemeToggle } from "../ThemeToggle";
@@ -344,11 +344,11 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
     queryFn: () => authAPI.getMe().then((res) => res.data),
   });
 
-  // Debug: afficher les données utilisateur
-  useEffect(() => {
-    console.log('User data in DashboardLayout:', user);
-    console.log('User ID:', user?.user?._id);
-  }, [user]);
+  // Debug: afficher les données utilisateur (commented out for tests)
+  // useEffect(() => {
+  //   console.log('User data in DashboardLayout:', user);
+  //   console.log('User ID:', user?.user?._id);
+  // }, [user]);
 
   const handleLogout = async () => {
     try {

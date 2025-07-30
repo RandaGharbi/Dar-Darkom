@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'styled-components';
+import { ThemeContext } from '../../context/ThemeContext';
 import AnalyticsPage from '../../app/analytics/page';
 
 const mockPush = jest.fn();
@@ -38,7 +39,14 @@ jest.mock('../../lib/api', () => ({
   },
   authAPI: {
     getMe: jest.fn(() => Promise.resolve({
-      data: { name: 'Test User', profileImage: null }
+      data: { 
+        user: {
+          _id: 'test-user-id',
+          name: 'Test User', 
+          email: 'test@example.com',
+          profileImage: null 
+        }
+      }
     }))
   }
 }));
@@ -117,10 +125,19 @@ const createTestQueryClient = () =>
 
 const renderWithProviders = () => {
   const queryClient = createTestQueryClient();
+  const mockThemeContext = {
+    themeMode: 'light' as const,
+    setThemeMode: jest.fn(),
+    toggleTheme: jest.fn(),
+    theme: mockTheme,
+  };
+  
   return render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={mockTheme}>
-        <AnalyticsPage />
+        <ThemeContext.Provider value={mockThemeContext}>
+          <AnalyticsPage />
+        </ThemeContext.Provider>
       </ThemeProvider>
     </QueryClientProvider>
   );

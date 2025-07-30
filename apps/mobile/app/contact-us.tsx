@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ContactInfo from '../components/ContactInfo';
 import goBackIcon from '../assets/images/back.png';
 import { getFullUrl } from '../config/api';
+// eslint-disable-next-line import/no-named-as-default
 import socketService from '../services/socketService';
 
 interface Message {
@@ -395,6 +396,7 @@ const ContactUsPage: React.FC = () => {
         socketService.disconnect();
       };
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, selectedConversation?.userId]);
 
   const renderConversationItem = ({ item }: { item: Conversation }) => {
@@ -466,6 +468,7 @@ const ContactUsPage: React.FC = () => {
       } else {
         messageTime = 'Maintenant';
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       messageTime = 'Maintenant';
     }
@@ -553,7 +556,7 @@ const ContactUsPage: React.FC = () => {
                           <Text style={styles.emptyStateIconText}>💬</Text>
                         </View>
                         <Text style={styles.emptyStateTitle}>Aucune conversation</Text>
-                        <Text style={styles.emptyStateText}>Commencez une nouvelle conversation pour obtenir de l'aide</Text>
+                        <Text style={styles.emptyStateText}>Commencez une nouvelle conversation pour obtenir de l&apos;aide</Text>
                         <TouchableOpacity 
                           style={[styles.newConversationButton, creatingConversation && styles.sendButtonDisabled]}
                           onPress={async () => {

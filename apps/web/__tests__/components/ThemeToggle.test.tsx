@@ -1,45 +1,32 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { ThemeToggle } from '../../components/ThemeToggle';
-import { ThemeContext } from '../../components/../context/ThemeContext';
+import { ThemeContext, lightTheme, darkTheme } from '../../context/ThemeContext';
 
 const mockToggleTheme = jest.fn();
+const mockSetThemeMode = jest.fn();
 
 const mockThemeContextValue = {
   themeMode: 'light' as const,
   toggleTheme: mockToggleTheme,
-  theme: {
-    colors: {
-      text: { primary: '#000' },
-      border: '#ccc'
-    },
-    borderRadius: { full: '50%' },
-    shadows: { sm: '0 1px 2px rgba(0,0,0,0.1)' }
-  }
-};
-
-const mockTheme = {
-  colors: {
-    text: { primary: '#000' },
-    border: '#ccc'
-  },
-  borderRadius: { full: '50%' },
-  shadows: { sm: '0 1px 2px rgba(0,0,0,0.1)' }
+  setThemeMode: mockSetThemeMode,
+  theme: lightTheme
 };
 
 const renderWithProviders = (themeMode: 'light' | 'dark' = 'light') => {
   const contextValue = {
     ...mockThemeContextValue,
-    themeMode
+    themeMode,
+    theme: themeMode === 'light' ? lightTheme : darkTheme
   };
 
   return render(
     <ThemeContext.Provider value={contextValue}>
-      <ThemeProvider theme={mockTheme}>
+      <StyledThemeProvider theme={contextValue.theme}>
         <ThemeToggle />
-      </ThemeProvider>
+      </StyledThemeProvider>
     </ThemeContext.Provider>
   );
 };

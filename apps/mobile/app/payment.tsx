@@ -45,7 +45,7 @@ export default function PaymentScreen() {
   
   // États pour la validation
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const [touched, setTouched] = useState<{[key: string]: boolean}>({});
+  const [, setTouched] = useState<{[key: string]: boolean}>({});
   
   const cardType = getCardType(cardNumber);
 

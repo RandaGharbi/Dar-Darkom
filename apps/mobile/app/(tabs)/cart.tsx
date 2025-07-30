@@ -16,7 +16,7 @@ import { useCartStore } from "../../context/CartStore";
 import { useAuth } from "../../context/AuthContext";
 import { Swipeable } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { API_BASE_URL } from "../../services/api";
+import { config } from "../../config/env";
 
 const CartScreen: React.FC = () => {
   const { cart, updateCartItem, removeFromCart, fetchCart } = useCartStore();
@@ -36,7 +36,7 @@ const CartScreen: React.FC = () => {
     if (isAuthenticated && user?._id) {
       fetchCart(user._id);
     }
-  }, [isAuthenticated, user?._id]);
+  }, [isAuthenticated, user?._id, fetchCart]); // fetchCart est stable depuis Zustand
 
   const subtotal =
     cart?.items?.reduce((sum, item) => {
@@ -152,7 +152,7 @@ const CartScreen: React.FC = () => {
                   "image" in product &&
                   typeof product.image === "string" &&
                   product.image) ||
-                `${API_BASE_URL}/images/placeholder.png`;
+                `${config.API_BASE_URL}/images/placeholder.png`;
               const price =
                 product &&
                 "price" in product &&
@@ -182,7 +182,7 @@ const CartScreen: React.FC = () => {
                             {
                               text: "Supprimer",
                               style: "destructive",
-                              onPress: () => removeFromCart(id),
+                              onPress: () => removeFromCart(user?._id || "", id?.toString() || ""),
                             },
                           ]
                         )
@@ -196,7 +196,7 @@ const CartScreen: React.FC = () => {
                 >
                   <CartItemRow
                     item={{
-                      id,
+                      id: id || 0,
                       name,
                       volume,
                       image,

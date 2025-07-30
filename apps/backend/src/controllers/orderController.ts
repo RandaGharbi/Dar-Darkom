@@ -3,7 +3,7 @@ import Order from "../models/Order";
 import Cart, { ICart } from "../models/Basket";
 import { IProduct } from "../types";
 import mongoose from "mongoose";
-import { sendNotification } from "../index";
+// import { sendNotification } from "../index";
 import { addDynamicNotification } from "./notificationController";
 import User from "../models/User";
 
@@ -72,20 +72,20 @@ export const createOrder = async (req: Request, res: Response) => {
         // Envoyer une notification à l'administrateur
         const notification = {
           _id: `order-${order._id}`,
-          userId: (admin._id as any).toString(),
+          userId: (admin._id as string).toString(),
           title: "Nouvelle commande reçue",
-          message: `Commande #${(order._id as any).toString().slice(-8)} de ${userName} - Total: ${total.toFixed(2)}€`,
+          message: `Commande #${(order._id as string).toString().slice(-8)} de ${userName} - Total: ${total.toFixed(2)}€`,
           createdAt: new Date().toISOString(),
           isRead: false,
           type: 'order' as const,
           metadata: {
-            orderId: (order._id as any).toString(),
+            orderId: (order._id as string).toString(),
             amount: total,
             customerName: userName
           }
         };
         
-        sendNotification((admin._id as any).toString(), notification);
+        // sendNotification((admin._id as string).toString(), notification);
         addDynamicNotification(notification);
         console.log("✅ Notification envoyée à l'administrateur");
       } else {

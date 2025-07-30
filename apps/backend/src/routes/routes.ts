@@ -4,7 +4,6 @@ import multer from 'multer';
 import path from 'path';
 import { importAllProducts } from '../controllers/importProduct';
 import { addToCart, getCart, removeFromCart, updateCartItem, deleteCart } from '../controllers/basketController';
-import { createOrder, getActiveOrders, getOrderHistory, getOrdersByUser } from '../controllers/orderController';
 import { addCard, getUserCards } from '../controllers/cardController';
 import addressRoutes from './address';
 import favoritesRoutes from './favorites';
@@ -74,7 +73,7 @@ router.post('/cart/remove', removeFromCart);
 router.post('/cart/update', updateCartItem);
 router.post('/cart/delete', deleteCart);
 
-router.post('/orders/create', createOrder);
+
 
 router.post('/api/card/add', addCard);
 router.get('/api/card/user/:userId', getUserCards);

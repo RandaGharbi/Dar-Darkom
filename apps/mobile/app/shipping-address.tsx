@@ -78,7 +78,6 @@ export default function ShippingAddressScreen() {
       if (data.length === 0 && user?.address) {
         try {
           // Créer automatiquement une adresse de livraison à partir du profil
-          const addressParts = user.address.split(' ');
           const fullName = user.name || 'Utilisateur';
           const streetAddress = user.address;
           const city = 'Ville'; // Valeur par défaut

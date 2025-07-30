@@ -5,12 +5,10 @@ class NotificationService {
   // Récupérer toutes les notifications d'un utilisateur
   async getUserNotifications(userId: string): Promise<NotificationResponse> {
     try {
-      console.log('Tentative de récupération des notifications pour userId:', userId);
       const response = await api.get(`/notifications/user/${userId}`);
-      console.log('Réponse des notifications:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des notifications:', error);
+      console.log('Erreur lors de la récupération des notifications:', error);
       throw error;
     }
   }

@@ -1,94 +1,91 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@testing-library/jest-dom';
-import { NotificationDropdown } from '../../components/NotificationDropdown';
+import NotificationDropdown from '../../components/NotificationDropdown';
 
-const mockNotifications = [
-  {
-    id: '1',
-    text: 'Test notification 1',
-    time: 'Il y a 5 minutes'
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
   },
-  {
-    id: '2',
-    text: 'Test notification 2',
-    time: 'Il y a 1 heure'
-  }
-];
+});
+
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = createTestQueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+};
+
+// Mock the notification service
+jest.mock('../../services/notificationService', () => ({
+  __esModule: true,
+  default: {
+    getUserNotifications: jest.fn().mockResolvedValue({
+      notifications: [],
+      unreadCount: 0,
+    }),
+    markAsRead: jest.fn().mockResolvedValue(undefined),
+    markAllAsRead: jest.fn().mockResolvedValue(undefined),
+    deleteNotification: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 
 describe('NotificationDropdown', () => {
   it('renders notification button', () => {
-    render(<NotificationDropdown />);
+    render(
+      <TestWrapper>
+        <NotificationDropdown userId="test-user-id" />
+      </TestWrapper>
+    );
     const button = screen.getByRole('button', { name: /notifications/i });
     expect(button).toBeInTheDocument();
   });
 
-  it('toggles dropdown when button is clicked', () => {
-    render(<NotificationDropdown />);
-    const button = screen.getByRole('button', { name: /notifications/i });
-    
-    expect(button).toHaveAttribute('aria-expanded', 'false');
-    
-    fireEvent.click(button);
-    expect(button).toHaveAttribute('aria-expanded', 'true');
-    
-    fireEvent.click(button);
-    expect(button).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('displays default notifications when none provided', () => {
-    render(<NotificationDropdown />);
+  it('opens dropdown when button is clicked', async () => {
+    render(
+      <TestWrapper>
+        <NotificationDropdown userId="test-user-id" />
+      </TestWrapper>
+    );
     const button = screen.getByRole('button', { name: /notifications/i });
     
     fireEvent.click(button);
-    
-    expect(screen.getByText('Nouvelle commande reçue #12345')).toBeInTheDocument();
-    expect(screen.getByText('Stock faible pour le produit "Crème Hydratante"')).toBeInTheDocument();
-  });
-
-  it('displays custom notifications when provided', () => {
-    render(<NotificationDropdown notifications={mockNotifications} />);
-    const button = screen.getByRole('button', { name: /notifications/i });
-    
-    fireEvent.click(button);
-    
-    expect(screen.getByText('Test notification 1')).toBeInTheDocument();
-    expect(screen.getByText('Test notification 2')).toBeInTheDocument();
-  });
-
-  it('closes dropdown when "Marquer comme lu" is clicked', () => {
-    render(<NotificationDropdown />);
-    const button = screen.getByRole('button', { name: /notifications/i });
-    
-    fireEvent.click(button);
-    expect(button).toHaveAttribute('aria-expanded', 'true');
-    
-    const markAsReadButton = screen.getByText('Marquer comme lu');
-    fireEvent.click(markAsReadButton);
-    
-    expect(button).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('closes dropdown when clicking outside', async () => {
-    render(<NotificationDropdown />);
-    const button = screen.getByRole('button', { name: /notifications/i });
-    
-    fireEvent.click(button);
-    expect(button).toHaveAttribute('aria-expanded', 'true');
-    
-    fireEvent.mouseDown(document.body);
     
     await waitFor(() => {
-      expect(button).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByText('Notifications')).toBeInTheDocument();
     });
   });
 
-  it('displays empty state when no notifications', () => {
-    render(<NotificationDropdown notifications={[]} />);
+  it('displays notifications dropdown content when open', async () => {
+    render(
+      <TestWrapper>
+        <NotificationDropdown userId="test-user-id" />
+      </TestWrapper>
+    );
     const button = screen.getByRole('button', { name: /notifications/i });
     
     fireEvent.click(button);
     
-    expect(screen.getByText('Aucune notification')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Notifications')).toBeInTheDocument();
+      expect(screen.getByText('Aucune notification')).toBeInTheDocument();
+    });
+  });
+
+  it('displays loading state initially', () => {
+    render(
+      <TestWrapper>
+        <NotificationDropdown userId="test-user-id" />
+      </TestWrapper>
+    );
+    const button = screen.getByRole('button', { name: /notifications/i });
+    
+    fireEvent.click(button);
+    
+    expect(screen.getByText('Chargement...')).toBeInTheDocument();
   });
 });

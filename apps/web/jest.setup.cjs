@@ -24,6 +24,14 @@ jest.mock('styled-components', () => {
     default: styled,
     ThemeProvider: ({ children }) => children,
     createGlobalStyle: () => () => null,
+    keyframes: (strings, ...interpolations) => {
+      // Mock keyframes function
+      return `keyframes_${Math.random().toString(36).substr(2, 9)}`;
+    },
+    css: (strings, ...interpolations) => {
+      // Mock css function
+      return `css_${Math.random().toString(36).substr(2, 9)}`;
+    },
     ServerStyleSheet: function() {
       return {
         instance: {},
@@ -73,8 +81,6 @@ jest.mock('next/router', () => ({
   },
 }));
 
-// (mets ici tous les mocks que tu as déjà postés, par exemple next/router, react-query, etc.)
-
 // Mock global ResizeObserver
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
@@ -96,3 +102,29 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 });
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(() => null),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
+
+// S'assurer que localStorage est disponible globalement
+global.localStorage = localStorageMock;
+
+// Mock fetch
+global.fetch = jest.fn();
+
+// Mock pour lib/api
+jest.mock('./lib/api');
+
+// Mock pour services/notificationService  
+jest.mock('./services/notificationService');
+

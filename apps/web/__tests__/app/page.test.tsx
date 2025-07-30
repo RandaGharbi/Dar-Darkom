@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'styled-components';
+import { ThemeContext } from '../../context/ThemeContext';
 import DashboardPage from '../../app/page';
 
 const mockPush = jest.fn();
@@ -101,10 +102,18 @@ const createTestQueryClient = () =>
 
 const renderWithProviders = () => {
   const queryClient = createTestQueryClient();
+  const mockThemeContext = {
+    themeMode: 'light',
+    setThemeMode: jest.fn(),
+    toggleTheme: jest.fn(),
+  };
+  
   return render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={mockTheme}>
-        <DashboardPage />
+        <ThemeContext.Provider value={mockThemeContext}>
+          <DashboardPage />
+        </ThemeContext.Provider>
       </ThemeProvider>
     </QueryClientProvider>
   );

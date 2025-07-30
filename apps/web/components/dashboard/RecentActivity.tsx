@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styled, { DefaultTheme, keyframes, css } from "styled-components";
 import { Product, Order, User } from "../../lib/api";
-import { ShoppingCart, UserPlus, Package, AlertTriangle, Star, DollarSign, Users, RefreshCw, TrendingUp, Activity } from "lucide-react";
+import { ShoppingCart, UserPlus, Package, AlertTriangle, Star, DollarSign, Users, RefreshCw, Activity } from "lucide-react";
 
 // Animation pour les nouvelles activités
 const slideInFromTop = keyframes`
@@ -279,7 +279,7 @@ export const RecentActivity = ({
   users,
 }: RecentActivityProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [, setLastUpdate] = useState(new Date());
   const [newActivities, setNewActivities] = useState<Set<string>>(new Set());
 
   // Mise à jour automatique toutes les 30 secondes
@@ -442,7 +442,7 @@ export const RecentActivity = ({
     });
 
     // Revenus (simulation basée sur les commandes)
-    if (orders.length > 0) {
+    if (orders.length > 0 && orders[0]) {
       const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
       const avgRevenue = totalRevenue / orders.length;
       
@@ -506,7 +506,7 @@ export const RecentActivity = ({
         time: getTimeAgo(activity.timestamp),
         isNew: newActivities.has(activity.id)
       }));
-  }, [products, orders, users, lastUpdate, newActivities]);
+  }, [products, orders, users, newActivities]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -533,7 +533,7 @@ export const RecentActivity = ({
         setNewActivities(new Set());
       }, 10000);
     }
-  }, [lastUpdate]); // Utiliser lastUpdate au lieu de generateRecentActivity
+  }, [generateRecentActivity]); // generateRecentActivity est stable depuis useMemo
 
   const recentActivity = generateRecentActivity;
 

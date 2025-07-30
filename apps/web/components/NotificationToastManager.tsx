@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import NotificationToast from './NotificationToast';
 import { Notification } from '../types/notifications';
@@ -21,6 +21,23 @@ const NotificationToastManager: React.FC<NotificationToastManagerProps> = ({ use
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
   const { playNotificationSound } = useNotificationSound();
   const { vibrateNotification } = useNotificationVibration();
+
+  const addToast = useCallback((notification: Notification) => {
+    const toast: ToastNotification = {
+      id: `toast-${Date.now()}-${Math.random()}`,
+      notification,
+      timestamp: Date.now(),
+    };
+
+    setToasts(prev => [...prev, toast]);
+    
+    // Jouer le son et vibrer pour les notifications
+    playNotificationSound();
+    vibrateNotification();
+    
+    // Afficher la notification push si autorisée
+    pushNotificationService.showNotification(notification);
+  }, [playNotificationSound, vibrateNotification]);
 
   useEffect(() => {
     // Connecter au WebSocket
@@ -45,24 +62,7 @@ const NotificationToastManager: React.FC<NotificationToastManagerProps> = ({ use
       websocketService.disconnect();
       clearInterval(simulationInterval);
     };
-  }, [userId]);
-
-  const addToast = (notification: Notification) => {
-    const toast: ToastNotification = {
-      id: `toast-${Date.now()}-${Math.random()}`,
-      notification,
-      timestamp: Date.now(),
-    };
-
-    setToasts(prev => [...prev, toast]);
-    
-    // Jouer le son et vibrer pour les notifications
-    playNotificationSound();
-    vibrateNotification();
-    
-    // Afficher la notification push si autorisée
-    pushNotificationService.showNotification(notification);
-  };
+  }, [userId, addToast]);
 
   const removeToast = (id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));

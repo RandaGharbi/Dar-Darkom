@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { useAuth } from '../../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ContactFormScreen: React.FC = () => {
@@ -8,7 +7,6 @@ const ContactFormScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
 
   const handleSubmit = async () => {
     if (!message.trim()) {
@@ -29,7 +27,7 @@ const ContactFormScreen: React.FC = () => {
         return;
       }
 
-      const response = await fetch('http://10.0.2.2:5000/api/messages/user/send', {
+      const response = await fetch('http://192.168.43.184:5000/api/messages/user/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

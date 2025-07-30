@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Cart from '../models/Basket';
 import Product from '../models/Product';
 
@@ -26,7 +27,7 @@ export const addToCart = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Produit non trouvé' });
     }
 
-    const mongoProductId = product._id;
+    const mongoProductId = product._id as mongoose.Types.ObjectId;
 
     let cart = await Cart.findOne({ userId });
     if (!cart) {
@@ -76,7 +77,7 @@ export const removeFromCart = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Produit non trouvé' });
     }
     
-    const mongoProductId = product._id;
+    const mongoProductId = product._id as mongoose.Types.ObjectId;
     const cart = await Cart.findOne({ userId });
     if (!cart) return res.status(404).json({ message: 'Panier non trouvé' });
     cart.items = cart.items.filter(item => String(item.productId) !== String(mongoProductId));
@@ -102,7 +103,7 @@ export const updateCartItem = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Produit non trouvé' });
     }
     
-    const mongoProductId = product._id;
+    const mongoProductId = product._id as mongoose.Types.ObjectId;
     const cart = await Cart.findOne({ userId });
     if (!cart) return res.status(404).json({ message: 'Panier non trouvé' });
     const itemIndex = cart.items.findIndex(item => item.productId.toString() === mongoProductId.toString());

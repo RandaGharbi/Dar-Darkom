@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import webSocketService from "../../lib/socket";
-import { useTranslation } from "../../hooks/useTranslation";
+
 
 const Container = styled.div`
   padding: 1.5rem;
@@ -508,6 +508,7 @@ export default function ContactPage() {
     return () => {
       webSocketService.disconnect();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation?.userId, queryClient]);
 
   // Récupérer toutes les conversations
@@ -528,33 +529,7 @@ export default function ContactPage() {
     refetchIntervalInBackground: false,
   });
 
-  // Récupérer les données complètes de l'utilisateur sélectionné (pour usage futur)
-  const { data: userData } = useQuery({
-    queryKey: ["user", selectedConversation?.userId],
-    queryFn: async () => {
-      if (!selectedConversation?.userId) return null;
-      console.log(
-        "🔍 Récupération des données utilisateur pour:",
-        selectedConversation.userId
-      );
-      const response = await fetch(`/users/${selectedConversation.userId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (!response.ok) {
-        console.log(
-          "❌ Erreur lors de la récupération des données utilisateur:",
-          response.status
-        );
-        return null;
-      }
-      const data = await response.json();
-      console.log("✅ Données utilisateur récupérées:", data);
-      return data.user || data;
-    },
-    enabled: !!selectedConversation?.userId,
-  });
+
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {

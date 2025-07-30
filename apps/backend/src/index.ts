@@ -1,12 +1,11 @@
 // server.ts
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 // Routes
 import authRoutes from './routes/routes';
@@ -68,7 +67,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 // WebSocket pour les notifications
-io.on('connection', (socket: any) => {
+io.on('connection', (socket: Socket) => {
   console.log('🔌 Client WebSocket connecté:', socket.id);
   console.log('🔌 Headers:', socket.handshake.headers);
   console.log('🔌 Auth:', socket.handshake.auth);
@@ -98,7 +97,7 @@ io.on('connection', (socket: any) => {
   });
 
   // Envoyer une notification
-  socket.on('send-notification', (data: any) => {
+  socket.on('send-notification', (data: { userId: string; notification: { title: string } }) => {
     const { userId, notification } = data;
     io.to(`notifications-${userId}`).emit('new-notification', notification);
     console.log(`📧 Notification envoyée à ${userId}:`, notification.title);
@@ -110,7 +109,7 @@ io.on('connection', (socket: any) => {
 });
 
 // Fonction pour envoyer une notification depuis n'importe où
-export const sendNotification = (userId: string, notification: any) => {
+export const sendNotification = (userId: string, notification: { title: string }) => {
   io.to(`notifications-${userId}`).emit('new-notification', notification);
 };
 

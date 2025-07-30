@@ -1,4 +1,3 @@
-import axios from 'axios';
 import httpClient from './httpClient';
 import API_CONFIG, { getFullUrl, getEndpoint } from '../config/api';
 
@@ -67,7 +66,7 @@ class ApiService {
       if (error instanceof TypeError && error.message.includes('Network request failed')) {
         return {
           success: false,
-          error: 'Network error - check if backend is running on localhost:5000'
+          error: 'Network error - check if backend is running on 192.168.43.184:5000'
         };
       }
       return { 

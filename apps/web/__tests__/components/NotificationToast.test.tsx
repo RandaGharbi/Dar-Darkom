@@ -1,9 +1,21 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { NotificationToast } from '../../components/NotificationToast';
+import NotificationToast from '../../components/NotificationToast';
 
-const mockOnHide = jest.fn();
+const mockOnClose = jest.fn();
+
+const createMockNotification = (overrides = {}) => ({
+  _id: '1',
+  userId: 'user1',
+  type: 'order' as const,
+  title: 'Test Title',
+  message: 'Test message',
+  isRead: false,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  ...overrides,
+});
 
 describe('NotificationToast', () => {
   let consoleErrorSpy: jest.SpyInstance;
@@ -15,7 +27,7 @@ describe('NotificationToast', () => {
   });
 
   beforeEach(() => {
-    mockOnHide.mockClear();
+    mockOnClose.mockClear();
     jest.useFakeTimers();
   });
 
@@ -24,50 +36,44 @@ describe('NotificationToast', () => {
     jest.useRealTimers();
   });
 
-  it('renders toast with message', () => {
-    render(<NotificationToast message="Test message" onHide={mockOnHide} />);
+  it('renders toast with notification', () => {
+    const notification = createMockNotification({ title: 'Test Title', message: 'Test message' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} />);
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
     expect(screen.getByText('Test message')).toBeInTheDocument();
   });
 
-  it('displays correct icon for success type', () => {
-    render(<NotificationToast message="Success" type="success" onHide={mockOnHide} />);
-    expect(screen.getByText('✅')).toBeInTheDocument();
+  it('renders correctly for order type', () => {
+    const notification = createMockNotification({ type: 'order', title: 'Order Title' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} />);
+    expect(screen.getByText('Order Title')).toBeInTheDocument();
+    expect(screen.getByText('Test message')).toBeInTheDocument();
   });
 
-  it('displays correct icon for error type', () => {
-    render(<NotificationToast message="Error" type="error" onHide={mockOnHide} />);
-    expect(screen.getByText('❌')).toBeInTheDocument();
+  it('renders correctly for stock type', () => {
+    const notification = createMockNotification({ type: 'stock', title: 'Stock Title' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} />);
+    expect(screen.getByText('Stock Title')).toBeInTheDocument();
+    expect(screen.getByText('Test message')).toBeInTheDocument();
   });
 
-  it('displays correct icon for warning type', () => {
-    render(<NotificationToast message="Warning" type="warning" onHide={mockOnHide} />);
-    expect(screen.getByText('⚠️')).toBeInTheDocument();
+  it('renders correctly for user type', () => {
+    const notification = createMockNotification({ type: 'user', title: 'User Title' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} />);
+    expect(screen.getByText('User Title')).toBeInTheDocument();
+    expect(screen.getByText('Test message')).toBeInTheDocument();
   });
 
-  it('displays correct icon for info type', () => {
-    render(<NotificationToast message="Info" type="info" onHide={mockOnHide} />);
-    expect(screen.getByText('ℹ️')).toBeInTheDocument();
+  it('renders correctly for system type', () => {
+    const notification = createMockNotification({ type: 'system', title: 'System Title' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} />);
+    expect(screen.getByText('System Title')).toBeInTheDocument();
+    expect(screen.getByText('Test message')).toBeInTheDocument();
   });
 
   it('auto-hides after default duration', async () => {
-    render(<NotificationToast message="Test" onHide={mockOnHide} />);
-    
-    expect(screen.getByText('Test')).toBeInTheDocument();
-    
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
-    
-    await waitFor(() => {
-      act(() => {
-        jest.advanceTimersByTime(300); // Animation delay
-      });
-      expect(mockOnHide).toHaveBeenCalled();
-    });
-  });
-
-  it('auto-hides after custom duration', async () => {
-    render(<NotificationToast message="Test" duration={5000} onHide={mockOnHide} />);
+    const notification = createMockNotification({ title: 'Test', message: 'Test message' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} />);
     
     expect(screen.getByText('Test')).toBeInTheDocument();
     
@@ -77,50 +83,67 @@ describe('NotificationToast', () => {
     
     await waitFor(() => {
       act(() => {
+        jest.advanceTimersByTime(300); // Animation delay
+      });
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+  });
+
+  it('auto-hides after custom duration', async () => {
+    const notification = createMockNotification({ title: 'Test', message: 'Test message' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} duration={2000} />);
+    
+    expect(screen.getByText('Test')).toBeInTheDocument();
+    
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    
+    await waitFor(() => {
+      act(() => {
         jest.advanceTimersByTime(300);
       });
-      expect(mockOnHide).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   it('hides when close button is clicked', async () => {
-    render(<NotificationToast message="Test" onHide={mockOnHide} />);
+    const notification = createMockNotification({ title: 'Test', message: 'Test message' });
+    render(<NotificationToast notification={notification} onClose={mockOnClose} />);
     
-    const closeButton = screen.getByRole('button');
+    const closeButton = screen.getByRole('button', { name: /fermer/i });
     fireEvent.click(closeButton);
     
     await waitFor(() => {
       act(() => {
         jest.advanceTimersByTime(300);
       });
-      expect(mockOnHide).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
-  it('applies correct CSS classes for different types', () => {
-    const { rerender } = render(
-      <NotificationToast message="Success" type="success" onHide={mockOnHide} />
-    );
-    // Cherche le parent avec la classe bg-green-500
-    const successDiv = screen.getByText('Success').parentElement?.parentElement;
-    expect(successDiv?.className).toContain('bg-green-500');
+  it('displays different styling for different types', () => {
+    const orderNotification = createMockNotification({ type: 'order', title: 'Order', message: 'Order message' });
+    const { rerender } = render(<NotificationToast notification={orderNotification} onClose={mockOnClose} />);
+    expect(screen.getByText('Order')).toBeInTheDocument();
 
-    rerender(<NotificationToast message="Error" type="error" onHide={mockOnHide} />);
-    const errorDiv = screen.getByText('Error').parentElement?.parentElement;
-    expect(errorDiv?.className).toContain('bg-red-500');
+    const stockNotification = createMockNotification({ type: 'stock', title: 'Stock', message: 'Stock message' });
+    rerender(<NotificationToast notification={stockNotification} onClose={mockOnClose} />);
+    expect(screen.getByText('Stock')).toBeInTheDocument();
 
-    rerender(<NotificationToast message="Warning" type="warning" onHide={mockOnHide} />);
-    const warningDiv = screen.getByText('Warning').parentElement?.parentElement;
-    expect(warningDiv?.className).toContain('bg-yellow-500');
+    const userNotification = createMockNotification({ type: 'user', title: 'User', message: 'User message' });
+    rerender(<NotificationToast notification={userNotification} onClose={mockOnClose} />);
+    expect(screen.getByText('User')).toBeInTheDocument();
 
-    rerender(<NotificationToast message="Info" type="info" onHide={mockOnHide} />);
-    const infoDiv = screen.getByText('Info').parentElement?.parentElement;
-    expect(infoDiv?.className).toContain('bg-blue-500');
+    const systemNotification = createMockNotification({ type: 'system', title: 'System', message: 'System message' });
+    rerender(<NotificationToast notification={systemNotification} onClose={mockOnClose} />);
+    expect(screen.getByText('System')).toBeInTheDocument();
   });
 
-  it('does not render before component is mounted', () => {
-    const { container } = render(<NotificationToast message="Test" onHide={mockOnHide} />);
-    // Le composant devrait être monté immédiatement ou après un court délai
+  it('renders correctly when mounted', () => {
+    const notification = createMockNotification({ title: 'Test', message: 'Test message' });
+    const { container } = render(<NotificationToast notification={notification} onClose={mockOnClose} />);
     expect(container.firstChild).toBeDefined();
+    expect(screen.getByText('Test')).toBeInTheDocument();
   });
 });

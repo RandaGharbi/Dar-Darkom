@@ -14,19 +14,9 @@ const detectEnvironment = () => {
 
   // Détection automatique basée sur la plateforme
   if (Platform.OS === 'android') {
-    // Vérifier si on est dans un émulateur Android standard
-    const isEmulator = Constants.isDevice === false;
-    
-    if (isEmulator) {
-      // Émulateur Android standard (Android Studio, etc.)
-      console.log('📱 Détecté: Émulateur Android standard');
-      return 'http://10.0.2.2:5000';
-    } else {
-      // Appareil physique Android ou émulateur spécial (Nox, etc.)
-      console.log('📱 Détecté: Appareil physique Android ou émulateur spécial');
-      // Utiliser l'IP de votre ordinateur - à configurer selon votre réseau
-      return 'http://192.168.1.100:5000'; // Changez cette IP selon votre réseau
-    }
+    // Pour tous les émulateurs Android (y compris Nox), utiliser l'IP réseau
+    console.log('📱 Détecté: Émulateur Android (incluant Nox Player)');
+    return 'http://192.168.43.184:5000';
   }
   
   if (Platform.OS === 'ios') {

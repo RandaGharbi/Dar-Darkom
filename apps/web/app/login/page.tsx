@@ -74,16 +74,6 @@ const Button = styled.button`
   }
 `;
 
-const ForgotPassword = styled.a`
-  display: block;
-  text-align: right;
-  margin-top: 0.5rem;
-  color: var(--link-color);
-  font-size: 0.95em;
-  text-decoration: underline;
-  cursor: pointer;
-`;
-
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -182,7 +172,6 @@ export default function LoginPage() {
               {loginMutation.isPending ? 'Connexion...' : 'Log in'}
             </Button>
           </Form>
-          <ForgotPassword href="#">Forgot password?</ForgotPassword>
         </LoginBox>
       </Container>
     </>

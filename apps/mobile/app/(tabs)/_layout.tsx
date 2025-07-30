@@ -3,7 +3,6 @@ import React from "react";
 import { Platform, Image, ImageSourcePropType, View, Text } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useCartStore } from '../../context/CartStore';
-import { Ionicons } from '@expo/vector-icons';
 
 import { HapticTab } from "../../components/collapsible/HapticTab";
 import TabBarBackground from "../../components/ui/TabBarBackground";

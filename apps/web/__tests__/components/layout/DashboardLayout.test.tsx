@@ -2,8 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from '../../../context/ThemeContext';
 import { DashboardLayout } from '../../../components/layout/DashboardLayout';
+
 
 const mockPush = jest.fn();
 const mockPathname = '/';
@@ -17,30 +18,24 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
-    t: (key: any) => key
+    t: (key: string) => key
   })
 }));
 
 jest.mock('../../../lib/api', () => ({
   authAPI: {
     getMe: jest.fn(() => Promise.resolve({
-      data: { name: 'Test User', profileImage: null }
+      data: { 
+        user: {
+          _id: 'test-user-id',
+          name: 'Test User', 
+          email: 'test@example.com',
+          profileImage: null 
+        }
+      }
     }))
   }
 }));
-
-const mockTheme = {
-  colors: {
-    sidebar: { background: '#fff', border: '#e5e7eb' },
-    background: '#fff',
-    text: { primary: '#000', muted: '#666' },
-    border: '#e5e7eb',
-    surface: '#f9fafb'
-  },
-  borderRadius: { sm: '4px', md: '8px' },
-  spacing: {},
-  shadows: {}
-};
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -53,9 +48,10 @@ const createTestQueryClient = () =>
 
 const renderWithProviders = (hideSidebar = false) => {
   const queryClient = createTestQueryClient();
+  
   return render(
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={mockTheme}>
+      <ThemeProvider>
         <DashboardLayout hideSidebar={hideSidebar}>
           <div>Test Content</div>
         </DashboardLayout>
@@ -67,6 +63,29 @@ const renderWithProviders = (hideSidebar = false) => {
 describe('DashboardLayout', () => {
   beforeEach(() => {
     mockPush.mockClear();
+    
+    // Mock localStorage avant chaque test - approche plus directe
+    const mockStorage = {
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+      length: 0,
+      key: jest.fn(() => null),
+    };
+    
+    // Remplacer complètement localStorage
+    Object.defineProperty(window, 'localStorage', {
+      value: mockStorage,
+      writable: true,
+      configurable: true,
+    });
+    
+    // S'assurer que localStorage est disponible globalement
+    global.localStorage = mockStorage;
+    
+    // Mock direct de localStorage
+    window.localStorage = mockStorage;
   });
 
   it('renders children content', () => {
@@ -125,7 +144,7 @@ describe('DashboardLayout', () => {
 
   it('renders notification dropdown', () => {
     renderWithProviders();
-    const notificationButton = screen.getByLabelText('Notifications');
+    const notificationButton = screen.getByRole('button', { name: /notifications/i });
     expect(notificationButton).toBeInTheDocument();
   });
 
@@ -155,9 +174,18 @@ describe('DashboardLayout', () => {
   it('handles logout when logout button is clicked', () => {
     const originalLocalStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
     const mockLocalStorage = {
-      removeItem: jest.fn()
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+      length: 0,
+      key: jest.fn(() => null),
     };
-    Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
+    Object.defineProperty(window, 'localStorage', { 
+      value: mockLocalStorage,
+      writable: true,
+      configurable: true,
+    });
 
     renderWithProviders();
     const logoutButtons = screen.getAllByRole('button');

@@ -24,4 +24,5 @@ export interface MessageNotification {
     userName: string;
     userEmail: string;
   };
+  [key: string]: unknown;
 } 

@@ -11,7 +11,7 @@ const router = express.Router();
 const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Essayer l'authentification
-    auth(req, res, (error: any) => {
+    auth(req, res, (error: unknown) => {
       if (error) {
         console.log('❌ [AUTH] Erreur d\'authentification:', error);
         return res.status(401).json({ message: 'Token invalide' });
@@ -395,11 +395,11 @@ router.get('/export', adminAuth, async (req, res) => {
     let filename = '';
     
     // Construire les filtres de date
-    const dateFilter: Record<string, any> = {};
+    const dateFilter: Record<string, unknown> = {};
     if (startDate || endDate) {
       dateFilter.createdAt = {};
-      if (startDate) (dateFilter.createdAt as any).$gte = new Date(startDate as string);
-      if (endDate) (dateFilter.createdAt as any).$lte = new Date(endDate as string);
+      if (startDate) (dateFilter.createdAt as Record<string, Date>).$gte = new Date(startDate as string);
+      if (endDate) (dateFilter.createdAt as Record<string, Date>).$lte = new Date(endDate as string);
     }
     
     // Construire les filtres de statut pour les commandes
@@ -412,8 +412,8 @@ router.get('/export', adminAuth, async (req, res) => {
         const orders = await Order.find(ordersQuery).populate('userId', 'name email');
         data = orders.map(order => ({
           'ID Commande': order._id,
-          'Client': (order.userId as any)?.name || 'Client inconnu',
-          'Email': (order.userId as any)?.email || '',
+          'Client': (order.userId as unknown as { name: string; email: string })?.name || 'Client inconnu',
+          'Email': (order.userId as unknown as { name: string; email: string })?.email || '',
           'Date': new Date(order.createdAt).toLocaleDateString('fr-FR'),
           'Total': order.total.toFixed(2) + ' €',
           'Statut': order.status,
@@ -433,10 +433,10 @@ router.get('/export', adminAuth, async (req, res) => {
           'Nom': product.name,
           'Prix': product.price.toFixed(2) + ' €',
           'Catégorie': product.category || 'Non catégorisé',
-          'Marque': product.brandCreator || 'Non spécifiée',
+          'Marque': product.productBrand || 'Non spécifiée',
           'Description': product.description || '',
-          'Stock': product.stock || 0,
-          'Type': product.type || 'product',
+          'Stock': product.quantity || 0,
+          'Type': product.productType || 'product',
           'Date de création': new Date(product.createdAt).toLocaleDateString('fr-FR')
         }));
         filename = `produits_${new Date().toISOString().split('T')[0]}`;
@@ -474,8 +474,8 @@ router.get('/export', adminAuth, async (req, res) => {
         const salesSummary = allOrders.map(order => ({
           'Type': 'Vente',
           'ID': order._id,
-          'Client': (order.userId as any)?.name || 'Client inconnu',
-          'Email': (order.userId as any)?.email || '',
+          'Client': (order.userId as unknown as { name: string; email: string })?.name || 'Client inconnu',
+          'Email': (order.userId as unknown as { name: string; email: string })?.email || '',
           'Date': new Date(order.createdAt).toLocaleDateString('fr-FR'),
           'Total': order.total.toFixed(2) + ' €',
           'Statut': order.status
