@@ -29,7 +29,7 @@ const ContactFormScreen: React.FC = () => {
         return;
       }
 
-      const response = await fetch('http://10.0.2.2:5000/api/messages/user/send', {
+      const response = await fetch('http://192.168.43.184:5000/api/messages/user/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

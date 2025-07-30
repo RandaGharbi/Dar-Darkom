@@ -27,8 +27,8 @@ export const getCorrectImageUrl = (imageUrl: string | null): string | null => {
   // Si l'URL contient localhost, la corriger selon la plateforme
   if (imageUrl.includes('localhost')) {
     if (Platform.OS === 'android') {
-      // Android émulateur utilise 10.0.2.2
-      return imageUrl.replace('localhost', '10.0.2.2');
+      // Android émulateur utilise l'IP réseau
+      return imageUrl.replace('localhost', '192.168.43.184');
     } else if (Platform.OS === 'ios') {
       if (isPhysicalDevice()) {
         // iPhone physique - utiliser l'IP de votre ordinateur
@@ -49,8 +49,8 @@ export const getCorrectImageUrl = (imageUrl: string | null): string | null => {
   let baseUrl = '';
   
   if (Platform.OS === 'android') {
-    // Android émulateur utilise 10.0.2.2
-    baseUrl = 'http://10.0.2.2:5000';
+    // Android émulateur utilise l'IP réseau
+    baseUrl = 'http://192.168.43.184:5000';
   } else if (Platform.OS === 'ios') {
     if (isPhysicalDevice()) {
       // iPhone physique - utiliser l'IP de votre ordinateur
@@ -70,8 +70,8 @@ export const getCorrectImageUrl = (imageUrl: string | null): string | null => {
  */
 export const getBaseUrl = (): string => {
   if (Platform.OS === 'android') {
-    // Android émulateur utilise 10.0.2.2
-    return 'http://10.0.2.2:5000';
+    // Android émulateur utilise l'IP réseau
+    return 'http://192.168.43.184:5000';
   } else if (Platform.OS === 'ios') {
     if (isPhysicalDevice()) {
       // iPhone physique - utiliser l'IP de votre ordinateur

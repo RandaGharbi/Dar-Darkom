@@ -67,7 +67,7 @@ class ApiService {
       if (error instanceof TypeError && error.message.includes('Network request failed')) {
         return {
           success: false,
-          error: 'Network error - check if backend is running on localhost:5000'
+          error: 'Network error - check if backend is running'
         };
       }
       return { 

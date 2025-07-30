@@ -14,9 +14,9 @@ const detectEnvironment = () => {
 
   // Détection automatique basée sur la plateforme
   if (Platform.OS === 'android') {
-    // Pour tous les émulateurs Android (y compris Nox), utiliser 10.0.2.2
+    // Pour tous les émulateurs Android (y compris Nox), utiliser l'IP réseau
     console.log('📱 Détecté: Émulateur Android (incluant Nox Player)');
-    return 'http://10.0.2.2:5000';
+    return 'http://192.168.43.184:5000';
   }
   
   if (Platform.OS === 'ios') {
