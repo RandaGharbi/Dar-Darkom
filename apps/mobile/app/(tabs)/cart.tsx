@@ -12,16 +12,16 @@ import {
 import CartItemRow from "../../components/CartItemRow";
 import GoBackIcon from "../../assets/images/back.png";
 import { useRouter } from "expo-router";
-import { useCart } from "../../context/CartContext";
+import { useCartStore } from "../../context/CartStore";
 import { useAuth } from "../../context/AuthContext";
 import { Swipeable } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { API_BASE_URL } from "../../services/api";
 
 const CartScreen: React.FC = () => {
-  const { cart, updateCartItem, removeFromCart } = useCart();
+  const { cart, updateCartItem, removeFromCart, fetchCart } = useCartStore();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const insets = useSafeAreaInsets();
 
   // Redirige si non connecté
@@ -30,6 +30,13 @@ const CartScreen: React.FC = () => {
       router.replace("/"); // ou '/login'
     }
   }, [isAuthenticated, router]);
+
+  // Charge le panier une seule fois au montage
+  React.useEffect(() => {
+    if (isAuthenticated && user?._id) {
+      fetchCart(user._id);
+    }
+  }, [isAuthenticated, user?._id]);
 
   const subtotal =
     cart?.items?.reduce((sum, item) => {
@@ -52,7 +59,7 @@ const CartScreen: React.FC = () => {
         <Text style={styles.summaryTitle}>Order Summary</Text>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>{subtotal.toFixed(2)}€</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Shipping</Text>
@@ -60,12 +67,12 @@ const CartScreen: React.FC = () => {
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Taxes</Text>
-          <Text style={styles.summaryValue}>${taxes.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>{taxes.toFixed(2)}€</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={[styles.summaryLabel, styles.totalText]}>Total</Text>
           <Text style={[styles.summaryValue, styles.totalText]}>
-            ${total.toFixed(2)}
+            {total.toFixed(2)}€
           </Text>
         </View>
       </View>
@@ -166,7 +173,8 @@ const CartScreen: React.FC = () => {
                         marginVertical: 5,
                       }}
                       onPress={() =>
-                        id !== null && Alert.alert(
+                        id !== null &&
+                        Alert.alert(
                           "Confirmation",
                           "Voulez-vous vraiment supprimer ce produit du panier ?",
                           [
@@ -196,10 +204,16 @@ const CartScreen: React.FC = () => {
                       quantity: item.quantity,
                     }}
                     onChangeQuantity={(delta) =>
-                      id !== null && updateCartItem(id, item.quantity + delta)
+                      id !== null &&
+                      updateCartItem(
+                        user?._id || "",
+                        id.toString(),
+                        item.quantity + delta
+                      )
                     }
                     onDelete={() =>
-                      id !== null && Alert.alert(
+                      id !== null &&
+                      Alert.alert(
                         "Confirmation",
                         "Voulez-vous vraiment supprimer ce produit du panier ?",
                         [
@@ -207,7 +221,8 @@ const CartScreen: React.FC = () => {
                           {
                             text: "Supprimer",
                             style: "destructive",
-                            onPress: () => removeFromCart(id),
+                            onPress: () =>
+                              removeFromCart(user?._id || "", id.toString()),
                           },
                         ]
                       )
@@ -324,6 +339,7 @@ const styles = StyleSheet.create({
   summaryValue: {
     fontSize: 13,
     color: "#222",
+    textAlign: "right",
   },
   totalText: { fontSize: 13 },
   checkoutButton: {

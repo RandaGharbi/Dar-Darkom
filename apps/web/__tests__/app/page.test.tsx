@@ -6,11 +6,13 @@ import { ThemeProvider } from 'styled-components';
 import DashboardPage from '../../app/page';
 
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
 
 jest.mock('next/navigation', () => ({
   usePathname: () => '/',
   useRouter: () => ({
-    push: mockPush
+    push: mockPush,
+    replace: mockReplace
   })
 }));
 
@@ -32,6 +34,10 @@ jest.mock('../../hooks/useTranslation', () => ({
       return translations[key] || key;
     }
   })
+}));
+
+jest.mock('../../utils/auth', () => ({
+  isAuthenticated: jest.fn(() => true)
 }));
 
 jest.mock('../../lib/api', () => ({
@@ -68,7 +74,7 @@ const mockTheme = {
     card: { background: '#fff', border: '#e5e7eb', shadow: '0 1px 2px 0 rgba(0,0,0,0.05)' },
     button: { primary: '#F5A623', secondary: '#F5F1EA', text: '#fff' }
   },
-  borderRadius: { sm: '4px', md: '8px' },
+  borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px', full: '9999px' },
   shadows: {
     sm: '0 1px 2px 0 rgba(0,0,0,0.05)',
     md: '0 4px 6px -1px rgba(0,0,0,0.1)',
@@ -107,6 +113,7 @@ const renderWithProviders = () => {
 describe('DashboardPage', () => {
   beforeEach(() => {
     mockPush.mockClear();
+    mockReplace.mockClear();
   });
 
   it('renders dashboard title', () => {
@@ -144,9 +151,9 @@ describe('DashboardPage', () => {
   });
 
   it('uses auth guard hook', () => {
-    const useAuthGuard = require('../../hooks/useAuthGuard').useAuthGuard;
+    const { isAuthenticated } = require('../../utils/auth');
     renderWithProviders();
-    expect(useAuthGuard).toHaveBeenCalled();
+    expect(isAuthenticated).toHaveBeenCalled();
   });
 
   it('fetches required data', () => {

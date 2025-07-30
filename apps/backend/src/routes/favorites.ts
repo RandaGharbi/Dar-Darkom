@@ -3,6 +3,7 @@ import {
   addToFavorites, 
   removeFromFavorites, 
   getFavorites, 
+  getFavoritesByUser,
   isFavorite, 
   toggleFavorite, 
   clearFavorites 
@@ -22,6 +23,9 @@ router.delete('/remove/:productId', removeFromFavorites);
 
 // Obtenir tous les favoris de l'utilisateur
 router.get('/', getFavorites);
+
+// Obtenir tous les favoris d'un utilisateur spécifique (pour l'interface admin)
+router.get('/user/:userId', getFavoritesByUser);
 
 // Vérifier si un produit est en favori
 router.get('/check/:productId', isFavorite);

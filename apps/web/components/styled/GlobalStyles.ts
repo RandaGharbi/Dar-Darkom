@@ -26,7 +26,6 @@ export const GlobalStyles = createGlobalStyle`
 
   a {
     color: var(--link-color);
-    text-decoration: underline;
     font-size: 0.95em;
   }
 

@@ -391,25 +391,25 @@ export default function OrdersPage() {
 
           <Tabs>
             <Tab 
-              active={activeTab === "All"} 
+              active={activeTab === "All" ? "true" : "false"} 
               onClick={() => setActiveTab("All")}
             >
               {mounted ? t('orders.tabs.all') : ""}
             </Tab>
             <Tab 
-              active={activeTab === "Active"} 
+              active={activeTab === "Active" ? "true" : "false"} 
               onClick={() => setActiveTab("Active")}
             >
               {mounted ? t('orders.tabs.pending') : ""}
             </Tab>
             <Tab 
-              active={activeTab === "Completed"} 
+              active={activeTab === "Completed" ? "true" : "false"} 
               onClick={() => setActiveTab("Completed")}
             >
               {mounted ? t('orders.tabs.delivered') : ""}
             </Tab>
             <Tab 
-              active={activeTab === "Cancelled"} 
+              active={activeTab === "Cancelled" ? "true" : "false"} 
               onClick={() => setActiveTab("Cancelled")}
             >
               {mounted ? t('orders.tabs.cancelled') : ""}
@@ -477,7 +477,7 @@ export default function OrdersPage() {
               {Array.from({ length: totalPages }, (_, i) => (
                 <PageButton
                   key={i + 1}
-                  active={currentPage === i + 1}
+                  active={currentPage === i + 1 ? "true" : "false"}
                   onClick={() => setCurrentPage(i + 1)}
                 >
                   {i + 1}

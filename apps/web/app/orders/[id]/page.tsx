@@ -6,14 +6,17 @@ import { DashboardLayout } from "../../../components/layout/DashboardLayout";
 import { GlobalStyles } from "../../../components/styled/GlobalStyles";
 import styled from "styled-components";
 import { ArrowLeft, Truck, Package, CheckCircle, Circle } from "lucide-react";
-import { ordersAPI } from "../../../lib/api";
+import { ordersAPI, Order } from "../../../lib/api";
 import { useState } from "react";
+import Modal from "../../../components/ui/Modal";
+import { useModal } from "../../../hooks/useModal";
 
 const Container = styled.div`
   padding: 2rem;
-  background: #fff;
+  background: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 
@@ -24,12 +27,12 @@ const Header = styled.div`
 const Title = styled.h1`
   font-size: 2.5rem;
   font-weight: bold;
-  color: #222;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0 0 0.5rem 0;
 `;
 
 const OrderDate = styled.p`
-  color: #666;
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-size: 1rem;
   margin: 0;
 `;
@@ -46,17 +49,18 @@ const Grid = styled.div`
 `;
 
 const Section = styled.div`
-  background: #fff;
+  background: ${({ theme }) => theme.colors.card.background};
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: ${({ theme }) => theme.colors.card.shadow};
   margin-bottom: 1.5rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const SectionTitle = styled.h2`
   font-size: 1.2rem;
   font-weight: 600;
-  color: #222;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0 0 1rem 0;
 `;
 
@@ -76,13 +80,13 @@ const InfoItem = styled.div`
 
 const InfoLabel = styled.div`
   font-size: 0.9rem;
-  color: #666;
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: 0.25rem;
 `;
 
 const InfoValue = styled.div`
   font-size: 1rem;
-  color: #222;
+  color: ${({ theme }) => theme.colors.text.primary};
   font-weight: 500;
 `;
 
@@ -95,16 +99,16 @@ const Table = styled.table`
 const Th = styled.th`
   text-align: left;
   padding: 0.75rem;
-  background: #f8f8f8;
-  color: #666;
+  background: ${({ theme }) => theme.colors.table.header};
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-weight: 600;
   font-size: 0.9rem;
 `;
 
 const Td = styled.td`
   padding: 0.75rem;
-  border-bottom: 1px solid #f2f2f2;
-  color: #222;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.95rem;
 `;
 
@@ -119,7 +123,7 @@ const TotalSection = styled.div`
 const TotalLabel = styled.span`
   font-size: 1.1rem;
   font-weight: 600;
-  color: #222;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const TotalValue = styled.span`
@@ -172,38 +176,60 @@ const TimelineContent = styled.div`
 
 const TimelineTitle = styled.div<{ completed?: boolean }>`
   font-weight: 600;
-  color: ${props => props.completed ? '#222' : '#666'};
+  color: ${props => props.completed ? props.theme.colors.text.primary : props.theme.colors.text.secondary};
   margin-bottom: 0.25rem;
 `;
 
 const TimelineDate = styled.div`
   font-size: 0.9rem;
-  color: #666;
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const UpdateSection = styled.div`
   margin-top: 2rem;
 `;
 
-const UpdateInput = styled.textarea`
+const UpdateSelect = styled.select`
   width: 100%;
   padding: 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   font-size: 1rem;
-  resize: vertical;
-  min-height: 100px;
   margin-bottom: 1rem;
+  background: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.text.primary};
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  padding-right: 2.5rem;
 
   &:focus {
     outline: none;
-    border-color: #b47b48;
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary}20;
+  }
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+
+  option {
+    background: ${({ theme }) => theme.colors.background};
+    color: ${({ theme }) => theme.colors.text.primary};
+    padding: 0.5rem;
+  }
+
+  &::-ms-expand {
+    display: none;
   }
 `;
 
 const UpdateButton = styled.button`
-  background: #b47b48;
-  color: white;
+  background: ${({ theme }) => theme.colors.button.primary};
+  color: ${({ theme }) => theme.colors.button.text};
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;
@@ -213,14 +239,14 @@ const UpdateButton = styled.button`
   transition: background 0.2s;
 
   &:hover {
-    background: #a06a3a;
+    background: ${({ theme }) => theme.colors.primary};
   }
 `;
 
 const BackButton = styled.button`
   background: none;
   border: none;
-  color: #666;
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-size: 0.9rem;
   cursor: pointer;
   display: flex;
@@ -230,7 +256,7 @@ const BackButton = styled.button`
   margin-bottom: 1rem;
 
   &:hover {
-    color: #b47b48;
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -244,6 +270,7 @@ export default function OrderDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { modalState, showSuccess, hideModal } = useModal();
   const orderId = params.id as string;
 
   const { data: order, isLoading, error } = useQuery({
@@ -253,12 +280,23 @@ export default function OrderDetailsPage() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async () => {
-      // Ici vous pouvez implémenter la mise à jour du statut
+    mutationFn: async (statusUpdate: string) => {
+      // Valider que le statut est valide
+      const validStatuses: Order['status'][] = ['active', 'completed', 'cancelled'];
+      if (!validStatuses.includes(statusUpdate as Order['status'])) {
+        throw new Error('Statut invalide');
+      }
+      
+      // Appeler l'API pour mettre à jour le statut
+      return ordersAPI.updateStatus(orderId, statusUpdate as Order['status']);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order", orderId] });
-      alert('Statut mis à jour avec succès !');
+      showSuccess('Statut mis à jour avec succès !');
+    },
+    onError: (error) => {
+      console.error('Erreur lors de la mise à jour du statut:', error);
+      // Ici vous pourriez afficher une notification d'erreur
     },
   });
 
@@ -270,7 +308,7 @@ export default function OrderDetailsPage() {
         <GlobalStyles />
         <DashboardLayout hideSidebar>
           <Container>
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#827869' }}>
               Chargement des détails de la commande...
             </div>
           </Container>
@@ -285,8 +323,23 @@ export default function OrderDetailsPage() {
         <GlobalStyles />
         <DashboardLayout hideSidebar>
           <Container>
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#e74c3c' }}>
-              Erreur lors du chargement de la commande
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#d84315' }}>
+              <h2>Erreur lors du chargement de la commande</h2>
+              <p>La commande demandée n&apos;existe pas ou n&apos;est pas accessible.</p>
+              <button 
+                onClick={() => router.push('/orders')}
+                style={{
+                  background: '#b47b48',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  marginTop: '1rem'
+                }}
+              >
+                Retour à la liste des commandes
+              </button>
             </div>
           </Container>
         </DashboardLayout>
@@ -333,32 +386,32 @@ export default function OrderDetailsPage() {
 
   const dates = calculateTimelineDates();
 
-  const timelineSteps = [
-    {
-      title: "Order Placed",
-      date: dates.orderPlaced,
-      icon: <Circle size={16} />,
-      completed: true
-    },
-    {
-      title: "Order Shipped",
-      date: dates.orderShipped,
-      icon: <Truck size={16} />,
-      completed: order.status === 'completed' || order.status === 'cancelled'
-    },
-    {
-      title: "Out for Delivery",
-      date: dates.outForDelivery,
-      icon: <Package size={16} />,
-      completed: order.status === 'completed'
-    },
-    {
-      title: "Delivered",
-      date: dates.delivered,
-      icon: <CheckCircle size={16} />,
-      completed: order.status === 'completed'
-    }
-  ];
+      const timelineSteps = [
+      {
+        title: "Order Placed",
+        date: dates.orderPlaced,
+        icon: <Circle size={16} />,
+        completed: true
+      },
+      {
+        title: "Order Shipped",
+        date: dates.orderShipped,
+        icon: <Truck size={16} />,
+        completed: order.status === "completed" || order.status === "cancelled"
+      },
+      {
+        title: "Out for Delivery",
+        date: dates.outForDelivery,
+        icon: <Package size={16} />,
+        completed: order.status === "completed"
+      },
+      {
+        title: "Delivered",
+        date: dates.delivered,
+        icon: <CheckCircle size={16} />,
+        completed: order.status === "completed"
+      }
+    ];
 
   return (
     <>
@@ -485,11 +538,15 @@ export default function OrderDetailsPage() {
               <Section>
                 <SectionTitle>Update Order Status</SectionTitle>
                 <UpdateSection>
-                  <UpdateInput
-                    placeholder="Enter status update..."
+                  <UpdateSelect
                     value={statusUpdate}
                     onChange={(e) => setStatusUpdate(e.target.value)}
-                  />
+                  >
+                    <option value="">Sélectionner un statut...</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </UpdateSelect>
                   <UpdateButton
                     onClick={() => {
                       if (statusUpdate.trim()) {
@@ -497,6 +554,7 @@ export default function OrderDetailsPage() {
                         setStatusUpdate("");
                       }
                     }}
+                    disabled={!statusUpdate.trim()}
                   >
                     Update Status
                   </UpdateButton>
@@ -504,6 +562,19 @@ export default function OrderDetailsPage() {
               </Section>
             </div>
           </Grid>
+
+          {/* Modal pour les notifications */}
+          <Modal
+            isOpen={modalState.isOpen}
+            onClose={hideModal}
+            title={modalState.title}
+            message={modalState.message}
+            type={modalState.type}
+            onConfirm={modalState.onConfirm}
+            confirmText={modalState.confirmText}
+            cancelText={modalState.cancelText}
+            showCancel={modalState.showCancel}
+          />
         </Container>
       </DashboardLayout>
     </>

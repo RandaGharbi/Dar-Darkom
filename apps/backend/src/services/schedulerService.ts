@@ -59,12 +59,7 @@ export class SchedulerService {
         })));
       } else {
         // Afficher tous les exports actifs pour debug
-        const allActiveExports = await ScheduledExport.find({ status: 'active' });
-        console.log('📋 [SCHEDULER] Aucun export à exécuter. Exports actifs:', allActiveExports.map((exp: IScheduledExport) => ({
-          name: exp.name,
-          nextRun: exp.nextRun.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }),
-          status: exp.status
-        })));
+        await ScheduledExport.find({ status: 'active' });
       }
 
       for (const scheduledExport of scheduledExports) {
@@ -77,31 +72,18 @@ export class SchedulerService {
 
   // Exécuter un export planifié
   private async executeScheduledExport(scheduledExport: IScheduledExport) {
-    console.log('🚀 [SCHEDULER] Début d\'exécution de l\'export:', scheduledExport.name);
-    console.log('📋 [SCHEDULER] Détails de l\'export:', {
-      id: scheduledExport._id,
-      type: scheduledExport.type,
-      format: scheduledExport.format,
-      emailRecipients: scheduledExport.emailRecipients
-    });
     
     try {
-      // Générer le fichier d'export
-      console.log('📊 [SCHEDULER] Génération du fichier d\'export...');
+    
       const exportResult = await this.generateExport(scheduledExport);
-      console.log('✅ [SCHEDULER] Fichier généré avec succès');
 
       if (exportResult.success) {
         // Envoyer l'email
-        console.log('📧 [SCHEDULER] Envoi de l\'email...');
         const emailSent = await this.sendExportEmail(scheduledExport, exportResult);
-        console.log('✅ [SCHEDULER] Email envoyé avec succès');
 
         if (emailSent) {
           // Mettre à jour le statut
           await this.updateExportStatus(scheduledExport._id!.toString(), 'success');
-          console.log('💾 [SCHEDULER] Statut mis à jour');
-          console.log('🎉 [SCHEDULER] Export terminé avec succès!');
         } else {
           await this.updateExportStatus(scheduledExport._id!.toString(), 'error', 'Erreur lors de l\'envoi de l\'email');
           console.log('❌ [SCHEDULER] Erreur lors de l\'envoi de l\'email');

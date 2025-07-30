@@ -73,13 +73,49 @@ export default function ShippingAddressScreen() {
     setLoading(true);
     try {
       const data: Address[] = await getAddressesByUser(userId);
-      setAddresses(data);
+      
+      // Si aucune adresse n'existe et que l'utilisateur a une adresse dans son profil
+      if (data.length === 0 && user?.address) {
+        try {
+          // Créer automatiquement une adresse de livraison à partir du profil
+          const addressParts = user.address.split(' ');
+          const fullName = user.name || 'Utilisateur';
+          const streetAddress = user.address;
+          const city = 'Ville'; // Valeur par défaut
+          const state = 'État'; // Valeur par défaut
+          const postalCode = '00000'; // Valeur par défaut
+          const country = 'France'; // Valeur par défaut
+          
+          const payload: AddressPayload = {
+            userId: userId as string,
+            fullName,
+            streetAddress,
+            city,
+            state,
+            postalCode,
+            country,
+          };
+          
+          await addAddress(payload);
+          console.log('Adresse du profil synchronisée vers les adresses de livraison');
+          
+          // Récupérer à nouveau les adresses
+          const updatedData: Address[] = await getAddressesByUser(userId);
+          setAddresses(updatedData);
+        } catch (syncError) {
+          console.error('Erreur lors de la synchronisation de l\'adresse:', syncError);
+          // Continuer avec les adresses existantes même si la sync échoue
+          setAddresses(data);
+        }
+      } else {
+        setAddresses(data);
+      }
     } catch (error) {
       console.error('Erreur lors de la récupération des adresses:', error);
       Alert.alert("Erreur", "Impossible de charger les adresses");
     }
     setLoading(false);
-  }, [userId]);
+  }, [userId, user]);
 
   useEffect(() => {
     fetchAddresses();

@@ -4,10 +4,8 @@ import {
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
-  Alert,
+  TouchableOpacity
 } from "react-native";
-import { useCart } from "../context/CartContext";
 import { getCorrectImageUrl } from "../utils/imageUtils";
 
 type CartItem = {

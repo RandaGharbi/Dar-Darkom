@@ -33,9 +33,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    # EXPO_TOKEN is required and must be configured in repository secrets
+    # This secret should be linked to the project's Expo account
     - name: Check for EXPO_TOKEN
       run: |
-        if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+        EXPO_TOKEN="${{ secrets.EXPO_TOKEN || '' }}"
+        if [ -z "$EXPO_TOKEN" ]; then
           echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
           exit 1
         fi

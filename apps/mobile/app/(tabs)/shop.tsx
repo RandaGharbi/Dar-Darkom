@@ -18,14 +18,15 @@ import ProductItem from "../../components/ProductItem";
 
 import goBackIcon from "../../assets/images/back.png";
 import { useAuth } from "../../context/AuthContext";
-import { useCart } from "../../context/CartContext";
+import { useCartStore } from "../../context/CartStore";
 
 const categories = ["All", "Face", "Body", "Hair"];
 
 const ShopScreen: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const { isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
+  const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set());
+  const { isAuthenticated, user } = useAuth();
+  const { addToCart } = useCartStore();
   
   const router = useRouter();
   const navigation = useNavigation();
@@ -42,23 +43,45 @@ const ShopScreen: React.FC = () => {
   const handleBasketPress = async (item: any) => {
     console.log('handleBasketPress appelé avec item:', item);
     console.log('isAuthenticated:', isAuthenticated);
+    console.log('user:', user);
     
-    if (isAuthenticated) {
-      try {
-        // Utilise d'abord l'ID numérique, sinon le _id MongoDB
-        const productId = item.id || item._id;
-        console.log('ProductID à envoyer:', productId);
-        console.log('Type de productId:', typeof productId);
-        
-        await addToCart(productId);
-        console.log('addToCart terminé avec succès');
-        Alert.alert('Succès', 'Produit ajouté au panier');
-      } catch (error) {
-        console.error('Erreur ajout panier:', error);
-        Alert.alert('Erreur', 'Impossible d\'ajouter le produit au panier');
-      }
-    } else {
+    if (!isAuthenticated || !user?._id) {
+      console.log('Utilisateur non authentifié ou ID manquant');
       router.push('/login');
+      return;
+    }
+    
+    try {
+      // Utilise d'abord l'ID numérique, sinon le _id MongoDB
+      const productId = item.id || item._id;
+      console.log('ProductID à envoyer:', productId);
+      console.log('UserID à envoyer:', user._id);
+      console.log('Type de productId:', typeof productId);
+      console.log('Type de user._id:', typeof user._id);
+      
+      if (!productId) {
+        console.error('ProductID manquant');
+        Alert.alert('Erreur', 'ID du produit manquant');
+        return;
+      }
+      
+      await addToCart(user._id, productId.toString());
+      console.log('addToCart terminé avec succès');
+      
+      // Feedback visuel immédiat
+      setAddedToCart(prev => new Set([...prev, productId.toString()]));
+      
+      // Retirer l'indicateur après 2 secondes
+      setTimeout(() => {
+        setAddedToCart(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(productId.toString());
+          return newSet;
+        });
+      }, 2000);
+    } catch (error) {
+      console.error('Erreur ajout panier:', error);
+      Alert.alert('Erreur', 'Impossible d\'ajouter le produit au panier');
     }
   };
 
@@ -169,6 +192,7 @@ const ShopScreen: React.FC = () => {
               isFavorite={isFavorite(item.id)}
               onToggleFavorite={() => handleToggleFavorite(item)}
               onPressBasket={() => handleBasketPress(item)}
+              isAddedToCart={addedToCart.has(item.id.toString())}
             />
           )}
           columnWrapperStyle={styles.row}

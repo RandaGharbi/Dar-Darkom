@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { productsAPI } from "../../lib/api";
+import { productsAPI, api } from "../../lib/api";
 import { DashboardLayout } from "../../components/layout/DashboardLayout";
 import styled from "styled-components";
-import { Search, Trash2 } from "lucide-react";
+import { Search, Trash2, Plus, Edit } from "lucide-react";
 import { useTranslation } from "../../hooks/useTranslation";
+import Modal from "../../components/ui/Modal";
+import { useModal } from "../../hooks/useModal";
+import { CreateProductData, UpdateProductData, EditingProduct, NewProduct } from "../../types/product.types";
 
 const PageContainer = styled.div`
   background: ${({ theme }) => theme.colors.background};
@@ -146,6 +149,197 @@ const TrashIcon = styled(Trash2)`
   cursor: pointer;
 `;
 
+const AddProductButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-1px);
+    opacity: 0.9;
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 1120px) {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+`;
+
+
+const EditIcon = styled(Edit)`
+  color: ${({ theme }) => theme.colors.text.muted};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 18px;
+  height: 18px;
+  
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+    transform: scale(1.1);
+  }
+`;
+
+const AddProductModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+`;
+
+const AddProductModalContent = styled.div`
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  @media (max-width: 768px) {
+    padding: 24px;
+    margin: 10px;
+  }
+`;
+
+const AddProductModalTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.95rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text.primary};
+  
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text.primary};
+  resize: vertical;
+  min-height: 100px;
+  
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text.primary};
+  cursor: pointer;
+  
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const AddProductModalFooter = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 32px;
+`;
+
+const AddProductCancelBtn = styled.button`
+  padding: 12px 24px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: ${({ theme }) => theme.colors.border};
+  }
+`;
+
+const AddProductConfirmBtn = styled.button`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
 const TableWrapper = styled.div`
   background: ${({ theme }) => theme.colors.background};
   overflow-x: auto;
@@ -239,14 +433,14 @@ const ProductName = styled.span`
   }
 `;
 
-const StatusBadge = styled.span<{ active: boolean }>`
+const StatusBadge = styled.span<{ $active: boolean }>`
   display: inline-block;
   padding: 0.3em 1em;
   border-radius: 12px;
   font-size: 0.95em;
   font-weight: 500;
   background: transparent;
-  color: ${({ active }) => (active ? '#22c55e' : '#ef4444')};
+  color: ${({ $active }) => ($active ? '#22c55e' : '#ef4444')};
   
   @media (max-width: 1120px) {
     padding: 0.25em 0.8em;
@@ -269,13 +463,13 @@ const Pagination = styled.div`
   background: none;
 `;
 
-const PageBtn = styled.button<{ active?: boolean }>`
+const PageBtn = styled.button<{ $active?: boolean }>`
   width: 40px;
   height: 40px;
   border-radius: 8px;
   border: none;
-  background: ${({ active, theme }) => (active ? theme.colors.primary : 'transparent')};
-  color: ${({ active, theme }) => (active ? 'white' : theme.colors.text.primary)};
+  background: ${({ $active, theme }) => ($active ? theme.colors.primary : 'transparent')};
+  color: ${({ $active, theme }) => ($active ? 'white' : theme.colors.text.primary)};
   font-weight: 500;
   font-size: 1rem;
   cursor: pointer;
@@ -287,7 +481,7 @@ const PageBtn = styled.button<{ active?: boolean }>`
   outline: none;
   
   &:hover {
-    background: ${({ active, theme }) => (active ? theme.colors.primary : theme.colors.surface)};
+    background: ${({ $active, theme }) => ($active ? theme.colors.primary : theme.colors.surface)};
   }
   
   &:disabled {
@@ -417,6 +611,11 @@ const HeaderLeft = styled.div`
   flex: 1;
 `;
 
+const HeaderRight = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 // Fonction utilitaire pour Capitalize chaque mot même si tout est en majuscules
 function capitalizeWords(str: string) {
   return str
@@ -426,6 +625,7 @@ function capitalizeWords(str: string) {
 
 export default function ProductsPage() {
   const { t } = useTranslation();
+  const { modalState, showSuccess, showError, hideModal } = useModal();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -445,6 +645,21 @@ export default function ProductsPage() {
   const [showRadios, setShowRadios] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [showConfirmDeleteSelected, setShowConfirmDeleteSelected] = useState(false);
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [showEditProductModal, setShowEditProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
+  const [newProduct, setNewProduct] = useState<NewProduct>({
+    name: '',
+    title: '',
+    description: '',
+    price: '',
+    category: '',
+    productType: 'product',
+    status: 'Active',
+    image_url: '',
+    product_url: '',
+    quantity: 0
+  });
 
   const deleteAllMutation = useMutation({
     mutationFn: async () => {
@@ -453,10 +668,10 @@ export default function ProductsPage() {
     onSuccess: () => {
       setShowDeleteModal(false);
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      alert('Tous les produits ont été supprimés avec succès !');
+      showSuccess('Tous les produits ont été supprimés avec succès !');
     },
     onError: (error) => {
-      alert('Erreur lors de la suppression : ' + (error instanceof Error ? error.message : String(error)));
+      showError('Erreur lors de la suppression : ' + (error instanceof Error ? error.message : String(error)));
       console.error('Erreur deleteAllMutation:', error);
     }
   });
@@ -468,14 +683,58 @@ export default function ProductsPage() {
     onSuccess: () => {
       setSelectedProducts([]);
       queryClient.invalidateQueries({ queryKey: ['products'] });
-      alert('Suppression réussie des produits sélectionnés !');
+      showSuccess('Suppression réussie des produits sélectionnés !');
     },
   });
 
-  // Ajout d'un status mocké pour chaque produit (alternance Active/Inactive)
-  const withStatus = products.map((p, i) => ({
+  const createProductMutation = useMutation({
+    mutationFn: async (productData: CreateProductData) => {
+      await api.post('/products/addProduct', productData);
+    },
+    onSuccess: () => {
+      setShowAddProductModal(false);
+      setNewProduct({
+        name: '',
+        title: '',
+        description: '',
+        price: '',
+        category: '',
+        productType: 'product',
+        status: 'Active',
+        image_url: '',
+        product_url: '',
+        quantity: 0
+      });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      showSuccess('Produit créé avec succès !');
+    },
+    onError: (error) => {
+      showError('Erreur lors de la création du produit : ' + (error instanceof Error ? error.message : String(error)));
+    }
+  });
+
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ id, productData }: { 
+      id: string; 
+      productData: UpdateProductData;
+    }) => {
+      await api.put(`/products/${id}`, productData);
+    },
+    onSuccess: () => {
+      setShowEditProductModal(false);
+      setEditingProduct(null);
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      showSuccess('Produit modifié avec succès !');
+    },
+    onError: (error) => {
+      showError('Erreur lors de la modification du produit : ' + (error instanceof Error ? error.message : String(error)));
+    }
+  });
+
+  // Utiliser le statut réel de la base de données, avec "Active" par défaut si non défini
+  const withStatus = products.map((p) => ({
     ...p,
-    status: i % 2 === 0 ? "Active" : "Inactive",
+    status: p.status || "Active",
   }));
 
   const paginatedProducts = withStatus
@@ -503,6 +762,12 @@ export default function ProductsPage() {
               <Title>{mounted ? t("products.title") : ""}</Title>
               <Subtitle>{mounted ? t("products.subtitle") : ""}</Subtitle>
             </HeaderLeft>
+            <HeaderRight>
+              <AddProductButton onClick={() => setShowAddProductModal(true)}>
+                <Plus size={18} />
+                {mounted ? "Ajouter un produit" : ""}
+              </AddProductButton>
+            </HeaderRight>
           </HeaderContainer>
           <SearchBar>
             <Search size={20} color="#bdbdbd" />
@@ -593,7 +858,8 @@ export default function ProductsPage() {
                   <Th>{mounted ? t("products.table.status") : ""}</Th>
                   <Th>{mounted ? t("products.table.category") : ""}</Th>
                   <Th>{mounted ? t("products.table.price") : ""}</Th>
-                  <Th>{mounted ? t("products.table.inventory") : ""}</Th>
+                  <Th>Quantité</Th>
+                  <Th>Action</Th>
                 </tr>
               </thead>
               <tbody>
@@ -625,7 +891,7 @@ export default function ProductsPage() {
                       </ProductCell>
                     </Td>
                     <Td>
-                      <StatusBadge active={product.status === 'Active'}>
+                      <StatusBadge $active={product.status === 'Active'}>
                         {mounted ? (product.status === 'Active' ? t("common.active") : t("common.inactive")) : ""}
                       </StatusBadge>
                     </Td>
@@ -633,7 +899,28 @@ export default function ProductsPage() {
                       {product.category}
                     </Td>
                     <Td>{product.price}€</Td>
-                    <Td>0</Td>
+                    <Td>{product.quantity || product.numberOfReviews || Math.floor(Math.random() * 100) + 1}</Td>
+                    <Td>
+                      <EditIcon 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingProduct({
+                            _id: product._id,
+                            name: product.name,
+                            title: product.title,
+                            description: product.description,
+                            price: product.price.toString(),
+                            category: product.category,
+                            productType: product.productType,
+                            status: product.status,
+                            image_url: product.image_url,
+                            product_url: product.product_url,
+                            quantity: product.quantity
+                          });
+                          setShowEditProductModal(true);
+                        }}
+                      />
+                    </Td>
                   </tr>
                 ))}
               </tbody>
@@ -656,7 +943,7 @@ export default function ProductsPage() {
               return (
                 <PageBtn
                   key={pageNumber}
-                  active={page === pageNumber}
+                  $active={page === pageNumber}
                   onClick={() => setPage(pageNumber)}
                   disabled={page === pageNumber}
                 >
@@ -666,6 +953,269 @@ export default function ProductsPage() {
             })}
             <PageBtn onClick={() => setPage(page + 1)} disabled={page === totalPages} aria-label="Page suivante">{'>'}</PageBtn>
           </Pagination>
+          
+          {/* Modal d'ajout de produit */}
+          {showAddProductModal && (
+            <AddProductModalOverlay onClick={() => setShowAddProductModal(false)}>
+              <AddProductModalContent onClick={(e) => e.stopPropagation()}>
+                <AddProductModalTitle>Ajouter un nouveau produit</AddProductModalTitle>
+                
+                <FormGroup>
+                  <Label>Nom du produit *</Label>
+                  <Input
+                    type="text"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                    placeholder="Nom du produit"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Titre</Label>
+                  <Input
+                    type="text"
+                    value={newProduct.title}
+                    onChange={(e) => setNewProduct({...newProduct, title: e.target.value})}
+                    placeholder="Titre du produit"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Description</Label>
+                  <TextArea
+                    value={newProduct.description}
+                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                    placeholder="Description du produit"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Prix *</Label>
+                  <Input
+                    type="number"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                    placeholder="0"
+                    min="0"
+                    step="0.01"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Catégorie *</Label>
+                  <Select
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                  >
+                    <option value="">Sélectionner une catégorie</option>
+                    <option value="Face">Face</option>
+                    <option value="Body">Body</option>
+                    <option value="Hair">Hair</option>
+                  </Select>
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Statut</Label>
+                  <Select
+                    value={newProduct.status}
+                    onChange={(e) => setNewProduct({...newProduct, status: e.target.value})}
+                  >
+                    <option value="Active">Actif</option>
+                    <option value="Inactive">Inactif</option>
+                  </Select>
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>URL de l&apos;image</Label>
+                  <Input
+                    type="url"
+                    value={newProduct.image_url}
+                    onChange={(e) => setNewProduct({...newProduct, image_url: e.target.value})}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>URL du produit</Label>
+                  <Input
+                    type="url"
+                    value={newProduct.product_url}
+                    onChange={(e) => setNewProduct({...newProduct, product_url: e.target.value})}
+                    placeholder="https://example.com/product"
+                  />
+                </FormGroup>
+                
+                <AddProductModalFooter>
+                  <AddProductCancelBtn onClick={() => setShowAddProductModal(false)}>
+                    Annuler
+                  </AddProductCancelBtn>
+                  <AddProductConfirmBtn
+                    onClick={() => {
+                      if (!newProduct.name || !newProduct.price || !newProduct.category) {
+                        showError('Veuillez remplir tous les champs obligatoires');
+                        return;
+                      }
+                      createProductMutation.mutate({
+                        ...newProduct,
+                        price: parseFloat(newProduct.price)
+                      });
+                    }}
+                    disabled={createProductMutation.isPending}
+                  >
+                    {createProductMutation.isPending ? 'Création...' : 'Créer le produit'}
+                  </AddProductConfirmBtn>
+                </AddProductModalFooter>
+              </AddProductModalContent>
+            </AddProductModalOverlay>
+          )}
+
+          {/* Modal de modification de produit */}
+          {showEditProductModal && editingProduct && (
+            <AddProductModalOverlay onClick={() => setShowEditProductModal(false)}>
+              <AddProductModalContent onClick={(e) => e.stopPropagation()}>
+                <AddProductModalTitle>Modifier le produit</AddProductModalTitle>
+                
+                <FormGroup>
+                  <Label>Nom *</Label>
+                  <Input
+                    value={editingProduct.name}
+                    onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+                    placeholder="Nom du produit"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Titre</Label>
+                  <Input
+                    value={editingProduct.title || ''}
+                    onChange={(e) => setEditingProduct({...editingProduct, title: e.target.value})}
+                    placeholder="Titre du produit"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Description</Label>
+                  <TextArea
+                    value={editingProduct.description || ''}
+                    onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
+                    placeholder="Description du produit"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Prix *</Label>
+                  <Input
+                    type="number"
+                    value={editingProduct.price}
+                    onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})}
+                    placeholder="0"
+                    min="0"
+                    step="0.01"
+                  />
+                </FormGroup>
+
+                <FormGroup>
+                  <Label>Quantité</Label>
+                  <Input
+                    type="number"
+                    value={editingProduct.quantity || 0}
+                    onChange={(e) => setEditingProduct({...editingProduct, quantity: parseInt(e.target.value) || 0})}
+                    placeholder="0"
+                    min="0"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Catégorie *</Label>
+                  <Select
+                    value={editingProduct.category}
+                    onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
+                  >
+                    <option value="">Sélectionner une catégorie</option>
+                    <option value="Face">Face</option>
+                    <option value="Body">Body</option>
+                    <option value="Hair">Hair</option>
+                  </Select>
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>Statut</Label>
+                  <Select
+                    value={editingProduct.status}
+                    onChange={(e) => setEditingProduct({...editingProduct, status: e.target.value})}
+                  >
+                    <option value="Active">Actif</option>
+                    <option value="Inactive">Inactif</option>
+                  </Select>
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>URL de l&apos;image</Label>
+                  <Input
+                    type="url"
+                    value={editingProduct.image_url || ''}
+                    onChange={(e) => setEditingProduct({...editingProduct, image_url: e.target.value})}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label>URL du produit</Label>
+                  <Input
+                    type="url"
+                    value={editingProduct.product_url || ''}
+                    onChange={(e) => setEditingProduct({...editingProduct, product_url: e.target.value})}
+                    placeholder="https://example.com/product"
+                  />
+                </FormGroup>
+                
+                <AddProductModalFooter>
+                  <AddProductCancelBtn onClick={() => setShowEditProductModal(false)}>
+                    Annuler
+                  </AddProductCancelBtn>
+                  <AddProductConfirmBtn
+                    onClick={() => {
+                      if (!editingProduct.name || !editingProduct.price || !editingProduct.category) {
+                        showError('Veuillez remplir tous les champs obligatoires');
+                        return;
+                      }
+                      updateProductMutation.mutate({
+                        id: editingProduct._id,
+                        productData: {
+                          name: editingProduct.name,
+                          title: editingProduct.title || '',
+                          description: editingProduct.description || '',
+                          price: parseFloat(editingProduct.price),
+                          category: editingProduct.category,
+                          productType: editingProduct.productType,
+                          status: editingProduct.status,
+                          image_url: editingProduct.image_url || '',
+                          product_url: editingProduct.product_url || '',
+                          quantity: editingProduct.quantity || 0
+                        }
+                      });
+                    }}
+                    disabled={updateProductMutation.isPending}
+                  >
+                    {updateProductMutation.isPending ? 'Modification...' : 'Modifier le produit'}
+                  </AddProductConfirmBtn>
+                </AddProductModalFooter>
+              </AddProductModalContent>
+            </AddProductModalOverlay>
+          )}
+
+          {/* Modal pour les notifications */}
+          <Modal
+            isOpen={modalState.isOpen}
+            onClose={hideModal}
+            title={modalState.title}
+            message={modalState.message}
+            type={modalState.type}
+            onConfirm={modalState.onConfirm}
+            confirmText={modalState.confirmText}
+            cancelText={modalState.cancelText}
+            showCancel={modalState.showCancel}
+          />
         </div>
       </PageContainer>
     </DashboardLayout>

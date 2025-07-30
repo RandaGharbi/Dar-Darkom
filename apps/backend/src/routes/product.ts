@@ -9,7 +9,8 @@ import {
     getProductsByType,
     deleteProductById,
     deleteAllProducts,
-    createProduct
+    createProduct,
+    updateProduct
 } from '../controllers/productController';
 import { importAllProducts } from '../controllers/importProduct';
 
@@ -20,6 +21,9 @@ router.post('/import', importAllProducts);
 
 // Route POST pour créer un produit (alternative explicite)
 router.post('/addProduct', createProduct);
+
+// Route PUT pour modifier un produit
+router.put('/:productId', updateProduct);
 
 // Route GET pour récupérer tous les produits
 router.get('/', getAllProducts);

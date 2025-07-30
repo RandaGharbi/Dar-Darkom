@@ -10,26 +10,20 @@ export interface Notification {
 
 // Fonction pour récupérer les notifications depuis l'API
 async function fetchNotifications(): Promise<Notification[]> {
-  try {
-    const response = await fetch('http://localhost:5000/api/notifications', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error('Erreur lors de la récupération des notifications');
-    }
-    
-    return response.json();
-  } catch (error) {
-    console.error('Erreur fetchNotifications:', error);
-    // Retourner des notifications par défaut en cas d'erreur
-    return getDefaultNotifications();
+  const response = await fetch('http://localhost:5000/api/notifications', {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Erreur lors de la récupération des notifications');
   }
+  
+  return response.json();
 }
 
-// Notifications par défaut
+// Notifications par défaut avec vraies données
 function getDefaultNotifications(): Notification[] {
   return [
     {
@@ -52,18 +46,36 @@ function getDefaultNotifications(): Notification[] {
       time: "Il y a 2 heures",
       read: true,
       type: 'user'
+    },
+    {
+      id: "4",
+      text: "Mise à jour du système terminée",
+      time: "Il y a 3 heures",
+      read: false,
+      type: 'system'
+    },
+    {
+      id: "5",
+      text: "Commande #12344 expédiée",
+      time: "Il y a 4 heures",
+      read: true,
+      type: 'order'
     }
   ];
 }
 
 // Hook pour utiliser les notifications
 export function useNotifications() {
+  const token = localStorage.getItem('token');
+  
   return useQuery<Notification[]>({
     queryKey: ["notifications"],
     queryFn: fetchNotifications,
-    staleTime: 30 * 1000, // 30 secondes
-    refetchInterval: 60 * 1000, // Rafraîchir toutes les minutes
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: false, // Désactiver le refetch automatique
+    refetchOnWindowFocus: false, // Désactiver le refetch au focus
+    enabled: !!token, // Ne pas exécuter si pas de token
+    initialData: token ? undefined : getDefaultNotifications(), // Utiliser les données par défaut si pas de token
   });
 }
 

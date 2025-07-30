@@ -7,6 +7,7 @@ import { authAPI } from '../../lib/api';
 import { toast } from 'react-hot-toast';
 import styled from 'styled-components';
 import { GlobalStyles } from '../../components/styled/GlobalStyles';
+import { isAuthenticated, setToken, removeToken } from '../../utils/auth';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -86,23 +87,45 @@ const ForgotPassword = styled.a`
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isChecking, setIsChecking] = useState(true);
   const router = useRouter();
 
-  // Supprime le token à chaque fois qu'on arrive sur /login
+  // Vérifier si l'utilisateur est déjà connecté une seule fois
   useEffect(() => {
-    localStorage.removeItem('token');
-  }, []);
+    const checkAuth = () => {
+      console.log('Checking authentication...');
+      const authenticated = isAuthenticated();
+      console.log('Is authenticated:', authenticated);
+      
+      if (authenticated) {
+        console.log('User is authenticated, redirecting to dashboard');
+        router.replace('/');
+      } else {
+        console.log('User is not authenticated, showing login form');
+        setIsChecking(false);
+        // Supprime le token à chaque fois qu'on arrive sur /login
+        removeToken();
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const loginMutation = useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      authAPI.login(email, password),
+    mutationFn: ({ email, password }: { email: string; password: string }) => {
+      console.log('Attempting login with:', { email, password: '***' });
+      return authAPI.login(email, password);
+    },
     onSuccess: (response) => {
+      console.log('Login successful:', response);
       const { token } = response.data;
-      localStorage.setItem('token', token);
+      setToken(token);
+      console.log('Token set, redirecting to dashboard');
       toast.success('Connexion réussie !');
-      router.push('/');
+      router.replace('/');
     },
     onError: (error: unknown) => {
+      console.error('Login error:', error);
       const err = error as { response?: { data?: { message?: string } } };
       toast.error(err.response?.data?.message || 'Erreur de connexion');
     },
@@ -110,12 +133,29 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted');
     if (!email || !password) {
       toast.error('Veuillez remplir tous les champs');
       return;
     }
     loginMutation.mutate({ email, password });
   };
+
+  // Afficher un loader pendant la vérification d'authentification
+  if (isChecking) {
+    return (
+      <>
+        <GlobalStyles />
+        <Container>
+          <LoginBox>
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              Chargement...
+            </div>
+          </LoginBox>
+        </Container>
+      </>
+    );
+  }
 
   return (
     <>

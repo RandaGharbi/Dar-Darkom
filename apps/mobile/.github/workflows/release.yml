@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    # EXPO_TOKEN is required and must be configured in repository secrets
+    # This secret should be linked to the project's Expo account
     - name: Check for EXPO_TOKEN
       run: |
         if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then

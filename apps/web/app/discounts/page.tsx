@@ -347,14 +347,14 @@ const DetailItem = styled.div`
   }
 `;
 
-const StatusBadge = styled.span<{ active: boolean }>`
+const StatusBadge = styled.span<{ $active: boolean }>`
   display: inline-block;
   padding: 0.3em 1em;
   border-radius: 12px;
   font-size: 0.85em;
   font-weight: 500;
-  background: ${({ active }) => (active ? "#e8f5e9" : "#fbe9e7")};
-  color: ${({ active }) => (active ? "#388e3c" : "#d84315")};
+  background: ${({ $active }) => ($active ? "#e8f5e9" : "#fbe9e7")};
+  color: ${({ $active }) => ($active ? "#388e3c" : "#d84315")};
   
   @media (max-width: 768px) {
     padding: 0.25em 0.8em;
@@ -949,9 +949,9 @@ export default function DiscountsPage() {
                   <DetailItem>
                     <Clock size={14} />
                     {isCurrentlyActive(discount) ? (
-                      <StatusBadge active={true}>Active</StatusBadge>
+                      <StatusBadge $active={true}>Active</StatusBadge>
                     ) : (
-                      <StatusBadge active={false}>Inactive</StatusBadge>
+                      <StatusBadge $active={false}>Inactive</StatusBadge>
                     )}
                   </DetailItem>
                 </DiscountDetails>

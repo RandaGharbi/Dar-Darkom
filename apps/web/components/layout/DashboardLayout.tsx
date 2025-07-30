@@ -10,9 +10,13 @@ import Link from "next/link";
 import { useTranslation } from "../../hooks/useTranslation";
 import { authAPI } from "../../lib/api";
 import { LanguageSelector } from "../LanguageSelector";
-import { NotificationDropdown } from "../NotificationDropdown";
-import { useTheme } from "styled-components";
+import NotificationDropdown from "../NotificationDropdown";
+import NotificationToastManager from "../NotificationToastManager";
+import NotificationPermissionRequest from "../NotificationPermissionRequest";
+import { MessageDropdown } from "../MessageDropdown";
 import Image from "next/image";
+import { removeToken } from "../../utils/auth";
+import { ThemeToggle } from "../ThemeToggle";
 
 const Sidebar = styled.aside<{ $isOpen: boolean }>`
   width: 280px;
@@ -87,7 +91,7 @@ const HorizontalNavWrapper = styled.div`
 `;
 
 // NavItem intermédiaire pour ne pas propager $active et pour compatibilité styled-components v4 + Next.js
-const NavItemBase = styled.a<{ $active?: boolean }>`
+const NavItemBase = styled.div<{ $active?: boolean }>`
   color: ${(props) =>
     props.$active
       ? props.theme.colors.text.primary
@@ -111,7 +115,7 @@ const NavItemBase = styled.a<{ $active?: boolean }>`
 
 type NavItemProps = React.ComponentPropsWithoutRef<typeof Link> & { $active?: boolean };
 const NavItem = ({ $active, children, ...rest }: NavItemProps) => (
-  <Link {...rest} legacyBehavior passHref>
+  <Link {...rest}>
     <NavItemBase $active={$active}>{children}</NavItemBase>
   </Link>
 );
@@ -223,6 +227,11 @@ const LogoImg = styled.img`
   max-width: 140px;
   object-fit: contain;
   margin-right: 32px;
+  filter: ${({ theme }) => 
+    theme.colors.background === '#1a1a1a' || theme.colors.background === '#000000' 
+      ? 'brightness(0) invert(1)' 
+      : 'none'
+  };
 
   @media (max-width: 1120px) {
     height: 36px;
@@ -239,13 +248,30 @@ const LogoImg = styled.img`
 
 // Composant Logo conditionnel
 const AdaptiveLogo = () => {
-  const theme = useTheme();
-  // Détecter le mode sombre en fonction de la couleur de fond
-  const isDarkMode =
-    theme.colors.background === "#1a1a1a" ||
-    theme.colors.background === "#000000";
-  const logoSrc = isDarkMode ? "/logoGuerlainWhite.png" : "/logoGuerlain.png";
-  return <LogoImg src={logoSrc} alt="Guerlain" />;
+  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleLogoClick = () => {
+    router.push('/');
+  };
+
+  // Ne rendre que côté client pour éviter l'hydratation
+  if (!mounted) {
+    return <div style={{ width: '140px', height: '44px' }} />;
+  }
+
+  return (
+    <LogoImg 
+      src="/logoGuerlain.png" 
+      alt="Guerlain" 
+      onClick={handleLogoClick}
+      style={{ cursor: 'pointer' }}
+    />
+  );
 };
 
 const LogoutButton = styled.button`
@@ -318,12 +344,27 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
     queryFn: () => authAPI.getMe().then((res) => res.data),
   });
 
+  // Debug: afficher les données utilisateur
+  useEffect(() => {
+    console.log('User data in DashboardLayout:', user);
+    console.log('User ID:', user?.user?._id);
+  }, [user]);
+
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("token");
+      // Appeler l'API backend pour le logout
+      await authAPI.logout();
+      
+      // Supprimer le token localement
+      removeToken();
+      
+      // Rediriger vers la page de login
       router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);
+      // Même en cas d'erreur, on supprime le token localement
+      removeToken();
+      router.push("/login");
     }
   };
 
@@ -389,10 +430,19 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
             </HorizontalNavWrapper>
           )}
 
-          <UserMenu>
-            <HeaderControls>
-              <NotificationDropdown />
-            </HeaderControls>
+                      <UserMenu>
+              <HeaderControls>
+                <ThemeToggle />
+                {/* Debug: {console.log('User data:', user)} */}
+                {user?.user?._id ? (
+                  <NotificationDropdown userId={user.user._id} />
+                ) : (
+                  <NotificationDropdown userId="demo" />
+                )}
+              </HeaderControls>
+
+            {user?.user?._id && <NotificationToastManager userId={user.user._id} />}
+            {user?.user?._id && <NotificationPermissionRequest userId={user.user._id} />}
 
             <UserAvatar>
               {user?.profileImage ? (

@@ -2,7 +2,8 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { Platform, Image, ImageSourcePropType, View, Text } from "react-native";
 import { useAuth } from "../../context/AuthContext";
-import { useCart } from '../../context/CartContext';
+import { useCartStore } from '../../context/CartStore';
+import { Ionicons } from '@expo/vector-icons';
 
 import { HapticTab } from "../../components/collapsible/HapticTab";
 import TabBarBackground from "../../components/ui/TabBarBackground";
@@ -45,8 +46,8 @@ function ImageIcon({
 
 export default function TabLayout() {
   const { isAuthenticated } = useAuth();
-  const { cart } = useCart();
-  const cartCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const { cart } = useCartStore();
+  const cartCount = cart?.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
   console.log('Badge panier - count:', cartCount, 'items:', cart?.items?.length);
 
   return (

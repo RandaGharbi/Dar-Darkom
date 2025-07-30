@@ -195,11 +195,11 @@ const FiltersRow = styled.div`
   }
 `;
 
-const FilterButton = styled.button<{ active?: boolean }>`
+const FilterButton = styled.button<{ $active?: boolean }>`
   padding: 8px 16px;
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ active, theme }) => (active ? theme.colors.surface : 'transparent')};
+  background: ${({ $active, theme }) => ($active ? theme.colors.surface : 'transparent')};
   color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.9rem;
   cursor: pointer;
@@ -404,7 +404,7 @@ const EmptyState = styled.div`
   }
 `;
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -454,8 +454,8 @@ export default function UsersPage() {
             />
           </SearchInput>
           <FiltersRow>
-            <FilterButton active>Status</FilterButton>
-            <FilterButton active>Date</FilterButton>
+            <FilterButton $active>Status</FilterButton>
+            <FilterButton $active>Date</FilterButton>
             <FilterButton>More filters</FilterButton>
           </FiltersRow>
           {isLoading ? (
@@ -478,15 +478,19 @@ export default function UsersPage() {
                   {paginatedUsers.map((user) => (
                     <tr
                       key={user._id}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => router.push(`/users/${user._id}`)}
+                      style={{ cursor: user.role === 'admin' ? "default" : "pointer" }}
+                      onClick={() => {
+                        if (user.role !== 'admin') {
+                          router.push(`/users/${user._id}`);
+                        }
+                      }}
                     >
                       <Td>
                         <UserCell>
                         {user.profileImage ? (
                           <div style={{ position: 'relative', width: 40, height: 40 }}>
                             <Image
-                              src={user.profileImage.replace('10.0.2.2', 'localhost')}
+                              src={user.profileImage.replace('192.168.1.73', 'localhost').replace('10.0.2.2', 'localhost')}
                               alt={user.name}
                               width={40}
                               height={40}
@@ -537,9 +541,13 @@ export default function UsersPage() {
                         </DateBadge>
                       </Td>
                       <Td>
-                        <StatusBadge active={Math.random() > 0.5}>
-                          {Math.random() > 0.5 ? "Active" : "Inactive"}
-                        </StatusBadge>
+                        {user.role === 'admin' ? (
+                          <span style={{ color: '#666', fontSize: '0.9rem' }}>-</span>
+                        ) : (
+                          <StatusBadge active={user._id.charCodeAt(0) % 2 === 0}>
+                            {user._id.charCodeAt(0) % 2 === 0 ? "Active" : "Inactive"}
+                          </StatusBadge>
+                        )}
                       </Td>
                       <Td>
                         {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString("en-US") : "03/10/2024"}

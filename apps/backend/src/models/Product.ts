@@ -23,6 +23,15 @@ const ProductSchema: Schema = new Schema({
     required: true, 
     enum: ['ingredient', 'bodyCare', 'hairCare', 'skinCare', 'product'],
     default: 'product'
+  },
+  status: {
+    type: String,
+    enum: ['Active', 'Inactive'],
+    default: 'Active'
+  },
+  quantity: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true

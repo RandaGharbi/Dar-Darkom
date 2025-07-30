@@ -7,7 +7,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwbc3ff127/01-ProductsViewer/P062076/P062076_E01_hi-res.jpg?sw=655&sh=655&sfrm=png",
     "price": 84,
     "Arrivals": "NOUVEAU",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 34,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 2,
@@ -17,7 +20,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw526e7de1/primary_packshot_3/2022/Skincare/AR/G061665_3346470616653_AB-ROY-22-SCALP-SER-50ML-BTL-1.jpg?sw=655&sh=655&sfrm=png",
     "price": 140,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 30,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 3,
@@ -27,7 +33,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/fr_FR/dw9576846f/primary_packshot_3/2023/Skincare/AR/HAIRCARE/G061886_3346470618862_AB-ROY-23-HAIR-SHAMP-FL-PPE-290ML-1.jpg?sw=655&sh=655&sfrm=png",
     "price": 75,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 98,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 4,
@@ -37,7 +46,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/fr_FR/dw2756037f/primary_packshot_3/2023/Skincare/AR/HAIRCARE/G061888_3346470618886_AB-ROY-23-HAIR-MASQUE-TB-200ML-1.jpg?sw=655&sh=655&sfrm=png",
     "price": 87,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 10,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 5,
@@ -47,7 +59,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/fr_FR/dw08489373/primary_packshot_3/2023/Skincare/AR/HAIRCARE/G061887_3346470618879_AB-ROY-23-HAIR-APR-SHAMP-FL-PPE-290ML-1.jpg?sw=655&sh=655&sfrm=png",
     "price": 75,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 27,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 6,
@@ -57,7 +72,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw0c8f3b4b/primary_packshot_3/2023/Skincare/AR/HAIRCARE/G061892_3346470618923_AB-ROY-23-HAIR-BROSSE.jpg?sw=655&sh=655&sfrm=png",
     "price": 150,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 32,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 7,
@@ -67,7 +85,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw9e3bfb12/primary_packshot_3/2024/Skincare/SETS/G062016_ 3346470620162_AB-ROY-24-HAIR-SET_1.jpg?sw=655&sh=655&sfrm=jpg",
     "price": 140,
     "Arrivals": "NOUVEAU",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 31,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 8,
@@ -77,7 +98,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw0c7a3db0/primary_packshot_3/2025/SK/AR/G100017_3346471000178_AB-ROY-25-HAIR-SET.jpg?sw=655&sh=655&sfrm=jpg",
     "price": 180,
     "Arrivals": "NOUVEAU",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 13,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 9,
@@ -87,7 +111,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw2a2c9e15/primary_packshot_3/2023/Skincare/AR/AR_DOUBLE_R_EYE_SERUM_20ML_.jpg?sw=655&sh=655&sfrm=png",
     "price": 100,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 23,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 10,
@@ -97,7 +124,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwf9645542/primary_packshot_3/2023/Skincare/AR/ABEILLE_ROYALE_-_FLUIDE_UV_SKIN_DEFENSE_50ml.jpg?sw=655&sh=655&sfrm=png",
     "price": 80,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 10,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 11,
@@ -107,7 +137,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwb57ee86b/primary_packshot_3/2022/Skincare/Revamp Packshot/ABEILLE_ROYALE_BEE_GLOW_30ML.jpg?sw=655&sh=655&sfrm=png",
     "price": 97,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 27,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 12,
@@ -117,7 +150,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw15709ea5/01-ProductsViewer/P062033/P062033_G062033_E01_hi-res.jpg?sw=655&sh=655&sfrm=png",
     "price": 57,
     "Arrivals": "NOUVEAU",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 55,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 13,
@@ -127,7 +163,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwb5c23a6a/primary_packshot_3/2024/Skincare/AR/ABEILLE ROYALE CRÈME RICHE 50ml - RECHARGE.jpg?sw=655&sh=655&sfrm=png",
     "price": 140,
     "Arrivals": "NOUVEAU",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 39,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 14,
@@ -137,7 +176,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw9e857bd4/primary_packshot_3/2024/Skincare/AR/ABEILLE ROYALE SOIN-EN-MOUSSE 175ml .jpg?sw=655&sh=655&sfrm=png",
     "price": 59,
     "Arrivals": "NOUVEAU",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 13,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 15,
@@ -147,7 +189,10 @@
     "Image": "[\"https://www.guerlain.com/...png\"]",
     "price": 150,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 72,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 16,
@@ -157,7 +202,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw3664b13e/primary_packshot_3/2024/Skincare/AR/G061846_3346470618466_AB-ROY-24-CR-BRIGHT-POT-50ML.jpg?sw=655&sh=655&sfrm=png",
     "price": 150,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 77,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 17,
@@ -167,7 +215,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwb0e438da/primary_packshot_3/2023/Skincare/AR/CREAMS/G061845_3346470618459_AB-ROY-23-DAY-CR-50ML-JAR-1.jpg?sw=655&sh=655&sfrm=png",
     "price": 140,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 81,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 18,
@@ -177,7 +228,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw2a2c9e15/primary_packshot_3/2023/Skincare/AR/AR_DOUBLE_R_EYE_SERUM_20ML_.jpg?sw=655&sh=655&sfrm=png",
     "price": 120,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 95,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 19,
@@ -187,7 +241,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwb70760fb/primary_packshot_3/2023/Skincare/AR/CREAMS/G061850_3346470618503_AB-ROY-23-NIGHT-CR-50ML-JAR-1.jpg?sw=655&sh=655&sfrm=png",
     "price": 160,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 56,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 20,
@@ -197,7 +254,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/fr_FR/dw2756037f/primary_packshot_3/2023/Skincare/AR/HAIRCARE/G061888_3346470618886_AB-ROY-23-HAIR-MASQUE-TB-200ML-1.jpg?sw=655&sh=655&sfrm=png",
     "price": 230,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 40,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 21,
@@ -207,7 +267,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwc5e19c29/primary_packshot_3/2024/Skincare/AR/G061555_3346470615557_AB-ROY-20-LOT-150ML-BTL.jpg?sw=655&sh=655&sfrm=png",
     "price": 81,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 33,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 22,
@@ -217,7 +280,10 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw10380591/primary_packshot_3/2024/Skincare/AR/G061732_3346470617322_AB-ROY-24-ESS-FL-150ML.jpg?sw=655&sh=655&sfrm=png",
     "price": 120,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 67,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "id": 23,
@@ -227,6 +293,9 @@
     "Image": "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw477cb18a/primary_packshot_3/2025/SK/AR/G061849_3346470618497_AB-ROY_24_RICH-CR_50ML_JAR.jpg?sw=655&sh=655&sfrm=png",
     "price": 120,
     "Arrivals": "Non",
-    "category": "Hair"
+    "category": "Hair",
+    "quantity": 96,
+    "status": "Active",
+    "productType": "product"
   }
 ]

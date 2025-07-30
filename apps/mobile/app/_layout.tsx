@@ -10,7 +10,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { StatusBar } from 'expo-status-bar';
 import { FavoritesProvider } from '../context/FavoritesContext';
 import { AuthProvider } from '../context/AuthContext';
-import { CartProvider } from "../context/CartContext";
 import { OrderProvider } from "../context/OrderContext";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SelectedCardProvider } from '../context/PaymentContext';
@@ -28,30 +27,28 @@ function AppContent() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <OrderProvider>
-              <SelectedCardProvider>
-                <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(tabs)" />
-                  <Stack.Screen name="login" options={{ headerShown: false }} />
-                  <Stack.Screen name="signup" options={{ headerShown: false }} />
-                  <Stack.Screen name="cart" options={{ headerShown: false }} />
-                  <Stack.Screen name="profile" options={{ headerShown: false }} />
-                  <Stack.Screen name="order-history" options={{ headerShown: false }} />
-                  <Stack.Screen name="order-details/[id]" options={{ headerShown: false }} />
-                  <Stack.Screen name="payment-methods" options={{ headerShown: false }} />
-                  <Stack.Screen name="personal-info" options={{ headerShown: false }} />
-                  <Stack.Screen name="contact-us" options={{ headerShown: false }} />
-                  <Stack.Screen name="help-center" options={{ headerShown: false }} />
-                </Stack>
-                <StatusBar style="auto" />
-                </View>
-              </SelectedCardProvider>
-            </OrderProvider>
-          </FavoritesProvider>
-        </CartProvider>
+        <FavoritesProvider>
+          <OrderProvider>
+            <SelectedCardProvider>
+              <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen name="signup" options={{ headerShown: false }} />
+                <Stack.Screen name="cart" options={{ headerShown: false }} />
+                <Stack.Screen name="profile" options={{ headerShown: false }} />
+                <Stack.Screen name="order-history" options={{ headerShown: false }} />
+                <Stack.Screen name="order-details/[id]" options={{ headerShown: false }} />
+                <Stack.Screen name="payment-methods" options={{ headerShown: false }} />
+                <Stack.Screen name="personal-info" options={{ headerShown: false }} />
+                <Stack.Screen name="contact-us" options={{ headerShown: false }} />
+                <Stack.Screen name="help-center" options={{ headerShown: false }} />
+              </Stack>
+              <StatusBar style="auto" />
+              </View>
+            </SelectedCardProvider>
+          </OrderProvider>
+        </FavoritesProvider>
       </AuthProvider>
     </ThemeProvider>
   );

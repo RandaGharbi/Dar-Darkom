@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -116,19 +116,19 @@ export default function OrderDetailsScreen() {
         <View style={styles.summaryBlock}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>€{subtotal.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Shipping</Text>
-            <Text style={styles.summaryValue}>${shipping.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>€{shipping.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Tax</Text>
-            <Text style={styles.summaryValue}>${tax.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>€{tax.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Total</Text>
-            <Text style={styles.summaryTotal}>${total.toFixed(2)}</Text>
+            <Text style={styles.summaryTotal}>€{total.toFixed(2)}</Text>
           </View>
         </View>
 

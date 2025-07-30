@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import goBackIcon from '../assets/images/back.png';
 import panierIcon from '../assets/images/basket.png';
 import { useAuth } from '../context/AuthContext';
+import API_CONFIG from '../config/api';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -32,8 +33,9 @@ const OrdersHistoryScreen = () => {
       setLoading(true);
       try {
         const endpoint = tab === 'active'
-          ? `http://localhost:5000/api/orders/active/${userId}`
-: `http://localhost:5000/api/orders/history/${userId}`;
+          ? `${API_CONFIG.BASE_URL}/api/orders/active/${userId}`
+          : `${API_CONFIG.BASE_URL}/api/orders/history/${userId}`;
+        console.log('🔗 Fetching orders from:', endpoint);
         const res = await fetch(endpoint);
         const data = await res.json();
         setOrders(data);
@@ -89,7 +91,7 @@ const OrdersHistoryScreen = () => {
               image={item.image || { uri: item.products?.[0]?.image || '' }}
               orderNumber={item.orderNumber || item._id}
               date={item.createdAt ? new Date(item.createdAt).toLocaleDateString() : item.date}
-              total={item.total ? `$${item.total}` : item.total}
+                              total={item.total ? `€${item.total}` : item.total}
               onPress={() => router.push({
                 pathname: '/order-details',
                 params: { order: JSON.stringify(item) }

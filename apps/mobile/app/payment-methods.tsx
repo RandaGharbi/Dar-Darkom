@@ -68,10 +68,8 @@ export default function PaymentMethodsScreen() {
     return CardIcon;
   };
 
-  // Carte principale = dernière ajoutée
-  const mainCard = cards.length > 0 ? cards[cards.length - 1] : null;
-  // Cartes sauvegardées = toutes sauf la dernière
-  const savedCards = cards.length > 1 ? cards.slice(0, -1) : [];
+  // Toutes les cartes sont dans la section "Saved Payment Methods"
+  const savedCards = cards;
 
 
   const handleGoBack = () => {
@@ -157,35 +155,6 @@ export default function PaymentMethodsScreen() {
         ) : (
           <Text style={styles.subText}>Aucune carte enregistrée</Text>
         )}
-
-        {/* Main Card */}
-        {mainCard && !loadingCards ? (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => setSelectedCardId(mainCard._id!)}
-          >
-            <Image
-              source={getCardLogo(mainCard.cardNumber)}
-              style={styles.icon}
-            />
-            <View style={styles.info}>
-              <Text style={styles.label}>
-                {mainCard.cardNumber
-                  ? `•••• ${mainCard.cardNumber.slice(-4)}`
-                  : "Carte"}
-              </Text>
-              <Text style={styles.subText}>Expires {mainCard.expiryDate}</Text>
-            </View>
-            <Ionicons
-              name={selectedCardId === mainCard._id ? "checkmark-circle" : undefined}
-              size={20}
-              color={selectedCardId === mainCard._id ? CHECK_COLOR : "transparent"}
-            />
-          </TouchableOpacity>
-        ) : (
-          <Text style={styles.subText}>Aucune carte principale</Text>
-        )}
-
         {/* Add Payment Method */}
         <Text style={styles.title}>Add Payment Method</Text>
         {renderAddMethod("Credit or Debit Card")}

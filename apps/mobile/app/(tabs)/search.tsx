@@ -23,6 +23,7 @@ export default function SearchScreen() {
         onChangeText={setSearchQuery}
         autoCapitalize="none"
         autoCorrect={false}
+        spellCheck={false}
       />
 
       {isLoading && (

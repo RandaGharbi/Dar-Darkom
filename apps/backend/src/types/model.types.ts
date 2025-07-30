@@ -27,6 +27,8 @@ export interface IProduct extends Document {
   category: string;
   arrivals?: string;
   productType: 'ingredient' | 'bodyCare' | 'hairCare' | 'product';
+  status?: 'Active' | 'Inactive';
+  quantity?: number;
   createdAt: Date;
   updatedAt: Date;
 }

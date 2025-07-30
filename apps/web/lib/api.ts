@@ -49,6 +49,8 @@ export interface Product {
   typeOfCare?: string;
   category: string;
   arrivals?: string;
+  quantity?: number;
+  status?: string;
   productType: 'ingredient' | 'bodyCare' | 'hairCare' | 'skinCare' | 'product';
   createdAt: string;
   updatedAt: string;
@@ -59,11 +61,13 @@ export interface User {
   name: string;
   email: string;
   profileImage?: string;
+  role?: 'admin' | 'user';
   createdAt: string;
   updatedAt: string;
   status?: 'Active' | 'Inactive';
   lastLogin?: string;
   phoneNumber?: string;
+  address?: string;
   dateOfBirth?: string;
   gender?: string;
   preferredLanguage?: string;
@@ -122,6 +126,7 @@ export const authAPI = {
   signup: (name: string, email: string, password: string) =>
     api.post('/signup', { name, email, password }),
   getMe: () => api.get('/me'),
+  logout: () => api.post('/logout'),
 };
 
 export const productsAPI = {
@@ -160,4 +165,88 @@ export const discountsAPI = {
   update: (id: string, data: Partial<Discount>) => api.put<Discount>(`/discounts/${id}`, data),
   delete: (id: string) => api.delete(`/discounts/${id}`),
   useCode: (code: string) => api.post(`/discounts/use/${code}`),
-}; 
+};
+
+// Interface pour les favoris
+export interface Favorite {
+  _id: string;
+  userId: string;
+  productId: string;
+  title: string;
+  subtitle?: string;
+  price: number;
+  image_url: string;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const favoritesAPI = {
+  getAll: () => api.get<{ favorites: Favorite[], count: number }>('/favorites'),
+  getByUser: (userId: string) => api.get<{ favorites: Favorite[], count: number }>(`/favorites/user/${userId}`),
+  add: (data: { productId: string; title: string; subtitle?: string; price: number; image_url: string; category: string }) => 
+    api.post<Favorite>('/favorites/add', data),
+  remove: (productId: string) => api.delete(`/favorites/remove/${productId}`),
+  toggle: (data: { productId: string; title: string; subtitle?: string; price: number; image_url: string; category: string }) => 
+    api.post<{ message: string; isFavorite: boolean; favorite?: Favorite }>('/favorites/toggle', data),
+  check: (productId: string) => api.get<{ isFavorite: boolean }>(`/favorites/check/${productId}`),
+  clear: () => api.delete('/favorites/clear'),
+};
+
+// Interface pour les cartes de paiement
+export interface PaymentCard {
+  _id: string;
+  userId: string;
+  cardNumber: string;
+  expiryDate: string;
+  nameOnCard: string;
+  billingAddress: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const cardsAPI = {
+  getByUser: (userId: string) => api.get<PaymentCard[]>(`/api/card/user/${userId}`),
+  add: (data: {
+    userId: string;
+    cardNumber: string;
+    expiryDate: string;
+    cvv: string;
+    nameOnCard: string;
+    billingAddress: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  }) => api.post<PaymentCard>('/api/card/add', data),
+  update: (cardId: string, data: Partial<PaymentCard>) => api.put<PaymentCard>(`/api/card/${cardId}`, data),
+  delete: (cardId: string) => api.delete(`/api/card/${cardId}`),
+};
+
+export interface Activity {
+  _id: string;
+  userId: string;
+  type: 'order' | 'favorite' | 'payment' | 'profile' | 'login' | 'logout';
+  title: string;
+  description: string;
+  details?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const activitiesAPI = {
+  getByUser: (userId: string) => api.get<{ activities: Activity[], count: number }>(`/activities/user/${userId}`),
+  create: (data: {
+    userId: string;
+    type: 'order' | 'favorite' | 'payment' | 'profile' | 'login' | 'logout';
+    title: string;
+    description: string;
+    details?: string;
+    metadata?: Record<string, unknown>;
+  }) => api.post<Activity>('/activities', data),
+};

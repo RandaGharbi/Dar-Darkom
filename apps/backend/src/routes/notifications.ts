@@ -10,11 +10,17 @@ router.use(auth);
 // Récupérer toutes les notifications
 router.get('/', getNotifications);
 
+// Récupérer les notifications d'un utilisateur spécifique
+router.get('/user/:userId', getNotifications);
+
 // Marquer une notification comme lue
-router.put('/:id/read', markAsRead);
+router.patch('/:id/read', markAsRead);
 
 // Marquer toutes les notifications comme lues
-router.put('/read-all', markAsRead);
+router.patch('/read-all', markAsRead);
+
+// Marquer toutes les notifications d'un utilisateur comme lues
+router.patch('/user/:userId/read-all', markAsRead);
 
 // Supprimer une notification
 router.delete('/:id', deleteNotification);

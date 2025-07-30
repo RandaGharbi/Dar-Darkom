@@ -42,6 +42,7 @@ export interface RawProduct {
   numberOfReviews: number;
   collection: string;
   typeOfCare: string;
+  status?: string;
 }
 
 // Types pour les produits transformés
@@ -120,6 +121,7 @@ export interface TransformedProduct {
   productBrand: string;
   typeOfCare: string;
   category: string;
+  status?: string;
   productType: 'product';
 }
 

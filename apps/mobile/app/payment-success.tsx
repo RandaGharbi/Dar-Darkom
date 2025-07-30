@@ -53,7 +53,7 @@ export default function PaymentSuccessScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.infoLabel}>Order Total</Text>
-            <Text style={styles.infoValue}>${orderTotal.toFixed(2)}</Text>
+            <Text style={styles.infoValue}>€{orderTotal.toFixed(2)}</Text>
           </View>
         </View>
 

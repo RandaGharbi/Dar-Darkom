@@ -13,27 +13,39 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-import { apiService } from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import API_CONFIG from '../config/api';
 
 import BackIcon from '../assets/images/back.png';
 
 export default function PersonalInfo() {
   const router = useRouter();
-  const { user, token, updateUser } = useAuth();
+  const { user, isAuthenticated, setUser } = useAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
   // Charger les données utilisateur au démarrage
   useEffect(() => {
     const loadUserData = async () => {
+      console.log('👤 User object:', user);
       if (user) {
+        console.log('📝 Setting user data:', {
+          name: user.name,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          address: user.address
+        });
         setName(user.name || '');
         setEmail(user.email || '');
         setPhone(user.phoneNumber || '');
+        setAddress(user.address || '');
+      } else {
+        console.log('❌ No user object available');
       }
       setInitialLoading(false);
     };
@@ -53,33 +65,73 @@ export default function PersonalInfo() {
       return;
     }
 
-    if (!token) {
+    if (!isAuthenticated) {
       Alert.alert('Error', 'You must be logged in to update your information.');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await apiService.updateUser({
-        name: name.trim(),
-        email: email.trim(),
-        phoneNumber: phone.trim(),
-      }, token);
+      const token = await AsyncStorage.getItem('authToken');
+      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.UPDATE_USER}`;
+      console.log('🔗 Making request to:', url);
+      console.log('🔑 Token:', token ? 'Present' : 'Missing');
+      
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phoneNumber: phone.trim(),
+          address: address.trim(),
+        }),
+      });
 
-      if (response.success) {
-        // Mettre à jour le contexte utilisateur avec les nouvelles données
-        if (updateUser && response.data?.user) {
-          updateUser(response.data.user);
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', response.headers);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('✅ Success response:', responseData);
+        
+        // Recharger les données utilisateur depuis le backend
+        try {
+          const meResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ME}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          
+          if (meResponse.ok) {
+            const meData = await meResponse.json();
+            console.log('🔄 Updated user data:', meData.user);
+            // Mettre à jour le contexte utilisateur avec les nouvelles données
+            setUser(meData.user);
+          }
+        } catch (reloadError) {
+          console.log('⚠️ Could not reload user data:', reloadError);
         }
+        
         Alert.alert('Success', 'Your information has been updated successfully!');
         router.back();
       } else {
-        Alert.alert('Error', response.error || 'An error occurred while updating your information.');
+        const responseText = await response.text();
+        console.log('❌ Error response text:', responseText);
+        try {
+          const errorData = JSON.parse(responseText);
+          Alert.alert('Error', errorData.message || 'An error occurred while updating your information.');
+        } catch {
+          console.log('❌ Could not parse error response as JSON');
+          Alert.alert('Error', `Server error: ${response.status} - ${responseText.substring(0, 100)}`);
+        }
       }
     } catch (error: any) {
-      console.error('Error updating user:', error);
-      const errorMessage = error.response?.data?.message || 'An error occurred while updating your information.';
-      Alert.alert('Error', errorMessage);
+      console.error('❌ Network error:', error);
+      Alert.alert('Error', `Network error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -120,6 +172,7 @@ export default function PersonalInfo() {
         onChangeText={setName}
         autoCapitalize="words"
         autoCorrect={false}
+        spellCheck={false}
         autoFocus
         accessibilityLabel="Name input"
       />
@@ -133,6 +186,7 @@ export default function PersonalInfo() {
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
+        spellCheck={false}
         accessibilityLabel="Email input"
       />
 
@@ -143,7 +197,22 @@ export default function PersonalInfo() {
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
+        autoCorrect={false}
+        spellCheck={false}
         accessibilityLabel="Phone number input"
+      />
+
+      <Text style={styles.label}>Address</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your address"
+        value={address}
+        onChangeText={setAddress}
+        multiline
+        numberOfLines={3}
+        autoCorrect={false}
+        spellCheck={false}
+        accessibilityLabel="Address input"
       />
 
       <Pressable 

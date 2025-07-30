@@ -11,6 +11,7 @@ export interface IUser extends Document {
   createdAt?: Date;
   updatedAt?: Date;
   phoneNumber?: string;
+  address?: string;
   dateOfBirth?: string;
   gender?: string;
   preferredLanguage?: string;
@@ -26,6 +27,7 @@ const UserSchema = new Schema<IUser>({
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
   lastLogin: { type: Date },
   phoneNumber: { type: String },
+  address: { type: String },
   dateOfBirth: { type: String },
   gender: { type: String },
   preferredLanguage: { type: String },

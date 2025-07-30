@@ -10,11 +10,14 @@ type User = {
   name: string;
   email: string;
   profileImage?: string;
+  phoneNumber?: string;
+  address?: string;
 };
 
 type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
+  setUser: (user: User | null) => void;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (name: string, email: string, password: string, profileImageUrl?: string) => Promise<boolean>;
   logout: () => void;
@@ -89,7 +92,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = async (name: string, email: string, password: string, profileImageUrl?: string) => {
     try {
-      await httpClient.post(API_CONFIG.ENDPOINTS.REGISTER, { name, email, password, profileImageUrl });
+      const res = await httpClient.post(API_CONFIG.ENDPOINTS.REGISTER, { name, email, password, profileImageUrl });
+      
+      // Si l'inscription réussit, connecter automatiquement l'utilisateur
+      if (res.data.token) {
+        console.log('🔐 Setting auth token and user data...');
+        await AsyncStorage.setItem('authToken', res.data.token);
+        setUser(res.data.user);
+        setIsAuthenticated(true);
+        console.log('✅ User authenticated after signup');
+
+        // --- Fusion des favoris locaux avec le backend ---
+        const localFavsRaw = await AsyncStorage.getItem('favorites');
+        const localFavs = localFavsRaw ? JSON.parse(localFavsRaw) : [];
+        if (Array.isArray(localFavs) && localFavs.length > 0) {
+          for (const fav of localFavs) {
+            try {
+              await favoritesStore.addFavorite(fav, true, res.data.token);
+            } catch (e) {
+              // Ignore les erreurs (doublons, etc.)
+            }
+          }
+          await AsyncStorage.removeItem('favorites');
+        }
+        // Hydrate les favoris depuis le backend après fusion
+        await favoritesStore.hydrate(true, res.data.token);
+        // --- Fin fusion ---
+      }
+      
       return true;
     } catch (err: any) {
       Alert.alert('Erreur', err.response?.data?.message || 'Erreur serveur');
@@ -110,7 +140,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, setUser, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

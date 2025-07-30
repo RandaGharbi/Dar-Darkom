@@ -32,6 +32,14 @@ interface EmailRecipient {
   name?: string;
 }
 
+// Interface pour les notifications de messages
+interface MessageNotification {
+  to: string;
+  userName: string;
+  message: string;
+  replyUrl: string;
+}
+
 // Service d'envoi d'email pour les exports
 export class EmailService {
   private transporter: nodemailer.Transporter | null = null;
@@ -266,6 +274,110 @@ export class EmailService {
       console.error('Erreur de configuration email:', error);
       return false;
     }
+  }
+
+  // Envoyer une notification de message
+  async sendMessageNotification(notification: MessageNotification): Promise<boolean> {
+    console.log('📧 [EMAIL] Envoi de notification de message à:', notification.to);
+    
+    try {
+      const mailOptions = {
+        from: process.env.EMAIL_USER || 'noreply@guerlain.com',
+        to: notification.to,
+        subject: '[Guerlain] Nouvelle réponse à votre message',
+        html: this.generateMessageEmailContent(notification)
+      };
+
+      const result = await this.getTransporter().sendMail(mailOptions);
+      console.log('✅ [EMAIL] Notification de message envoyée! Message ID:', result.messageId);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ [EMAIL] Erreur lors de l\'envoi de la notification de message:', error);
+      return false;
+    }
+  }
+
+  private generateMessageEmailContent(notification: MessageNotification): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Réponse à votre message - Guerlain</title>
+        <style>
+          body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .header {
+            background: linear-gradient(135deg, #bfa77a 0%, #8b7355 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+          }
+          .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+          }
+          .message-box {
+            background: white;
+            border-left: 4px solid #bfa77a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+          }
+          .btn {
+            display: inline-block;
+            background: #bfa77a;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Guerlain Paris</h1>
+          <p>Notre équipe vous répond</p>
+        </div>
+        
+        <div class="content">
+          <h2>Bonjour ${notification.userName},</h2>
+          
+          <p>Notre équipe support a répondu à votre message :</p>
+          
+          <div class="message-box">
+            <p><strong>Réponse de l'équipe :</strong></p>
+            <p>${notification.message}</p>
+          </div>
+          
+          <p>Pour continuer la conversation, cliquez sur le bouton ci-dessous :</p>
+          
+          <a href="${notification.replyUrl}" class="btn">Répondre au message</a>
+          
+          <div class="footer">
+            <p>Merci de votre confiance en Guerlain Paris</p>
+            <p>68 Avenue des Champs-Élysées, 75008 Paris</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
   }
 }
 

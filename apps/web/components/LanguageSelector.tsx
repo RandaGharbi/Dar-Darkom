@@ -81,6 +81,11 @@ const languages = [
 export const LanguageSelector: React.FC = () => {
   const { currentLocale, changeLanguage } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
 
@@ -88,6 +93,17 @@ export const LanguageSelector: React.FC = () => {
     changeLanguage(locale);
     setIsOpen(false);
   };
+
+  // Ne rendre que côté client pour éviter l'hydratation
+  if (!mounted) {
+    return (
+      <SelectorContainer>
+        <SelectButton>
+          <span>🇫🇷</span>
+        </SelectButton>
+      </SelectorContainer>
+    );
+  }
 
   return (
     <SelectorContainer>

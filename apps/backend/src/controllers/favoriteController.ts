@@ -88,6 +88,28 @@ export const getFavorites = async (req: Request, res: Response) => {
   }
 };
 
+// Obtenir tous les favoris d'un utilisateur spécifique (pour l'interface admin)
+export const getFavoritesByUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    console.log('[BACK] getFavoritesByUser', { userId });
+    
+    if (!userId) {
+      return res.status(400).json({ message: 'userId requis' });
+    }
+
+    const favorites = await Favorite.find({ userId }).sort({ createdAt: -1 });
+
+    res.json({
+      favorites,
+      count: favorites.length
+    });
+  } catch (error) {
+    console.error('[BACK] Erreur getFavoritesByUser:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
 // Vérifier si un produit est en favori
 export const isFavorite = async (req: Request, res: Response) => {
   try {

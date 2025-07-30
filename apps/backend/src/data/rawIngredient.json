@@ -20,7 +20,10 @@
         "description": "Hydratante, adoucissante et légèrement parfumée.",
         "image": "https://www.fitnessboutique.fr/cdn/shop/files/inshape-nutrition-huile-coco-Detail.jpg?v=1737734695&width=536"
       }
-    ]
+    ],
+    "quantity": 70,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "category": "Beurres",
@@ -31,7 +34,10 @@
         "description": "Beurre nourrissant, réparateur et protecteur.",
         "image": "https://comptoirdeshuiles.com/cdn/shop/files/beurre_karite_bois.webp?v=1732186701"
       }
-    ]
+    ],
+    "quantity": 77,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "category": "Produits de la ruche",
@@ -66,7 +72,10 @@
         "description": "Miel aromatique aux propriétés purifiantes.",
         "image": "https://www.nicolebernard.fr/9335-large_default/miel-de-thym-origine-espagne.jpg"
       }
-    ]
+    ],
+    "quantity": 34,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "category": "Huiles essentielles",
@@ -83,7 +92,10 @@
         "description": "Huile relaxante et régénérante pour la peau.",
         "image": "https://img.passeportsante.net/1200x675/2024-06-19/huile-essentielle-neroli.jpg"
       }
-    ]
+    ],
+    "quantity": 60,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "category": "Absolue",
@@ -94,7 +106,10 @@
         "description": "Extrait floral très parfumé, relaxant et harmonisant.",
         "image": "https://static.aujardin.info/cache/th/par/jasminum-sambac-600x450.webp"
       }
-    ]
+    ],
+    "quantity": 38,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "category": "Extraits",
@@ -105,7 +120,10 @@
         "description": "Hydratant, apaisant et réparateur naturel.",
         "image": "https://www.green-shop.ch/img/styles/blog/cms/Blog/blog_comment-utiliser-le-gel-d-aloe-vera.webp?p=ec13bf6d"
       }
-    ]
+    ],
+    "quantity": 50,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "category": "Conservateurs & antioxydants",
@@ -122,7 +140,10 @@
         "description": "Antioxydant naturel qui prolonge la durée de vie des huiles.",
         "image": "https://www.ericfavre.com/lifestyle/wp-content/uploads/2020/03/VITAMINE-E.jpg"
       }
-    ]
+    ],
+    "quantity": 64,
+    "status": "Active",
+    "productType": "product"
   },
   {
     "category": "Autres ingrédients naturels",
@@ -151,6 +172,9 @@
         "description": "Riche en antioxydants et vitamines, apporte éclat.",
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS6A0hPUC43fiNcz-8uP15Rj4yW9RPaziFXscbHurjFGvMo0clahnncLLngVF4gMO2OVw&usqp=CAU"
       }
-    ]
+    ],
+    "quantity": 53,
+    "status": "Active",
+    "productType": "product"
   }
 ]

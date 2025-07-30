@@ -1,17 +1,19 @@
 "use client"; 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { useQuery } from '@tanstack/react-query';
-import { productsAPI, ordersAPI, usersAPI } from '../lib/api';
+import { productsAPI, ordersAPI, usersAPI, authAPI } from '../lib/api';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { GlobalStyles } from '../components/styled/GlobalStyles';
-import { useAuthGuard } from '../hooks/useAuthGuard';
 import styled from 'styled-components';
 import { StatsCards } from '../components/dashboard/StatsCards';
 import { RecentActivity } from '../components/dashboard/RecentActivity';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { Charts } from '../components/dashboard/Charts';
 import { useTranslation } from '../hooks/useTranslation';
+import { isAuthenticated } from '../utils/auth';
+import { useNotificationManager } from '../hooks/useNotificationManager';
 
 const PageWrapper = styled.div`
   background: ${({ theme }) => theme.colors.surface};
@@ -107,23 +109,69 @@ const HeaderContainer = styled.div`
 `;
 
 export default function DashboardPage() {
-  useAuthGuard();
+  const router = useRouter();
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Vérifier l'authentification une seule fois au chargement
+  useEffect(() => {
+    const checkAuth = () => {
+      if (!isAuthenticated()) {
+        router.replace('/login');
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const { data: products = [] } = useQuery({
     queryKey: ['products'],
     queryFn: () => productsAPI.getAll().then(res => res.data),
+    enabled: !isLoading, // Ne pas exécuter si on est en train de vérifier l'auth
   });
 
   const { data: orders = [] } = useQuery({
     queryKey: ['orders'],
     queryFn: () => ordersAPI.getAll().then(res => res.data),
+    enabled: !isLoading,
   });
 
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
     queryFn: () => usersAPI.getAll().then(res => res.data),
+    enabled: !isLoading,
   });
+
+  // Récupérer l'utilisateur connecté pour les notifications
+  const { data: currentUser } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => authAPI.getMe().then(res => res.data),
+    enabled: !isLoading,
+  });
+
+  // Gérer les notifications automatiquement
+  useNotificationManager({
+    userId: currentUser?._id || '',
+    products,
+    orders,
+    users,
+  });
+
+  // Afficher un loader pendant la vérification d'authentification
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <GlobalStyles />
+        <Content>
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            Chargement...
+          </div>
+        </Content>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>

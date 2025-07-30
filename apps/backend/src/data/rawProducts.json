@@ -10,7 +10,8 @@
     "category": "Face",
     "typeOfCare": "Huile visage",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 50
   },
   {
     "id": 2,
@@ -23,7 +24,8 @@
     "category": "Face",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 75
   },
   {
     "id": 3,
@@ -36,7 +38,8 @@
     "category": "Face",
     "typeOfCare": "Démaquillant et nettoyant",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 30
   },
   {
     "id": 4,
@@ -49,7 +52,8 @@
     "category": "Face",
     "typeOfCare": "Serum",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 45
   },
   {
     "id": 5,
@@ -62,7 +66,8 @@
     "category": "Face",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 60
   },
   {
     "id": 6,
@@ -73,9 +78,10 @@
     "customerRating": 5,
     "numberOfReviews": 143,
     "category": "Face",
-    "typeOfCare": "Soin de jour", 
+    "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 80
   },
   {
     "id": 7,
@@ -88,7 +94,8 @@
     "category": "Face",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 35
   },
   {
     "id": 8,
@@ -101,7 +108,8 @@
     "category": "Face",
     "typeOfCare": "Soin de nuit",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 65
   },
   {
     "id": 9,
@@ -114,7 +122,8 @@
     "category": "Face",
     "typeOfCare": "Huile visage",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 10,
@@ -127,7 +136,8 @@
     "category": "Face",
     "typeOfCare": "Lotion",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 50
   },
   {
     "id": 11,
@@ -140,7 +150,8 @@
     "category": "Face",
     "typeOfCare": "Serum",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 20
   },
   {
     "id": 12,
@@ -153,7 +164,8 @@
     "category": "Face",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 13,
@@ -166,7 +178,8 @@
     "category": "Face",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 14,
@@ -179,7 +192,8 @@
     "category": "Face",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 15,
@@ -192,7 +206,8 @@
     "category": "Face",
     "typeOfCare": "Soin de nuit",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 16,
@@ -205,7 +220,8 @@
     "category": "Face",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 17,
@@ -218,7 +234,8 @@
     "category": "Face",
     "typeOfCare": "Protection UV",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 18,
@@ -231,7 +248,8 @@
     "category": "Face",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 19,
@@ -244,7 +262,8 @@
     "category": "Face",
     "typeOfCare": "Huile visage",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 20,
@@ -254,10 +273,11 @@
     "price": 11,
     "customerRating": 50,
     "numberOfReviews": 56,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Démaquillant et nettoyant",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 21,
@@ -267,10 +287,11 @@
     "price": 33,
     "customerRating": 50,
     "numberOfReviews": 32,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Huile visage",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 22,
@@ -280,10 +301,11 @@
     "price": 39,
     "customerRating": 50,
     "numberOfReviews": 36,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Masque",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 23,
@@ -293,10 +315,11 @@
     "price": 39,
     "customerRating": 50,
     "numberOfReviews": 36,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Soin cou et décolleté",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 24,
@@ -306,10 +329,11 @@
     "price": 18,
     "customerRating": 37,
     "numberOfReviews": 43,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Lotion",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 25,
@@ -319,10 +343,11 @@
     "price": 49,
     "customerRating": 50,
     "numberOfReviews": 85,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Serum",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 26,
@@ -332,10 +357,11 @@
     "price": 19,
     "customerRating": 31,
     "numberOfReviews": 1,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Base de teint et fond de teint",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 27,
@@ -348,7 +374,8 @@
     "category": "Orchidée Impériale Gold Nobile",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 28,
@@ -361,7 +388,8 @@
     "category": "Orchidée Impériale Gold Nobile",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 29,
@@ -374,7 +402,8 @@
     "category": "Orchidée Impériale Gold Nobile",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 24,
@@ -384,10 +413,11 @@
     "price": 18,
     "customerRating": 37,
     "numberOfReviews": 43,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Lotion",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 25,
@@ -397,10 +427,11 @@
     "price": 49,
     "customerRating": 50,
     "numberOfReviews": 52,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Serum",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 26,
@@ -410,10 +441,11 @@
     "price": 19,
     "customerRating": 31,
     "numberOfReviews": 1,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Base de teint et fond de teint",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 27,
@@ -426,7 +458,8 @@
     "category": "Orchidée Impériale Gold Nobile",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 28,
@@ -439,7 +472,8 @@
     "category": "Orchidée Impériale Gold Nobile",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 29,
@@ -452,7 +486,8 @@
     "category": "Orchidée Impériale Gold Nobile",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 30,
@@ -465,7 +500,8 @@
     "category": "Face",
     "typeOfCare": "Serum",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 31,
@@ -478,7 +514,8 @@
     "category": "Face",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 32,
@@ -491,7 +528,8 @@
     "category": "Face",
     "typeOfCare": "Lotion",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 33,
@@ -504,7 +542,8 @@
     "category": "Face",
     "typeOfCare": "Serum",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 34,
@@ -517,7 +556,8 @@
     "category": "Face",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 35,
@@ -530,7 +570,8 @@
     "category": "Orchidée Impériale Brightening",
     "typeOfCare": "Soin éclaircissant",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 36,
@@ -543,7 +584,8 @@
     "category": "Orchidée Impériale Brightening",
     "typeOfCare": "Protection UV",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 37,
@@ -556,7 +598,8 @@
     "category": "Orchidée Impériale Brightening",
     "typeOfCare": "Base de teint et fond de teint",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 38,
@@ -569,7 +612,8 @@
     "category": "Super Aqua-Serum",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 39,
@@ -580,7 +624,10 @@
     "customerRating": 5,
     "numberOfReviews": 4,
     "category": "Super Aqua-Serum",
-    "typeOfCare": "Soin de jour"
+    "typeOfCare": "Soin de jour",
+    "productType": "product",
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 40,
@@ -593,7 +640,8 @@
     "category": "Super Aqua-Serum",
     "typeOfCare": "Soin de jour",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 41,
@@ -606,7 +654,8 @@
     "category": "Super Aqua-Serum",
     "typeOfCare": "Serum",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 42,
@@ -619,7 +668,8 @@
     "category": "Super Aqua-Serum",
     "typeOfCare": "Lotion",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 43,
@@ -632,7 +682,8 @@
     "category": "Super Aqua-Serum",
     "typeOfCare": "Masque",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 44,
@@ -645,7 +696,8 @@
     "category": "Super Aqua-Serum",
     "typeOfCare": "Soin yeux et lèvres",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 45,
@@ -658,7 +710,8 @@
     "category": "Face",
     "typeOfCare": "Soin éclaircissant",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 46,
@@ -671,7 +724,8 @@
     "category": "Face",
     "typeOfCare": "Lotion",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 47,
@@ -684,7 +738,8 @@
     "category": "Face",
     "typeOfCare": "Démaquillant et nettoyant",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 48,
@@ -697,7 +752,8 @@
     "category": "Face",
     "typeOfCare": "Protection UV",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 49,
@@ -707,10 +763,11 @@
     "price": 35,
     "customerRating": 5,
     "numberOfReviews": 18,
-   "category": "Face",
+    "category": "Face",
     "typeOfCare": "Soin de nuit",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 50,
@@ -723,7 +780,8 @@
     "category": "Face",
     "typeOfCare": "Démaquillant et nettoyant",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 51,
@@ -736,7 +794,8 @@
     "category": "Face",
     "typeOfCare": "Démaquillant et nettoyant",
     "productType": "product",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 52,
@@ -748,7 +807,9 @@
     "numberOfReviews": 9,
     "category": "Face",
     "typeOfCare": "Démaquillant et nettoyant",
-    "status": "Active"
+    "productType": "product",
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 53,
@@ -761,7 +822,8 @@
     "category": "Face",
     "productType": "product",
     "typeOfCare": "Démaquillant et nettoyant",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 54,
@@ -773,7 +835,9 @@
     "numberOfReviews": 8,
     "category": "Face",
     "productType": "product",
-    "typeOfCare": "Démaquillant et nettoyant"
+    "typeOfCare": "Démaquillant et nettoyant",
+    "status": "Active",
+    "quantity": 100
   },
   {
     "id": 55,
@@ -786,6 +850,7 @@
     "category": "Face",
     "productType": "product",
     "typeOfCare": "Démaquillant et nettoyant",
-    "status": "Active"
+    "status": "Active",
+    "quantity": 100
   }
 ]

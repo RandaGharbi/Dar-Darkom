@@ -175,6 +175,8 @@ const LoginScreen: React.FC = () => {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
+            spellCheck={false}
           />
           <Text style={styles.label}>Password</Text>
           <TextInput
@@ -183,6 +185,8 @@ const LoginScreen: React.FC = () => {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            autoCorrect={false}
+            spellCheck={false}
           />
           <TouchableOpacity 
             style={[styles.signupBtn, isLoggingIn && { opacity: 0.7 }]} 
@@ -280,7 +284,7 @@ const styles = StyleSheet.create({
   },
   signupLink: {
     position: "absolute",
-    bottom: 32,
+    bottom: 80,
     left: 0,
     right: 0,
     alignItems: "center",

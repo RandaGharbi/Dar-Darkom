@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Calendar, Clock, Settings, Plus, Trash2, Edit, Play, Pause } from "lucide-react";
 import { analyticsApi } from "../../services/analyticsApi";
+import Modal from "../ui/Modal";
+import { useModal } from "../../hooks/useModal";
 
 const Container = styled.div`
   background: #f5efe7;
@@ -280,8 +282,14 @@ interface ScheduledExport {
   type: string;
   format: string;
   frequency: string;
+  status: 'active' | 'paused' | 'completed';
+  nextRun: string;
+  lastRun?: string;
+  emailRecipients: string[];
+  lastError?: string;
 }
 export function ScheduledExports() {
+  const { modalState, showSuccess, showError, showInfo, hideModal } = useModal();
   const [scheduledExports, setScheduledExports] = useState<ScheduledExport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -348,7 +356,7 @@ export function ScheduledExports() {
       );
     } catch (error) {
       console.error('Erreur lors de la mise à jour du statut:', error);
-      alert('Erreur lors de la mise à jour du statut');
+      showError('Erreur lors de la mise à jour du statut');
     }
   };
 
@@ -360,19 +368,19 @@ export function ScheduledExports() {
     try {
       await analyticsApi.deleteScheduledExport(id);
       setScheduledExports(prev => prev.filter(item => item.id !== id));
-      alert('Export planifié supprimé avec succès !');
+      showSuccess('Export planifié supprimé avec succès !');
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
-      alert('Erreur lors de la suppression de l\'export planifié');
+      showError('Erreur lors de la suppression de l\'export planifié');
     }
   };
 
   const handleEdit = () => {
-    alert('Fonctionnalité d\'édition à implémenter');
+    showInfo('Fonctionnalité d\'édition à implémenter');
   };
 
   const handleAddNew = () => {
-    alert('Utilisez le bouton "Planifier" dans la section Export Functionality');
+    showInfo('Utilisez le bouton "Planifier" dans la section Export Functionality');
   };
 
   if (loading) {
@@ -445,8 +453,8 @@ export function ScheduledExports() {
           </EmptyText>
         </EmptyState>
       ) : (
-        scheduledExports.map((exportItem) => (
-          <ScheduleItem key={exportItem.id}>
+        scheduledExports.map((exportItem, index) => (
+          <ScheduleItem key={exportItem.id || `export-${index}`}>
             <ScheduleHeader>
               <ScheduleInfo>
                 <ScheduleTitle>
@@ -464,7 +472,7 @@ export function ScheduledExports() {
                 >
                   {exportItem.status === 'active' ? <Pause size={16} /> : <Play size={16} />}
                 </ActionButton>
-                <ActionButton onClick={() => handleEdit(exportItem.id)}>
+                <ActionButton onClick={() => handleEdit()}>
                   <Edit size={16} />
                 </ActionButton>
                 <ActionButton 
@@ -522,6 +530,19 @@ export function ScheduledExports() {
           </ScheduleItem>
         ))
       )}
+
+      {/* Modal pour les notifications */}
+      <Modal
+        isOpen={modalState.isOpen}
+        onClose={hideModal}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+        onConfirm={modalState.onConfirm}
+        confirmText={modalState.confirmText}
+        cancelText={modalState.cancelText}
+        showCancel={modalState.showCancel}
+      />
     </Container>
   );
 } 

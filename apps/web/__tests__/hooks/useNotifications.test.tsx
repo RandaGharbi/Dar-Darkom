@@ -41,9 +41,9 @@ describe('useNotifications', () => {
     expect(useQuery).toHaveBeenCalledWith({
       queryKey: ["notifications"],
       queryFn: expect.any(Function),
-      staleTime: 30 * 1000,
-      refetchInterval: 60 * 1000,
-      refetchOnWindowFocus: true,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
     });
 
     expect(result.current.data).toEqual(mockData);

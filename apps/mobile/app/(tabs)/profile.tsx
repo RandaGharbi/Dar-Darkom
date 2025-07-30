@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import GoBackIcon from '../../assets/images/back.png';
 import ChevronIcon from '../../assets/images/chevron.png';
 import { getCorrectImageUrl } from '../../utils/imageUtils';
-import Constants from 'expo-constants';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -51,7 +50,7 @@ export default function ProfileScreen() {
         <View style={styles.header}>
           <Image 
             source={
-              user.profileImage 
+              user.profileImage && !imageError
                 ? { uri: getCorrectImageUrl(user.profileImage || null) || user.profileImage } 
                 : require('../../assets/images/avatar.png')
             } 
@@ -253,4 +252,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+
 }); 

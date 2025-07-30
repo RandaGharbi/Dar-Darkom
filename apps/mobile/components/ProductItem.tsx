@@ -25,13 +25,15 @@ type ProductItemProps = {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onPressBasket: () => void;
+  isAddedToCart?: boolean;
 };
 
 const ProductItem: React.FC<ProductItemProps> = ({
   product,
   isFavorite,
   onToggleFavorite,
-  onPressBasket
+  onPressBasket,
+  isAddedToCart = false
 }) => {
 
   return (
@@ -56,11 +58,15 @@ const ProductItem: React.FC<ProductItemProps> = ({
       <View style={styles.bottomRow}>
         <View style={{ flex: 1 }} />
         <View style={styles.priceRow}>
-          <Text style={styles.price}>${product.price}</Text>
+                      <Text style={styles.price}>€{product.price}</Text>
           <TouchableOpacity onPress={onPressBasket}>
             <Image
               source={basket}
-              style={[styles.wishlistIcon, { marginLeft: 6 }]}
+              style={[
+                styles.wishlistIcon, 
+                { marginLeft: 6 },
+                isAddedToCart && { tintColor: '#4CAF50' }
+              ]}
             />
           </TouchableOpacity>
         </View>

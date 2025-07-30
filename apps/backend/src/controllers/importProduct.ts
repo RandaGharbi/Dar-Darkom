@@ -209,6 +209,7 @@ export const importAllProducts = async (req: Request, res: Response) => {
           productBrand: product.category, // correction ici
           typeOfCare: product.typeOfCare,
           category: product.category,    // correction ici
+          status: product.status || "Active", // Ajout du champ status
           productType: "product" as const,
         })
       );

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useProducts } from '../../hooks/useProducts';
 import { useAuth } from '../../context/AuthContext';
-import { useCart } from '../../context/CartContext';
+import { useCartStore } from '../../context/CartStore';
 import { getCorrectImageUrl } from '../../utils/imageUtils';
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { data: products, isLoading, error } = useProducts();
-  const { isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
+  const { isAuthenticated, user } = useAuth();
+  const { addToCart } = useCartStore();
 
   if (isLoading) return <Text style={styles.loading}>Chargement...</Text>;
   if (error) return <Text style={styles.error}>Erreur : {error.message}</Text>;
@@ -42,7 +42,7 @@ export default function ProductDetailsScreen() {
       return;
     }
     try {
-      await addToCart(product.id.toString()); // Utilise l'id numérique
+      await addToCart(user?._id || '', product.id.toString()); // Utilise l'id numérique
       Alert.alert('Succès', 'Produit ajouté au panier !');
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);

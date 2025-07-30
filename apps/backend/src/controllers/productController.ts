@@ -186,9 +186,40 @@ export const deleteAllProducts = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const product = await Product.create(req.body);
+    // Générer un ID unique basé sur le timestamp
+    const timestamp = Date.now();
+    const randomId = Math.floor(Math.random() * 1000);
+    const uniqueId = timestamp + randomId;
+    
+    const productData = {
+      ...req.body,
+      id: uniqueId
+    };
+    
+    const product = await Product.create(productData);
     res.status(201).json(product);
   } catch (err) {
     res.status(500).json({ message: 'Erreur lors de la création du produit', error: err });
+  }
+};
+
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const { productId } = req.params;
+    const updateData = req.body;
+    
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      updateData,
+      { new: true, runValidators: true }
+    );
+    
+    if (!product) {
+      return res.status(404).json({ message: "Produit non trouvé" });
+    }
+    
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur lors de la modification du produit', error: err });
   }
 };

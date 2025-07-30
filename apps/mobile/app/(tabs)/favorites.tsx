@@ -60,11 +60,19 @@ export default function FavoritesScreen() {
         keyExtractor={(item: any) => item._id || item.id?.toString()}
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24 }}
         renderItem={({ item }: { item: any }) => (
-          <View style={styles.itemRow}>
+          <TouchableOpacity 
+            style={styles.itemRow}
+            onPress={() => {
+              if (item.id || item.productId || item._id) {
+                router.push(`/product-details/${item.id || item.productId || item._id}`);
+              }
+            }}
+            activeOpacity={0.7}
+          >
             <Image source={{ uri: getCorrectImageUrl(item.image_url) || item.image_url }} style={styles.image} />
             <View style={styles.textBlock}>
               <Text style={styles.itemTitle}>{item.title}</Text>
-              <Text style={styles.itemPrice}>${item.price?.toFixed(2) ?? '0.00'}</Text>
+                              <Text style={styles.itemPrice}>€{item.price?.toFixed(2) ?? '0.00'}</Text>
             </View>
             <FavoriteButton product={{
               id: item.productId || item.id || item._id,
@@ -80,7 +88,7 @@ export default function FavoritesScreen() {
               benefits: '',
               howToUse: '',
             }} size={24} />
-          </View>
+          </TouchableOpacity>
         )}
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
         ListEmptyComponent={

@@ -1,15 +1,17 @@
 "use client";
 
+import React from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { usersAPI } from "../../../lib/api";
-import styled from "styled-components";
-import { GlobalStyles } from "../../../components/styled/GlobalStyles";
 import { DashboardLayout } from "../../../components/layout/DashboardLayout";
-import { useState } from 'react';
+import { GlobalStyles } from "../../../components/styled/GlobalStyles";
+import styled from "styled-components";
+import { usersAPI } from "../../../lib/api";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { OrdersTab, FavoritesTab, PaymentMethodsTab, ActivityLogTab } from "../../../components/user-tabs";
 
 const Container = styled.div`
-  background: var(--color-white);
+  background: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
   padding: 2.5rem 2rem 2rem 2rem;
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
@@ -37,12 +39,12 @@ const Avatar = styled.div`
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: var(--color-gray-bg);
+  background: ${({ theme }) => theme.colors.surface};
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
-  color: var(--color-taupe);
+  color: ${({ theme }) => theme.colors.primary};
   overflow: hidden;
   @media (max-width: 600px) {
     width: 60px;
@@ -55,23 +57,24 @@ const Name = styled.h2`
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Email = styled.div`
-  color: #888;
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-size: 1.1rem;
   margin-bottom: 0.3rem;
 `;
 
 const Since = styled.div`
-  color: #aaa;
+  color: ${({ theme }) => theme.colors.text.muted};
   font-size: 1rem;
 `;
 
 const Tabs = styled.div`
   display: flex;
   gap: 2.5rem;
-  border-bottom: 1px solid var(--color-gray-light);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   margin-bottom: 2.5rem;
   overflow-x: auto;
   @media (max-width: 600px) {
@@ -85,9 +88,9 @@ const Tab = styled.button<{ active?: boolean }>`
   border: none;
   font-size: 15px;
   font-weight: 500;
-  color: ${props => props.active ? 'var(--color-black)' : 'var(--color-taupe)'};
+  color: ${props => props.active ? props.theme.colors.text.primary : props.theme.colors.text.secondary};
   font-weight: ${props => props.active ? 'bold' : '100'};
-  border-bottom: 2.5px solid ${props => props.active ? 'var(--color-black)' : 'transparent'};
+  border-bottom: 2.5px solid ${props => props.active ? props.theme.colors.text.primary : 'transparent'};
   padding: 0.7rem 0;
   cursor: pointer;
   transition: color 0.15s;
@@ -96,107 +99,284 @@ const Tab = styled.button<{ active?: boolean }>`
 const SectionTitle = styled.h3`
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 2rem 0 1rem 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: 1.5rem;
 `;
 
-const Form = styled.form`
+const FormWrapper = styled.div`
+  background: ${({ theme }) => theme.colors.card.background};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: 2rem;
+  box-shadow: ${({ theme }) => theme.colors.card.shadow};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const Form = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  max-width: 400px;
-  width: 100%;
-  @media (max-width: 600px) {
-    max-width: 100%;
-  }
 `;
 
 const Label = styled.label`
-  margin-bottom: 1rem;
-  display: block;
-  font-size: 15px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  margin-bottom: 0.5rem;
 `;
 
 const Input = styled.input`
-  padding: 0.5rem 1rem;
-  border: 1px solid #E3E0DE;
-  border-radius: 8px;
+  padding: 0.75rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-`;
+  transition: border-color 0.2s;
 
-const UpdateButton = styled.button`
-  margin-top: 2.5rem;
-  background: #e5d3b3;
-  color: #222;
-  border: none;
-  border-radius: 8px;
-  padding: 0.8rem 2rem;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  align-self: flex-end;
-  &:hover {
-    background: #f5a623;
-    color: #000;
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
   }
-`;
 
-const DeleteButton = styled.button`
-  margin-top: 2.5rem;
-  margin-left: 1rem;
-  background: #E74C3C;
-  color: var(--color-white);
-  border: none;
-  border-radius: 8px;
-  padding: 0.8rem 2rem;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  align-self: flex-end;
-  &:hover {
-    background: #c0392b;
-    color: var(--color-white);
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.text.muted};
   }
-`;
-
-const FormWrapper = styled.div`  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
 `;
 
 const ButtonRow = styled.div`
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
   gap: 1rem;
-  width: 100%;
-  @media (max-width: 600px) {
+  justify-content: flex-end;
+
+  @media (max-width: 768px) {
     flex-direction: column;
-    align-items: stretch;
-    gap: 0.7rem;
   }
 `;
 
-export default function UserDetailsPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+const UpdateButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  background: ${({ theme }) => theme.colors.button.primary};
+  color: ${({ theme }) => theme.colors.button.text};
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: ${({ theme }) => theme.colors.primary};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const DeleteButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  background: ${({ theme }) => theme.colors.error};
+  color: white;
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #c53030;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+// Modal styles
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: ${({ theme }) => theme.colors.card.background};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: ${({ theme }) => theme.shadows.lg};
+  text-align: center;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const ModalTitle = styled.h3`
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const ModalMessage = styled.p`
+  margin: 0 0 1.5rem 0;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  line-height: 1.5;
+`;
+
+const ModalButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+`;
+
+const ModalButton = styled.button<{ variant?: 'primary' | 'secondary' | 'danger' }>`
+  padding: 0.7rem 1.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  
+  ${props => {
+    if (props.variant === 'danger') {
+      return `
+        background: ${props.theme.colors.error};
+        color: white;
+        &:hover {
+          background: #c82333;
+        }
+      `;
+    }
+    if (props.variant === 'secondary') {
+      return `
+        background: ${props.theme.colors.surface};
+        color: ${props.theme.colors.text.secondary};
+        border: 1px solid ${props.theme.colors.border};
+        &:hover {
+          background: ${props.theme.colors.border};
+        }
+      `;
+    }
+    return `
+      background: ${props.theme.colors.primary};
+      color: white;
+      &:hover {
+        background: ${props.theme.colors.secondary};
+      }
+    `;
+  }}
+`;
+
+export default function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const { data: user, isLoading } = useQuery({
     queryKey: ['user', id],
     queryFn: () => usersAPI.getById(id).then(res => res.data),
     enabled: !!id,
   });
   const [activeTab, setActiveTab] = useState('Profile');
+  // Ajout pour corriger l'hydratation :
+  const [createdAtFormatted, setCreatedAtFormatted] = useState<string | null>(null);
+  
+  // États pour les champs du formulaire
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    gender: ''
+  });
+
+  // États pour les modals
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isActionLoading, setIsActionLoading] = useState(false);
+
+  useEffect(() => {
+    if (user && user.createdAt) {
+      setCreatedAtFormatted(
+        new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      );
+    }
+    // Initialiser les données du formulaire quand l'utilisateur est chargé
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        phoneNumber: user.phoneNumber || '',
+        address: user.address || '',
+        gender: user.gender || ''
+      });
+    }
+  }, [user?.createdAt, user]);
 
   if (isLoading || !user) return <div style={{ padding: 40 }}>Chargement...</div>;
 
-  // Ajoute la fonction de suppression (à compléter)
-  const handleDeleteProfile = () => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce profil ?')) {
-      // TODO: Appeler l'API de suppression, puis rediriger ou afficher un message
-      alert('Suppression du profil (à implémenter)');
+  // Fonction pour gérer les changements dans les champs
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Fonction pour mettre à jour le profil
+  const handleUpdateProfile = async () => {
+    setIsActionLoading(true);
+    try {
+      await usersAPI.update(id, formData);
+      setModalMessage('Profil mis à jour avec succès !');
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du profil:', error);
+      setModalMessage('Erreur lors de la mise à jour du profil');
+      setShowErrorModal(true);
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  // Fonction pour ouvrir le modal de suppression
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  // Fonction pour supprimer le profil
+  const handleDeleteProfile = async () => {
+    setIsActionLoading(true);
+    try {
+      await usersAPI.delete(id);
+      setModalMessage('Profil supprimé avec succès !');
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Erreur lors de la suppression du profil:', error);
+      setModalMessage('Erreur lors de la suppression du profil');
+      setShowErrorModal(true);
+    } finally {
+      setIsActionLoading(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -241,7 +421,7 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
                   alignItems: 'center', 
                   justifyContent: 'center',
                   fontSize: '2.5rem',
-                  color: 'var(--color-taupe)',
+                  color: '#827869',
                   fontWeight: 'bold'
                   }}
               >
@@ -251,64 +431,168 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
             <div>
               <Name>{user.name}</Name>
               <Email>{user.email}</Email>
-              <Since>Customer since {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'}</Since>
+              <Since>Customer since {createdAtFormatted || '-'}</Since>
             </div>
           </Header>
           <Tabs>
             <Tab active={activeTab === 'Profile'} onClick={() => setActiveTab('Profile')}>Profile</Tab>
             <Tab active={activeTab === 'Orders'} onClick={() => setActiveTab('Orders')}>Orders</Tab>
             <Tab active={activeTab === 'Favorites'} onClick={() => setActiveTab('Favorites')}>Favorites</Tab>
-            <Tab active={activeTab === 'Addresses'} onClick={() => setActiveTab('Addresses')}>Addresses</Tab>
             <Tab active={activeTab === 'Payment Methods'} onClick={() => setActiveTab('Payment Methods')}>Payment Methods</Tab>
             <Tab active={activeTab === 'Activity Log'} onClick={() => setActiveTab('Activity Log')}>Activity Log</Tab>
           </Tabs>
-          {/* Profile Tab */}
-          <SectionTitle>Profile Information</SectionTitle>
-          <FormWrapper>
-            <Form>
-              <div>
-                <Label>Full Name</Label>
-                <Input type="text" value={user.name || ''} />
-              </div>
-              <div>
-                <Label>Email</Label>
-                <Input type="email" value={user.email || ''} />
-              </div>
-              <div>
-                <Label>Phone Number</Label>
-                <Input type="text" value={user.phoneNumber || ''} />
-              </div>
-              <div>
-                <Label>Date of Birth</Label>
-                <Input type="date" value={user.dateOfBirth || ''} />
-              </div>
-              <div>
-                <Label>Gender</Label>
-                <Input type="text" value={user.gender || ''} />
-              </div>
-              <div>
-                <Label>Preferred Language</Label>
-                <Input type="text" value={user.preferredLanguage || ''} />
-              </div>
-            </Form>
-            <SectionTitle>Account Settings</SectionTitle>
-            <Form>
-              <div>
-                <Label>Username</Label>
-                <Input type="text" value={user.username || ''} />
-              </div>
-              <div>
-                <Label>Password</Label>
-                <Input type="password" value="********" />
-              </div>
-            </Form>
-            <ButtonRow>
-              <UpdateButton>Update Profile</UpdateButton>
-              <DeleteButton onClick={handleDeleteProfile}>Delete Profile</DeleteButton>
-            </ButtonRow>
-          </FormWrapper>
+          
+          {/* Tab Content */}
+          {activeTab === 'Profile' && (
+            <>
+              <SectionTitle>Profile Information</SectionTitle>
+              <FormWrapper>
+                <Form>
+                  <FormGroup>
+                    <Label>Full Name</Label>
+                    <Input 
+                      type="text" 
+                      value={formData.name} 
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Email</Label>
+                    <Input 
+                      type="email" 
+                      value={formData.email} 
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Phone Number</Label>
+                    <Input 
+                      type="text" 
+                      value={formData.phoneNumber} 
+                      onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Address</Label>
+                    <Input 
+                      type="text" 
+                      value={formData.address} 
+                      onChange={(e) => handleInputChange('address', e.target.value)}
+                      placeholder="Enter your address" 
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Gender</Label>
+                    <Input 
+                      type="text" 
+                      value={formData.gender} 
+                      onChange={(e) => handleInputChange('gender', e.target.value)}
+                      placeholder="Enter your gender"
+                    />
+                  </FormGroup>
+                </Form>
+                <ButtonRow>
+                  <UpdateButton onClick={handleUpdateProfile} disabled={isActionLoading}>
+                    {isActionLoading ? 'Mise à jour...' : 'Update Profile'}
+                  </UpdateButton>
+                  <DeleteButton onClick={handleDeleteClick} disabled={isActionLoading}>
+                    Delete Profile
+                  </DeleteButton>
+                </ButtonRow>
+              </FormWrapper>
+            </>
+          )}
+
+          {activeTab === 'Orders' && (
+            <OrdersTab userId={id} />
+          )}
+
+          {activeTab === 'Favorites' && (
+            <FavoritesTab userId={id} />
+          )}
+
+          {activeTab === 'Payment Methods' && (
+            <PaymentMethodsTab userId={id} />
+          )}
+
+          {activeTab === 'Activity Log' && (
+            <ActivityLogTab userId={id} />
+          )}
         </Container>
       </DashboardLayout>
+
+      {/* Modal de succès pour mise à jour */}
+      {showSuccessModal && !modalMessage.includes('supprimé') && (
+        <ModalOverlay onClick={() => setShowSuccessModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalTitle>✅ Succès</ModalTitle>
+            <ModalMessage>{modalMessage}</ModalMessage>
+            <ModalButtons>
+              <ModalButton onClick={() => {
+                setShowSuccessModal(false);
+                // Recharger la page après fermeture du modal
+                window.location.reload();
+              }}>
+                OK
+              </ModalButton>
+            </ModalButtons>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal d'erreur */}
+      {showErrorModal && (
+        <ModalOverlay onClick={() => setShowErrorModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalTitle>❌ Erreur</ModalTitle>
+            <ModalMessage>{modalMessage}</ModalMessage>
+            <ModalButtons>
+              <ModalButton onClick={() => setShowErrorModal(false)}>
+                OK
+              </ModalButton>
+            </ModalButtons>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal de confirmation de suppression */}
+      {showDeleteModal && (
+        <ModalOverlay onClick={() => setShowDeleteModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalTitle>⚠️ Confirmation</ModalTitle>
+            <ModalMessage>
+              Êtes-vous sûr de vouloir supprimer ce profil ? Cette action est irréversible.
+            </ModalMessage>
+            <ModalButtons>
+              <ModalButton variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                Annuler
+              </ModalButton>
+              <ModalButton variant="danger" onClick={handleDeleteProfile} disabled={isActionLoading}>
+                {isActionLoading ? 'Suppression...' : 'Supprimer'}
+              </ModalButton>
+            </ModalButtons>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal de succès pour suppression */}
+      {showSuccessModal && modalMessage.includes('supprimé') && (
+        <ModalOverlay onClick={() => setShowSuccessModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalTitle>✅ Succès</ModalTitle>
+            <ModalMessage>{modalMessage}</ModalMessage>
+            <ModalButtons>
+              <ModalButton onClick={() => {
+                setShowSuccessModal(false);
+                // Rediriger vers la liste des utilisateurs
+                window.location.href = '/users';
+              }}>
+                OK
+              </ModalButton>
+            </ModalButtons>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </>
   );
 }

@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { useCart } from "../context/CartContext";
+import { useCartStore } from "../context/CartStore";
 import { useSelectedCard } from "../context/PaymentContext";
 import ChevronRight from '../assets/images/chevronRight.png';
 import CardIcon from '../assets/images/card.png';
@@ -23,14 +23,13 @@ import { useMutation } from '@tanstack/react-query';
 
 export default function CheckoutScreen() {
   const router = useRouter();
-  const { cart } = useCart();
+  const { cart, clearCart, fetchCart } = useCartStore();
   const { user } = useAuth();
   const { selectedCardId } = useSelectedCard();
   const [cards, setCards] = useState<Card[]>([]);
   const [loadingCard, setLoadingCard] = useState(true);
   const [shippingAddress, setShippingAddress] = useState<AddressPayload | null>(null);
   const { setLastOrder } = useOrder();
-  const { clearCart, fetchCart } = useCart();
   const [checkoutDone, setCheckoutDone] = useState(false);
 
   // Calculs dynamiques
@@ -62,26 +61,6 @@ export default function CheckoutScreen() {
     };
     fetchCards();
   }, [user]);
-
-  // Recharger les cartes quand on revient sur cette page
-  useFocusEffect(
-    useCallback(() => {
-      const fetchCards = async () => {
-        setLoadingCard(true);
-        const token = await AsyncStorage.getItem('authToken');
-        if (token && user?._id) {
-          const res = await apiService.getCards(token, user._id);
-          if (res.success && res.data) {
-            setCards(res.data);
-          } else {
-            setCards([]);
-          }
-        }
-        setLoadingCard(false);
-      };
-      fetchCards();
-    }, [user])
-  );
 
   useFocusEffect(
     useCallback(() => {
@@ -124,8 +103,8 @@ export default function CheckoutScreen() {
     },
     onSuccess: async (data, variables) => {
       setLastOrder(data.data || variables);
-      clearCart();
-      await fetchCart();
+      clearCart(user?._id || '');
+      await fetchCart(user?._id || '');
       setCheckoutDone(true); // Indique que le checkout est terminé
       Alert.alert(
         "Commande validée",
@@ -174,7 +153,7 @@ export default function CheckoutScreen() {
           (product && 'image_url' in product && typeof product.image_url === 'string' && product.image_url) ||
           (product && 'image' in product && typeof product.image === 'string' && product.image) ||
           'https://via.placeholder.com/150';
-        const name = product && ('title' in product ? product.title : product.name) || '';
+        const name = (product && typeof product === 'object' && 'title' in product ? String(product.title) : (product && typeof product === 'object' && 'name' in product ? String(product.name) : '')) || '';
         const key = product && '_id' in product && typeof product._id === 'string' ? product._id : (typeof item.productId === 'string' ? item.productId : Math.random().toString());
         return (
           <View key={key} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
@@ -192,20 +171,20 @@ export default function CheckoutScreen() {
       <View style={styles.summaryBlock}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>{subtotal.toFixed(2)}€</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Shipping</Text>
-          <Text style={styles.summaryValue}>${shipping.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>{shipping.toFixed(2)}€</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Taxes</Text>
-          <Text style={styles.summaryValue}>${taxes.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>{taxes.toFixed(2)}€</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={[styles.summaryLabel, styles.totalLabel]}>Total</Text>
           <Text style={[styles.summaryValue, styles.totalLabel]}>
-            ${total.toFixed(2)}
+            {total.toFixed(2)}€
           </Text>
         </View>
       </View>
@@ -220,7 +199,7 @@ export default function CheckoutScreen() {
               <Image source={CardIcon} style={styles.icon} />
             )}
           </View>
-          <View style={{ marginLeft: 12 }}>
+          <View style={{ marginLeft: 8, marginTop: 10, justifyContent: 'center' }}>
             <Text style={styles.rowBtnText}>
               {cardToShow && cardToShow.cardNumber
                 ? `•••• ${cardToShow.cardNumber.slice(-4)}`
@@ -385,8 +364,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F6F6F6',
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: -20,
-    marginRight: 10,
+    marginRight: 8,
     paddingHorizontal: 4,
   },
 });

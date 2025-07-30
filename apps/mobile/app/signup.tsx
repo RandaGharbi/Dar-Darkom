@@ -9,17 +9,50 @@ import {
   Alert,
   ActivityIndicator,
   Image,
-  Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import uploadImg from '../assets/images/upload.png';
 import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerResult, ImagePickerAsset } from 'expo-image-picker';
-import API_CONFIG, { getFullUrl } from '../config/api';
+import { getFullUrl } from '../config/api';
 import { getCorrectImageUrl } from '../utils/imageUtils';
 
 type SignupProps = object;
+
+// Fonctions de validation
+const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  if (password.length < 6) {
+    errors.push('Au moins 6 caractères');
+  }
+  if (!/\d/.test(password)) {
+    errors.push('Au moins 1 chiffre');
+  }
+  if (!/[a-z]/.test(password)) {
+    errors.push('Au moins 1 lettre minuscule');
+  }
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Au moins 1 lettre majuscule');
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    errors.push('Au moins 1 caractère spécial');
+  }
+  
+  return { isValid: errors.length === 0, errors };
+};
+
+const validateName = (name: string): boolean => {
+  return name.trim().length >= 2;
+};
+
 const SignupScreen: React.FC<SignupProps> = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -27,13 +60,22 @@ const SignupScreen: React.FC<SignupProps> = () => {
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  
+  // États de validation
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [showPasswordErrors, setShowPasswordErrors] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
   const { signup, isAuthenticated, loading: authLoading } = useAuth();
 
   // Rediriger si déjà connecté
   useEffect(() => {
+    console.log('🔄 Auth state changed:', { authLoading, isAuthenticated });
     if (!authLoading && isAuthenticated) {
+      console.log('🚀 Redirecting to home from signup screen...');
       router.replace('/');
     }
   }, [authLoading, isAuthenticated, router]);
@@ -93,9 +135,51 @@ const SignupScreen: React.FC<SignupProps> = () => {
     setUploading(false);
   };
 
+  // Fonctions de validation en temps réel
+  const validateNameField = (value: string) => {
+    if (value.length > 0 && !validateName(value)) {
+      setNameError('Le nom et le prénom doit contenir au moins 20 caractères');
+    } else {
+      setNameError('');
+    }
+  };
+
+  const validateEmailField = (value: string) => {
+    if (value.length > 0 && !validateEmail(value)) {
+      setEmailError('Veuillez entrer un email valide');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const validatePasswordField = (value: string) => {
+    const validation = validatePassword(value);
+    if (value.length > 0 && !validation.isValid) {
+      setPasswordError(validation.errors.join(', '));
+    } else {
+      setPasswordError('');
+    }
+  };
+
   const handleSignup = async (profileImageUrl?: string | null) => {
-    if (!name || !email || !password) {
-      Alert.alert('Erreur', 'Tous les champs sont requis');
+    // Validation complète avant soumission
+    const nameValidation = validateName(name);
+    const emailValidation = validateEmail(email);
+    const passwordValidation = validatePassword(password);
+
+    if (!nameValidation) {
+      setNameError('Le nom doit contenir au moins 2 caractères');
+    }
+    if (!emailValidation) {
+      setEmailError('Veuillez entrer un email valide');
+    }
+    if (!passwordValidation.isValid) {
+      setPasswordError(passwordValidation.errors.join(', '));
+      setShowPasswordErrors(true);
+    }
+
+    if (!nameValidation || !emailValidation || !passwordValidation.isValid) {
+      Alert.alert('Erreur de validation', 'Veuillez corriger les erreurs dans le formulaire');
       return;
     }
 
@@ -106,12 +190,8 @@ const SignupScreen: React.FC<SignupProps> = () => {
     setLoading(false);
 
     if (success) {
-      Alert.alert('Succès', 'Compte créé avec succès', [
-        {
-          text: 'OK',
-          onPress: () => router.replace('/login')
-        }
-      ]);
+      console.log('✅ Signup successful, user should be automatically redirected...');
+      // La redirection se fera automatiquement via le useEffect quand isAuthenticated devient true
     }
   };
 
@@ -127,8 +207,10 @@ const SignupScreen: React.FC<SignupProps> = () => {
     );
   }
 
-  // Si déjà connecté, ne pas afficher l'écran de signup
+  // Si déjà connecté, rediriger vers l'accueil
   if (isAuthenticated) {
+    console.log('🚀 User is authenticated, redirecting to home...');
+    router.replace('/');
     return null;
   }
 
@@ -157,31 +239,71 @@ const SignupScreen: React.FC<SignupProps> = () => {
 
         <Text style={styles.label}>Name</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, nameError ? styles.inputError : null]}
           placeholder="Enter your name"
           value={name}
-          onChangeText={setName}
+          onChangeText={(text) => {
+            setName(text);
+            validateNameField(text);
+          }}
           autoCapitalize="words"
+          autoCorrect={false}
+          spellCheck={false}
+          textContentType="none"
+          keyboardType="default"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          autoComplete="off"
         />
+        {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
 
         <Text style={styles.label}>Email</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, emailError ? styles.inputError : null]}
           placeholder="Enter your email"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            validateEmailField(text);
+          }}
           keyboardType="email-address"
           autoCapitalize="none"
+          autoCorrect={false}
+          spellCheck={false}
+          textContentType="none"
         />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
         <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+        <View style={styles.passwordContainer}>
+                    <TextInput
+            style={[styles.input, styles.passwordInput, passwordError ? styles.inputError : null]}
+            placeholder="Enter your password"
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              validatePasswordField(text);
+            }}
+            secureTextEntry={!showPassword}
+            onFocus={() => setShowPasswordErrors(true)}
+            autoCapitalize="none"
+            autoCorrect={false}
+            spellCheck={false}
+            textContentType="none"
+            keyboardType="default"
+          />
+          <TouchableOpacity
+            style={styles.eyeButton}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Ionicons 
+              name={showPassword ? "eye-off" : "eye"} 
+              size={20} 
+              color="#666" 
+            />
+          </TouchableOpacity>
+        </View>
+        {passwordError && showPasswordErrors ? <Text style={styles.errorText}>{passwordError}</Text> : null}
       </View>
 
       <TouchableOpacity
@@ -285,6 +407,15 @@ const styles = StyleSheet.create({
     color: '#6B4F2B',
     textDecorationLine: 'underline',
   },
+  inputError: {
+    // Pas de bordure rouge
+  },
+  errorText: {
+    color: '#ff4444',
+    fontSize: 12,
+    marginBottom: 8,
+    marginLeft: 4,
+  },
   formFieldsContainer: {
     paddingHorizontal: 32,
     width: '100%',
@@ -295,6 +426,21 @@ const styles = StyleSheet.create({
     marginLeft: 14,
     backgroundColor: 'transparent',
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 14,
+    padding: 8,
+  },
+
 });
 
 export default SignupScreen;

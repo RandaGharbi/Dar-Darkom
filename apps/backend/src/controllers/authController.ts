@@ -77,7 +77,32 @@ export const signup = async (req: Request, res: Response) => {
     const user = new User({ name, email, password: hashedPassword, profileImage: profileImageUrl, role: 'user' });
     await user.save();
 
-    res.status(201).json({ message: 'User created' });
+    // Générer un token JWT pour l'utilisateur nouvellement créé
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '7d' }
+    );
+
+    // Utilise toObject() pour accéder à toutes les propriétés
+    const userObj = user.toObject();
+
+    res.status(201).json({
+      message: 'User created',
+      token,
+      user: {
+        name: userObj.name,
+        email: userObj.email,
+        profileImage: userObj.profileImage,
+        phoneNumber: userObj.phoneNumber,
+        dateOfBirth: userObj.dateOfBirth,
+        gender: userObj.gender,
+        preferredLanguage: userObj.preferredLanguage,
+        username: userObj.username,
+        createdAt: userObj.createdAt,
+        status: userObj.status
+      }
+    });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     res.status(500).json({ message: 'Server error', error: errorMessage });
@@ -146,7 +171,7 @@ export const getMe = async (req: Request, res: Response) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as jwt.JwtPayload;
     const userId = typeof decoded === 'object' && decoded.userId ? decoded.userId : null;
     if (!userId) return res.status(401).json({ message: 'Invalid token payload' });
-    const user = await User.findById(userId).select('name email profileImage phoneNumber dateOfBirth gender preferredLanguage username');
+    const user = await User.findById(userId).select('name email profileImage phoneNumber address dateOfBirth gender preferredLanguage username');
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json({ user });
   } catch {
@@ -173,7 +198,7 @@ export const appleSignIn = async (req: Request, res: Response) => {
         name: appleUser.email?.split('@')[0] || 'AppleUser',
       });
     }
-    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+    const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
     res.json({ token: jwtToken, user });
   } catch {
     res.status(401).json({ error: 'Invalid Apple token' });
@@ -199,7 +224,7 @@ export const googleSignIn = async (req: Request, res: Response) => {
         name: payload.name || payload.email?.split('@')[0] || 'GoogleUser',
       });
     }
-    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+    const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
     res.json({ token: jwtToken, user });
   } catch {
     res.status(401).json({ error: 'Invalid Google token' });
@@ -238,7 +263,7 @@ export const updateUser = async (req: Request, res: Response) => {
     const userId = typeof decoded === 'object' && decoded.userId ? decoded.userId : null;
     if (!userId) return res.status(401).json({ message: 'Invalid token payload' });
 
-    const { name, email, phoneNumber, dateOfBirth, gender, preferredLanguage, username } = req.body;
+    const { name, email, phoneNumber, address, dateOfBirth, gender, preferredLanguage, username } = req.body;
 
     // Vérifier si l'utilisateur existe
     const user = await User.findById(userId);
@@ -256,6 +281,7 @@ export const updateUser = async (req: Request, res: Response) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
+    if (address !== undefined) user.address = address;
     if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
     if (gender !== undefined) user.gender = gender;
     if (preferredLanguage !== undefined) user.preferredLanguage = preferredLanguage;
@@ -264,6 +290,51 @@ export const updateUser = async (req: Request, res: Response) => {
     await user.save();
 
         // Retourner l'utilisateur mis à jour (sans le mot de passe)
+    const updatedUser = user.toObject();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...userWithoutPassword } = updatedUser;
+
+    res.json({ 
+      message: 'User updated successfully', 
+      user: userWithoutPassword 
+    });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    res.status(500).json({ message: 'Server error', error: errorMessage });
+  }
+};
+
+export const updateUserById = async (req: Request, res: Response) => {
+  try {
+    const { name, email, phoneNumber, address, dateOfBirth, gender, preferredLanguage, username } = req.body;
+
+    // Vérifier si l'utilisateur existe
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Vérifier si l'email est déjà utilisé par un autre utilisateur
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({ message: 'Email already in use' });
+      }
+    }
+
+    // Mettre à jour les champs fournis
+    if (name !== undefined) user.name = name;
+    if (email !== undefined) user.email = email;
+    if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
+    if (address !== undefined) user.address = address;
+    if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
+    if (gender !== undefined) user.gender = gender;
+    if (preferredLanguage !== undefined) user.preferredLanguage = preferredLanguage;
+    if (username !== undefined) user.username = username;
+
+    await user.save();
+
+    // Retourner l'utilisateur mis à jour (sans le mot de passe)
     const updatedUser = user.toObject();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _password, ...userWithoutPassword } = updatedUser;

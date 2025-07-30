@@ -12,6 +12,7 @@ const API_CONFIG = {
     REGISTER: '/api/signup',
     LOGOUT: '/api/logout',
     ME: '/api/me',
+    UPDATE_USER: '/api/update',
     UPLOAD_PROFILE_IMAGE: '/api/upload-profile-image',
     
     // Products

@@ -29,7 +29,7 @@ const ProductList = ({ title, products: propProducts, layout = 'grid' } : Produc
       <Text style={styles.header}>{title}</Text>
       <FlatList
         data={displayProducts}
-        keyExtractor={(item) => item.id.toString() + item.name}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={({ item }) => <ProductCard product={item} cardWidth={layout === 'grid' ? CARD_WIDTH : undefined} />}
         numColumns={layout === 'grid' ? 2 : 1}
         horizontal={layout === 'horizontal'}

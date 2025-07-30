@@ -11,6 +11,8 @@ export interface ICard extends Document {
   state: string;
   zipCode: string;
   country: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const CardSchema: Schema = new Schema({
@@ -24,6 +26,8 @@ const CardSchema: Schema = new Schema({
   state: { type: String, required: true },
   zipCode: { type: String, required: true },
   country: { type: String, required: true }
+}, {
+  timestamps: true
 });
 
 export default mongoose.model<ICard>('Card', CardSchema); 

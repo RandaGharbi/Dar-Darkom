@@ -1,16 +1,59 @@
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ContactFormScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
-  const handleSubmit = () => {
-    Alert.alert('Message sent', 'Thank you for contacting us!');
-    setName('');
-    setEmail('');
-    setMessage('');
+  const handleSubmit = async () => {
+    if (!message.trim()) {
+      Alert.alert('Erreur', 'Veuillez saisir un message');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Récupérer le token depuis le stockage
+      const token = await AsyncStorage.getItem('authToken');
+      
+      console.log('Token récupéré:', token ? 'Présent' : 'Absent');
+      
+      if (!token) {
+        Alert.alert('Erreur', 'Token non trouvé. Veuillez vous reconnecter.');
+        return;
+      }
+
+      const response = await fetch('http://10.0.2.2:5000/api/messages/user/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          content: message.trim()
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'envoi du message');
+      }
+
+      Alert.alert('Message envoyé', 'Merci de nous avoir contacté ! Notre équipe vous répondra bientôt.');
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi:', error);
+      Alert.alert('Erreur', 'Impossible d\'envoyer le message. Veuillez réessayer.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -24,6 +67,8 @@ const ContactFormScreen: React.FC = () => {
         placeholder="Enter your name"
         value={name}
         onChangeText={setName}
+        autoCorrect={false}
+        spellCheck={false}
       />
 
       <Text style={styles.label}>Your Email</Text>
@@ -35,6 +80,7 @@ const ContactFormScreen: React.FC = () => {
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
+        spellCheck={false}
       />
 
       <Text style={styles.label}>Your Message</Text>
@@ -45,10 +91,18 @@ const ContactFormScreen: React.FC = () => {
         onChangeText={setMessage}
         multiline
         numberOfLines={5}
+        autoCorrect={false}
+        spellCheck={false}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Send Message</Text>
+      <TouchableOpacity 
+        style={[styles.button, isLoading && styles.buttonDisabled]} 
+        onPress={handleSubmit}
+        disabled={isLoading}
+      >
+        <Text style={styles.buttonText}>
+          {isLoading ? 'Envoi...' : 'Send Message'}
+        </Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
@@ -81,6 +135,9 @@ const styles = StyleSheet.create({
       borderRadius: 30,
       alignSelf: 'flex-end',
       marginTop: 20,
+    },
+    buttonDisabled: {
+      backgroundColor: '#666',
     },
     buttonText: {
       color: '#fff',

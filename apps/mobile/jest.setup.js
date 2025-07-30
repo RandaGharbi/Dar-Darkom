@@ -53,6 +53,23 @@ jest.mock('expo-modules-core', () => ({
   NativeModule: jest.fn(),
   SharedObject: jest.fn(),
   SharedRef: jest.fn(),
+  requireOptionalNativeModule: jest.fn(),
+}));
+
+// Mock expo-constants
+jest.mock('expo-constants', () => ({
+  default: {
+    expoConfig: {
+      extra: {
+        apiUrl: 'http://localhost:5000/api',
+      },
+    },
+    manifest: {
+      extra: {
+        apiUrl: 'http://localhost:5000/api',
+      },
+    },
+  },
 }));
 
 // Mock AsyncStorage
