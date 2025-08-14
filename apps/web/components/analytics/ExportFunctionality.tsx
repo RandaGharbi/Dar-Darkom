@@ -401,8 +401,7 @@ export function ExportFunctionality() {
         setProgress(0);
       }, 2000);
       
-    } catch (error) {
-      console.error('Erreur lors de l\'export:', error);
+    } catch {
       setExportError('Erreur lors de l\'export des données. Veuillez réessayer.');
     } finally {
       setIsExporting(false);
@@ -422,8 +421,7 @@ export function ExportFunctionality() {
       const response = await analyticsApi.createScheduledExport(schedule);
       console.log('✅ [FRONTEND] Réponse API reçue:', response);
       alert(`Export planifié "${schedule.name}" créé avec succès !`);
-    } catch (error) {
-      console.error('❌ [FRONTEND] Erreur lors de la création de l\'export planifié:', error);
+    } catch {
       alert('Erreur lors de la création de l\'export planifié. Veuillez réessayer.');
     }
   };

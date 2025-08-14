@@ -33,7 +33,8 @@ jest.mock('../../../lib/api', () => ({
           profileImage: null 
         }
       }
-    }))
+    })),
+    logout: jest.fn(() => Promise.resolve({ success: true }))
   }
 }));
 
@@ -142,10 +143,11 @@ describe('DashboardLayout', () => {
     // On ne teste pas l'état visuel car il dépend du state interne
   });
 
-  it('renders notification dropdown', () => {
+  it('renders notification dropdown only when user is authenticated', () => {
     renderWithProviders();
-    const notificationButton = screen.getByRole('button', { name: /notifications/i });
-    expect(notificationButton).toBeInTheDocument();
+    // Sans utilisateur authentifié, le NotificationDropdown ne doit pas être rendu
+    const notificationButton = screen.queryByRole('button', { name: /notifications/i });
+    expect(notificationButton).not.toBeInTheDocument();
   });
 
   it('renders user avatar with fallback', () => {
@@ -171,7 +173,7 @@ describe('DashboardLayout', () => {
     expect(logoutButton).toBeInTheDocument();
   });
 
-  it('handles logout when logout button is clicked', () => {
+  it('handles logout when logout button is clicked', async () => {
     const originalLocalStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
     const mockLocalStorage = {
       getItem: jest.fn(() => null),
@@ -192,6 +194,10 @@ describe('DashboardLayout', () => {
     const logoutButton = logoutButtons[logoutButtons.length - 1];
     if (logoutButton && logoutButton instanceof HTMLElement) {
       fireEvent.click(logoutButton);
+      
+      // Attendre que les effets asynchrones se terminent
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
       if (mockLocalStorage && typeof mockLocalStorage.removeItem === 'function') {
         expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
       }

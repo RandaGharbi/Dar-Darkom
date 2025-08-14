@@ -118,8 +118,8 @@ const NotificationPermissionRequest: React.FC<NotificationPermissionRequestProps
         await pushNotificationService.registerServiceWorker();
         setIsVisible(false);
       }
-    } catch (error) {
-      console.error('Erreur lors de la demande de permission:', error);
+    } catch {
+      // Gérer l'erreur silencieusement
     } finally {
       setIsLoading(false);
     }

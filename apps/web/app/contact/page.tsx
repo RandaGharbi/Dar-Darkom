@@ -422,8 +422,8 @@ export default function ContactPage() {
         );
         console.log("📧 Conversation reçue depuis URL:", conversationData);
         setSelectedConversation(conversationData);
-      } catch (error) {
-        console.error("❌ Erreur lors du parsing de la conversation:", error);
+      } catch {
+        // Gérer l'erreur silencieusement
       }
     }
   }, []);
@@ -500,8 +500,8 @@ export default function ContactPage() {
           // Rafraîchir la liste des conversations
           queryClient.invalidateQueries({ queryKey: ["admin-messages"] });
         });
-      } catch (error) {
-        console.error("❌ Erreur WebSocket (Contact):", error);
+      } catch {
+        // Gérer l'erreur silencieusement
       }
     }
 
@@ -587,12 +587,12 @@ export default function ContactPage() {
         setTimeout(() => {
           scrollToBottom();
         }, 150);
-      } else {
-        console.error("❌ Erreur lors de l'envoi:", response.status);
+              } else {
+          // Gérer l'erreur silencieusement
+        }
+      } catch {
+        // Gérer l'erreur silencieusement
       }
-    } catch (error) {
-      console.error("❌ Erreur lors de l'envoi:", error);
-    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

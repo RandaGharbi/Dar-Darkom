@@ -360,8 +360,7 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
       
       // Rediriger vers la page de login
       router.push("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch {
       // Même en cas d'erreur, on supprime le token localement
       removeToken();
       router.push("/login");
@@ -434,10 +433,8 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
               <HeaderControls>
                 <ThemeToggle />
                 {/* Debug: {console.log('User data:', user)} */}
-                {user?.user?._id ? (
+                {user?.user?._id && (
                   <NotificationDropdown userId={user.user._id} />
-                ) : (
-                  <NotificationDropdown userId="demo" />
                 )}
               </HeaderControls>
 

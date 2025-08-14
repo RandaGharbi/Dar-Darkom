@@ -53,9 +53,11 @@ const NotificationButton = styled.button<{ $hasUnread: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
+  color: ${({ theme }) => theme.colors.text.primary};
 
   &:hover {
     background: ${({ theme }) => theme.colors.surface};
+    color: ${({ theme }) => theme.colors.primary};
   }
 
   ${({ $hasUnread }) => $hasUnread && css`
@@ -425,7 +427,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ userId }) =
             <EmptyState>Chargement...</EmptyState>
           ) : notifications.length === 0 ? (
             <EmptyState>
-              <Bell size={32} style={{ opacity: 0.5, marginBottom: 8 }} />
+              <Bell size={32} style={{ opacity: 0.5, marginBottom: 8, color: 'inherit' }} />
               <div>Aucune notification</div>
             </EmptyState>
           ) : (

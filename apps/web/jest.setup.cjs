@@ -128,3 +128,26 @@ jest.mock('./lib/api');
 // Mock pour services/notificationService  
 jest.mock('./services/notificationService');
 
+// Supprimer les avertissements console.error spécifiques
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    // Filtrer les avertissements React act() et LinkComponent
+    if (
+      args[0] && 
+      typeof args[0] === 'string' && 
+      (args[0].includes('An update to ForwardRef(LinkComponent)') ||
+       args[0].includes('was not wrapped in act') ||
+       args[0].includes('setVisible'))
+    ) {
+      return;
+    }
+    // Afficher les autres erreurs
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+

@@ -1,22 +1,7 @@
+// Mock de l'API
+jest.mock('../../lib/api');
+
 import { authAPI, productsAPI, ordersAPI, discountsAPI } from '../../lib/api';
-
-// Mock pour axios
-jest.mock('axios', () => {
-  const mockAxiosInstance = {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() },
-    },
-  };
-
-  return {
-    create: jest.fn(() => mockAxiosInstance),
-  };
-});
 
 // Mock pour localStorage
 const localStorageMock = {
@@ -30,25 +15,18 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 describe('API Services', () => {
-  let mockAxiosInstance: any;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    const axios = require('axios');
-    mockAxiosInstance = axios.create();
   });
 
   describe('authAPI', () => {
     it('se connecte avec succès', async () => {
       const mockResponse = { data: { token: 'fake-token', user: { id: 1, email: 'test@example.com' } } };
-      mockAxiosInstance.post.mockResolvedValueOnce(mockResponse);
+      (authAPI.login as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const result = await authAPI.login('test@example.com', 'password123');
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/login', {
-        email: 'test@example.com',
-        password: 'password123',
-      });
+      expect(authAPI.login).toHaveBeenCalledWith('test@example.com', 'password123');
       expect(result).toEqual(mockResponse);
     });
 
@@ -56,7 +34,7 @@ describe('API Services', () => {
       const errorResponse = {
         response: { status: 401, statusText: 'Unauthorized' },
       };
-      mockAxiosInstance.post.mockRejectedValueOnce(errorResponse);
+      (authAPI.login as jest.Mock).mockRejectedValueOnce(errorResponse);
 
       await expect(authAPI.login('test@example.com', 'wrong-password')).rejects.toEqual(errorResponse);
     });
@@ -69,22 +47,22 @@ describe('API Services', () => {
         { id: 2, name: 'Produit 2', price: 20.99 },
       ];
       const mockResponse = { data: mockProducts };
-      mockAxiosInstance.get.mockResolvedValueOnce(mockResponse);
+      (productsAPI.getAll as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const result = await productsAPI.getAll();
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/products');
+      expect(productsAPI.getAll).toHaveBeenCalledWith();
       expect(result).toEqual(mockResponse);
     });
 
     it('crée un nouveau produit', async () => {
       const newProduct = { name: 'Nouveau Produit', price: 15.99, description: 'Description' };
       const mockResponse = { data: { id: 3, ...newProduct } };
-      mockAxiosInstance.post.mockResolvedValueOnce(mockResponse);
+      (productsAPI.create as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const result = await productsAPI.create(newProduct);
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/products', newProduct);
+      expect(productsAPI.create).toHaveBeenCalledWith(newProduct);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -96,11 +74,11 @@ describe('API Services', () => {
         { id: 2, customerName: 'Client 2', total: 75.50 },
       ];
       const mockResponse = { data: mockOrders };
-      mockAxiosInstance.get.mockResolvedValueOnce(mockResponse);
+      (ordersAPI.getAll as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const result = await ordersAPI.getAll();
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/orders');
+      expect(ordersAPI.getAll).toHaveBeenCalledWith();
       expect(result).toEqual(mockResponse);
     });
   });
@@ -112,11 +90,11 @@ describe('API Services', () => {
         { id: 2, code: 'SALE30', percentage: 30 },
       ];
       const mockResponse = { data: mockDiscounts };
-      mockAxiosInstance.get.mockResolvedValueOnce(mockResponse);
+      (discountsAPI.getAll as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const result = await discountsAPI.getAll();
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/discounts');
+      expect(discountsAPI.getAll).toHaveBeenCalledWith();
       expect(result).toEqual(mockResponse);
     });
   });

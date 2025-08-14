@@ -349,11 +349,10 @@ export default function UserDetailsPage({ params }: { params: Promise<{ id: stri
       await usersAPI.update(id, formData);
       setModalMessage('Profil mis à jour avec succès !');
       setShowSuccessModal(true);
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour du profil:', error);
-      setModalMessage('Erreur lors de la mise à jour du profil');
-      setShowErrorModal(true);
-    } finally {
+          } catch {
+        setModalMessage('Erreur lors de la mise à jour du profil');
+        setShowErrorModal(true);
+      } finally {
       setIsActionLoading(false);
     }
   };
@@ -370,11 +369,10 @@ export default function UserDetailsPage({ params }: { params: Promise<{ id: stri
       await usersAPI.delete(id);
       setModalMessage('Profil supprimé avec succès !');
       setShowSuccessModal(true);
-    } catch (error) {
-      console.error('Erreur lors de la suppression du profil:', error);
-      setModalMessage('Erreur lors de la suppression du profil');
-      setShowErrorModal(true);
-    } finally {
+          } catch {
+        setModalMessage('Erreur lors de la suppression du profil');
+        setShowErrorModal(true);
+      } finally {
       setIsActionLoading(false);
       setShowDeleteModal(false);
     }

@@ -294,8 +294,7 @@ export default function OrderDetailsPage() {
       queryClient.invalidateQueries({ queryKey: ["order", orderId] });
       showSuccess('Statut mis à jour avec succès !');
     },
-    onError: (error) => {
-      console.error('Erreur lors de la mise à jour du statut:', error);
+    onError: () => {
       // Ici vous pourriez afficher une notification d'erreur
     },
   });

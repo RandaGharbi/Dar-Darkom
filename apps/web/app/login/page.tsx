@@ -115,7 +115,6 @@ export default function LoginPage() {
       router.replace('/');
     },
     onError: (error: unknown) => {
-      console.error('Login error:', error);
       const err = error as { response?: { data?: { message?: string } } };
       toast.error(err.response?.data?.message || 'Erreur de connexion');
     },

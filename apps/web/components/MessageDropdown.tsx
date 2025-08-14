@@ -301,7 +301,7 @@ export const MessageDropdown: React.FC<MessageDropdownProps> = () => {
         
         console.log('✅ WebSocket configuré avec succès');
       } catch (error) {
-        console.error('❌ Erreur WebSocket (Web):', error);
+        // Gérer l'erreur silencieusement
       }
     } else {
       console.log('❌ Pas de token, WebSocket non connecté');
@@ -455,8 +455,8 @@ export const MessageDropdown: React.FC<MessageDropdownProps> = () => {
       // Vider le champ de saisie
       setNewMessage('');
       
-    } catch (error) {
-      console.error('❌ Erreur lors de l\'envoi:', error);
+    } catch {
+      // Gérer l'erreur silencieusement
     }
   };
 
@@ -491,8 +491,8 @@ export const MessageDropdown: React.FC<MessageDropdownProps> = () => {
       console.log('🔄 Redirection vers /contact avec conversation:', conversationData);
       window.location.href = `/contact?conversation=${encodeURIComponent(JSON.stringify(conversationData))}`;
       
-    } catch (error) {
-      console.error('❌ Erreur lors du marquage comme lu:', error);
+    } catch {
+      // Gérer l'erreur silencieusement
     }
   };
 

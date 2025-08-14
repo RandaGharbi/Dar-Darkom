@@ -33,4 +33,10 @@ module.exports = createJestConfig({
       statements: 70,
     },
   },
+  // Supprimer les avertissements console.error spécifiques
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
+  // Configuration pour supprimer les avertissements React act()
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
 }); 

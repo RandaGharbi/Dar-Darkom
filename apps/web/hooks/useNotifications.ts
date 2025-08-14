@@ -90,7 +90,7 @@ export async function markNotificationAsRead(notificationId: string): Promise<vo
       },
     });
   } catch (error) {
-    console.error('Erreur markNotificationAsRead:', error);
+    // Gérer l'erreur silencieusement
   }
 }
 

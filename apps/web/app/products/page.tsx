@@ -672,7 +672,6 @@ export default function ProductsPage() {
     },
     onError: (error) => {
       showError('Erreur lors de la suppression : ' + (error instanceof Error ? error.message : String(error)));
-      console.error('Erreur deleteAllMutation:', error);
     }
   });
 

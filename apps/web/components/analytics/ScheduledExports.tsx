@@ -303,10 +303,9 @@ export function ScheduledExports() {
       setLoading(true);
       const data = await analyticsApi.getScheduledExports();
       setScheduledExports(data);
-    } catch (error) {
-      console.error('Erreur lors du chargement des exports planifiés:', error);
-      setError('Erreur lors du chargement des exports planifiés');
-    } finally {
+          } catch {
+        setError('Erreur lors du chargement des exports planifiés');
+      } finally {
       setLoading(false);
     }
   };
@@ -354,8 +353,7 @@ export function ScheduledExports() {
             : item
         )
       );
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour du statut:', error);
+    } catch {
       showError('Erreur lors de la mise à jour du statut');
     }
   };
@@ -369,8 +367,7 @@ export function ScheduledExports() {
       await analyticsApi.deleteScheduledExport(id);
       setScheduledExports(prev => prev.filter(item => item.id !== id));
       showSuccess('Export planifié supprimé avec succès !');
-    } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+    } catch {
       showError('Erreur lors de la suppression de l\'export planifié');
     }
   };
