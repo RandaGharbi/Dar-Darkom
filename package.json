@@ -12,6 +12,7 @@
     "build": "turbo run build",
     "start": "turbo run start",
     "lint": "turbo run lint",
+    "type-check": "turbo run type-check --continue",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "backend:network": "cd apps/backend && BASE_URL=http://192.168.1.73:5000 HOST=0.0.0.0 npm run dev",
