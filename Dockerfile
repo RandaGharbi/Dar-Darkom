@@ -1,4 +1,6 @@
 # Dockerfile pour le projet Guerlain
+# CORRIGÉ: Utilise yarn install --immutable au lieu de --immutable-cache
+# Commit: 329f85a - Pipeline CI/CD corrigé
 FROM node:18-alpine AS base
 
 # Installer les dépendances système
