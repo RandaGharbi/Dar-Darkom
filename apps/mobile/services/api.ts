@@ -68,7 +68,7 @@ class ApiService {
       if (error instanceof TypeError && error.message.includes('Network request failed')) {
         return {
           success: false,
-          error: 'Network error - check if backend is running on 192.168.43.184:5000'
+          error: 'Network error - check if backend is running on 192.168.1.74:5000'
         };
       }
       return { 
@@ -185,7 +185,7 @@ class ApiService {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json', // Ajout du header manquant
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(orderData),
     });
@@ -227,4 +227,4 @@ export const deleteAddress = async (addressId: string) => {
 export const setDefaultAddress = async (addressId: string, userId: string) => {
   const res = await httpClient.patch(getEndpoint('SET_DEFAULT_ADDRESS', addressId), { addressId, userId });
   return res.data;
-}; 
+};

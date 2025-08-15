@@ -109,12 +109,30 @@ export const createOrder = async (req: Request, res: Response) => {
 
 export const getActiveOrders = async (req: Request, res: Response) => {
   const userId = req.params.userId;
-  console.log('[BACK] getActiveOrders', { userId });
+  console.log('[BACK] getActiveOrders - Récupération de TOUTES les commandes pour:', { userId });
   if (!userId) return res.status(400).json({ message: 'userId requis' });
   try {
-    const orders = await Order.find({ userId, status: 'active' }).sort({ createdAt: -1 });
+    // ✅ Récupérer TOUTES les commandes de l'utilisateur (actives, annulées, terminées)
+    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+    console.log('[BACK] Toutes les commandes trouvées:', orders.length, 'avec statuts:', orders.map(o => o.status));
     res.json(orders);
   } catch (err) {
+    console.error('[BACK] Erreur getActiveOrders:', err);
+    res.status(500).json({ message: 'Erreur serveur', error: err });
+  }
+};
+
+export const getAllOrdersByUser = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  console.log('[BACK] getAllOrdersByUser - Récupération de TOUTES les commandes pour:', { userId });
+  if (!userId) return res.status(400).json({ message: 'userId requis' });
+  try {
+    // ✅ Récupérer TOUTES les commandes de l'utilisateur (actives, annulées, terminées)
+    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+    console.log('[BACK] Toutes les commandes trouvées:', orders.length, 'avec statuts:', orders.map(o => o.status));
+    res.json(orders);
+  } catch (err) {
+    console.error('[BACK] Erreur getAllOrdersByUser:', err);
     res.status(500).json({ message: 'Erreur serveur', error: err });
   }
 };

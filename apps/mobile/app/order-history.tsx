@@ -32,12 +32,19 @@ const OrdersHistoryScreen = () => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
+        // ✅ Utiliser l'endpoint existant qui fonctionne
         const endpoint = tab === 'active'
-          ? `${API_CONFIG.BASE_URL}/api/orders/active/${userId}`
-          : `${API_CONFIG.BASE_URL}/api/orders/history/${userId}`;
+          ? `${API_CONFIG.BASE_URL}/api/orders/active/${userId}` // ✅ Endpoint existant
+          : `${API_CONFIG.BASE_URL}/api/orders/active/${userId}`; // ✅ Même endpoint pour les deux tabs
         console.log('🔗 Fetching orders from:', endpoint);
         const res = await fetch(endpoint);
         const data = await res.json();
+        console.log('📦 Commandes récupérées:', data.length, 'avec statuts:', data.map((o: any) => o.status));
+        console.log('🔍 Détail des commandes:', data.map((o: any) => ({
+          id: o._id,
+          status: o.status,
+          date: o.createdAt
+        })));
         setOrders(data);
       } catch (error) {
         console.error('Erreur lors de la récupération des commandes:', error);
@@ -48,11 +55,24 @@ const OrdersHistoryScreen = () => {
     fetchOrders();
   }, [tab, userId]);
 
-  // Filtrage local selon le status pour plus de robustesse
+  // ✅ Filtrage local corrigé pour séparer correctement les commandes
   const filteredOrders = orders.filter(order => {
-    if (tab === 'active') return order.status === 'active';
-    return order.status === 'completed' || order.status === 'cancelled';
+    console.log(`🔍 Commande ${order._id}: status="${order.status}"`);
+    
+    if (tab === 'active') {
+      // Tab "Active" : SEULEMENT les commandes vraiment actives (pas annulées, pas terminées)
+      const isActive = order.status === 'active' || order.status === 'processing' || order.status === 'shipped';
+      console.log(`  → Tab Active: ${isActive ? '✅ AFFICHÉE' : '❌ FILTRÉE'}`);
+      return isActive;
+    } else {
+      // Tab "History" : SEULEMENT les commandes terminées ou annulées
+      const isHistory = order.status === 'completed' || order.status === 'cancelled';
+      console.log(`  → Tab History: ${isHistory ? '✅ AFFICHÉE' : '❌ FILTRÉE'}`);
+      return isHistory;
+    }
   });
+  
+  console.log(`📊 Tab "${tab}": ${filteredOrders.length} commandes affichées sur ${orders.length} total`);
 
   return (
     <SafeAreaView style={styles.container}>

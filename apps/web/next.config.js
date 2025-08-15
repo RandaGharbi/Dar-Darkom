@@ -12,6 +12,7 @@ const nextConfig = {
       '10.0.2.2',
       '192.168.43.184', // Ajout de l'IP du backend pour autoriser les images
       '192.168.1.73', // Ajout de l'IP du backend pour autoriser les images
+      '192.168.1.74', // ✅ Ajout de l'IP du backend pour autoriser les images
       // ajoute d'autres domaines/IP si besoin
     ],
     remotePatterns: [
@@ -30,6 +31,12 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: '192.168.1.73',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.1.74', // ✅ Ajout de l'IP du backend
         port: '5000',
         pathname: '/uploads/**',
       },

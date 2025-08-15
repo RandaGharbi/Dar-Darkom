@@ -51,12 +51,12 @@ export default function ProfileScreen() {
           <Image 
             source={
               user.profileImage && !imageError
-                ? { uri: getCorrectImageUrl(user.profileImage || null) || user.profileImage } 
+                ? { uri: getCorrectImageUrl(user.profileImage) || user.profileImage } 
                 : require('../../assets/images/avatar.png')
             } 
             style={styles.profileImage}
             onError={() => {
-              console.log('❌ Image failed to load');
+              console.log('❌ Image failed to load:', user.profileImage);
               setImageError(true);
             }}
             onLoad={() => {
@@ -64,8 +64,8 @@ export default function ProfileScreen() {
               setImageError(false);
             }}
           />
-          <Text style={styles.profileName}>{user.name}</Text>
-          <Text style={styles.profileEmail}>{user.email}</Text>
+          <Text style={styles.profileName}>{user.name || 'Utilisateur'}</Text>
+          <Text style={styles.profileEmail}>{user.email || 'email@example.com'}</Text>
         </View>
 
         {/* Account Section */}

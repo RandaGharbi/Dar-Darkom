@@ -11,13 +11,11 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import SocialButton from "../components/SocialButton";
-import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import SafeAreaWrapper from '../components/SafeAreaWrapper';
 import { API_BASE_URL } from '../services/api';
 
-import appleIcon from "../assets/images/apple.png";
 import googleIcon from "../assets/images/gmail.png";
 import emailIcon from "../assets/images/email.png";
 
@@ -77,38 +75,6 @@ const LoginScreen: React.FC = () => {
     }
   };
 
-  const handleAppleLogin = async () => {
-    try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      if (credential.identityToken) {
-        // Envoie le token au backend
-        const res = await fetch(`${API_BASE_URL}/api/auth/apple`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: credential.identityToken }),
-        });
-        const data = await res.json();
-        if (data.token) {
-          // Ici tu peux stocker le token JWT et connecter l'utilisateur
-          // Par exemple : await loginWithApple(data.token, data.user)
-          // Ou rediriger, etc.
-        } else {
-          Alert.alert('Erreur', data.error || 'Erreur lors de la connexion Apple');
-        }
-      }
-    } catch (e) {
-      if (e instanceof Error && 'code' in e && e.code === 'ERR_CANCELED') {
-        // L'utilisateur a annulé
-      } else {
-        Alert.alert('Erreur', 'Erreur lors de la connexion Apple');
-      }
-    }
-  };
 
   // Afficher un loader pendant la vérification de l'état d'authentification
   if (loading) {
@@ -146,11 +112,6 @@ const LoginScreen: React.FC = () => {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <SocialButton
-          icon={appleIcon}
-          text="Continue with Apple"
-          onPress={handleAppleLogin}
-        />
         <SocialButton
           icon={googleIcon}
           text="Continue with Google"

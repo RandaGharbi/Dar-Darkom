@@ -24,25 +24,42 @@ export default function OrderTrackingScreen() {
   const products = params.products ? JSON.parse(params.products as string) : [];
   const address = params.address ? JSON.parse(params.address as string) : {};
   const steps = params.steps ? JSON.parse(params.steps as string) : [];
+  const orderStatus = params.orderStatus || "active"; // ✅ Ajouter le statut de la commande
 
   const orderDateStr = params.orderDate || null;
   const orderDate = orderDateStr ? new Date(orderDateStr as string) : new Date();
+  
   function addDays(date: Date, days: number) {
     const d = new Date(date);
     d.setDate(d.getDate() + days);
     return d;
   }
+  
   function formatDate(date: Date) {
     return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   }
-  // Valeurs fallback si steps vide
-  const defaultSteps = [
-    { label: "Order placed", date: formatDate(orderDate), icon: stepIcon, done: true },
-    { label: "Order processed", date: formatDate(addDays(orderDate, 1)), icon: stepIcon, done: true },
-    { label: "Order shipped", date: formatDate(addDays(orderDate, 2)), icon: deliveryIcon, done: true },
-    { label: "Order delivered", date: "Estimated " + formatDate(addDays(orderDate, 5)), icon: orderIcon, done: false },
-  ];
-  const timelineSteps = steps.length > 0 ? steps : defaultSteps;
+  
+  // ✅ Logique pour les étapes selon le statut
+  const getTimelineSteps = () => {
+    if (orderStatus === "cancelled") {
+      // Si la commande est annulée, afficher l'étape d'annulation
+      return [
+        { label: "Order placed", date: formatDate(orderDate), icon: stepIcon, done: true },
+        { label: "Order processed", date: formatDate(addDays(orderDate, 1)), icon: stepIcon, done: true },
+        { label: "Order cancelled", date: formatDate(addDays(orderDate, 2)), icon: stepIcon, done: true, cancelled: true },
+      ];
+    } else {
+      // Étapes normales pour les commandes actives
+      return [
+        { label: "Order placed", date: formatDate(orderDate), icon: stepIcon, done: true },
+        { label: "Order processed", date: formatDate(addDays(orderDate, 1)), icon: stepIcon, done: true },
+        { label: "Order shipped", date: formatDate(addDays(orderDate, 2)), icon: deliveryIcon, done: true },
+        { label: "Order delivered", date: "Estimated " + formatDate(addDays(orderDate, 5)), icon: orderIcon, done: false },
+      ];
+    }
+  };
+  
+  const timelineSteps = steps.length > 0 ? steps : getTimelineSteps();
 
   // Mock data
   const subtotal = 50;
@@ -60,20 +77,58 @@ export default function OrderTrackingScreen() {
           <View style={{ width: 32 }} />
         </View>
         <Text style={styles.orderId}>Order {orderId}</Text>
+        
+        {/* ✅ Statut de la commande */}
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusLabel}>Status:</Text>
+          <View style={[
+            styles.statusBadge, 
+            orderStatus === "cancelled" ? styles.statusCancelled : styles.statusActive
+          ]}>
+            <Text style={[
+              styles.statusText,
+              orderStatus === "cancelled" ? styles.statusTextCancelled : styles.statusTextActive
+            ]}>
+              {orderStatus === "cancelled" ? "CANCELLED" : "ACTIVE"}
+            </Text>
+          </View>
+        </View>
 
         {/* Timeline */}
         <View style={styles.timelineBlock}>
           {timelineSteps.map((step: any, idx: number) => (
             <View key={step.label} style={styles.timelineRow}>
               <View style={styles.timelineIconCol}>
-                <Image source={step.icon || stepIcon} style={[styles.timelineIcon, !step.done && { opacity: 0.3 }]} />
+                <Image 
+                  source={step.icon || stepIcon} 
+                  style={[
+                    styles.timelineIcon, 
+                    !step.done && { opacity: 0.3 },
+                    step.cancelled && styles.cancelledIcon
+                  ]} 
+                />
                 {idx < timelineSteps.length - 1 && (
-                  <View style={styles.timelineLine} />
+                  <View style={[
+                    styles.timelineLine,
+                    step.cancelled && styles.cancelledLine
+                  ]} />
                 )}
               </View>
               <View style={styles.timelineTextCol}>
-                <Text style={[styles.timelineLabel, !step.done && { color: '#8A7861' }]}>{step.label}</Text>
-                <Text style={[styles.timelineDate, !step.done && { color: '#8A7861' }]}>{step.date}</Text>
+                <Text style={[
+                  styles.timelineLabel, 
+                  !step.done && { color: '#8A7861' },
+                  step.cancelled && styles.cancelledText
+                ]}>
+                  {step.label}
+                </Text>
+                <Text style={[
+                  styles.timelineDate, 
+                  !step.done && { color: '#8A7861' },
+                  step.cancelled && styles.cancelledText
+                ]}>
+                  {step.date}
+                </Text>
               </View>
             </View>
           ))}
@@ -98,34 +153,44 @@ export default function OrderTrackingScreen() {
         {/* Résumé de commande */}
         <Text style={styles.sectionTitle}>Order Summary</Text>
         <View style={styles.summaryBlock}>
-          {products.map((item: any, idx: number) => {
-            const imageUri =
-              (item.image_url && typeof item.image_url === 'string' && item.image_url) ||
-              (item.image && typeof item.image === 'string' && item.image) ||
-              'https://via.placeholder.com/150';
-            return (
-              <View key={idx} style={styles.productRow}>
-                <Image source={{ uri: imageUri }} style={{ width: 40, height: 40, borderRadius: 8, marginRight: 10 }} />
-                <Text style={styles.productQty}>{item.qty || item.quantity || 1} x</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.productName}>{item.name}</Text>
-                  {item.desc && <Text style={styles.productDesc}>{item.desc}</Text>}
+          {/* ✅ Optimisation : Rendu conditionnel et limité pour éviter les problèmes de performance */}
+          {products && products.length > 0 ? (
+            products.slice(0, 10).map((item: any, idx: number) => {
+              const imageUri =
+                (item.image_url && typeof item.image_url === 'string' && item.image_url) ||
+                (item.image && typeof item.image === 'string' && item.image) ||
+                'https://via.placeholder.com/150';
+              return (
+                <View key={`product-${idx}-${item.name || idx}`} style={styles.productRow}>
+                  <Image 
+                    source={{ uri: imageUri }} 
+                    style={{ width: 40, height: 40, borderRadius: 8, marginRight: 10 }} 
+                  />
+                  <Text style={styles.productQty}>{item.qty || item.quantity || 1} x</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.productName}>{item.name}</Text>
+                    {item.desc && <Text style={styles.productDesc}>{item.desc}</Text>}
+                  </View>
                 </View>
-              </View>
-            );
-          })}
-                  <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>€{subtotal.toFixed(2)}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Shipping</Text>
-          <Text style={styles.summaryValue}>€{shipping.toFixed(2)}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Total</Text>
-          <Text style={styles.summaryTotal}>€{total.toFixed(2)}</Text>
-        </View>
+              );
+            })
+          ) : (
+            <Text style={styles.noProducts}>Aucun produit disponible</Text>
+          )}
+          
+          {/* ✅ Affichage du résumé financier */}
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Subtotal</Text>
+            <Text style={styles.summaryValue}>€{subtotal.toFixed(2)}</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Shipping</Text>
+            <Text style={styles.summaryValue}>€{shipping.toFixed(2)}</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Total</Text>
+            <Text style={styles.summaryTotal}>€{total.toFixed(2)}</Text>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.ctaBtn} onPress={() => router.push('/contact-us')}>
@@ -179,6 +244,40 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     marginLeft: 2,
   },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 18,
+    marginLeft: 2,
+  },
+  statusLabel: {
+    fontSize: 13,
+    color: '#8A7861',
+    marginRight: 8,
+  },
+  statusBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusActive: {
+    backgroundColor: '#E6E6E6',
+  },
+  statusCancelled: {
+    backgroundColor: '#FFE6E6',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  statusTextActive: {
+    color: '#222',
+  },
+  statusTextCancelled: {
+    color: '#D32F2F',
+  },
   timelineBlock: {
     marginBottom: 24,
     marginLeft: 2,
@@ -202,22 +301,31 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     resizeMode: 'contain',
   },
+  cancelledIcon: {
+    opacity: 0.3,
+  },
   timelineLine: {
     width: 2,
-    backgroundColor: '#E6E6E6',
-    flex: 1,
-    alignSelf: 'center',
+    height: 36,
+    backgroundColor: '#E0E0E0',
     marginTop: 2,
+  },
+  cancelledLine: {
+    backgroundColor: '#FFE6E6',
   },
   timelineTextCol: {
     flex: 1,
     marginLeft: 12,
+    paddingTop: 2,
   },
   timelineLabel: {
-    fontWeight: 'bold',
     fontSize: 14,
+    fontWeight: '500',
     color: '#222',
     marginBottom: 2,
+  },
+  cancelledText: {
+    color: '#D32F2F',
   },
   timelineDate: {
     fontSize: 13,
@@ -307,5 +415,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     letterSpacing: 0.5,
+  },
+  noProducts: {
+    fontSize: 14,
+    color: '#8A7861',
+    textAlign: 'center',
+    marginTop: 10,
+    fontStyle: 'italic',
   },
 }); 

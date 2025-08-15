@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Platform, Image, ImageSourcePropType, View, Text } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useCartStore } from '../../context/CartStore';
@@ -44,10 +44,27 @@ function ImageIcon({
 }
 
 export default function TabLayout() {
-  const { isAuthenticated } = useAuth();
-  const { cart } = useCartStore();
+  const { isAuthenticated, user } = useAuth();
+  const { cart, fetchCart } = useCartStore();
+  
+  // Initialiser le panier de manière sécurisée
+  useEffect(() => {
+    const initializeCart = async () => {
+      try {
+        if (isAuthenticated && user?._id) {
+          console.log('🛒 Initialisation sécurisée du panier pour:', user._id);
+          await fetchCart(user._id);
+        }
+      } catch (error) {
+        console.error('❌ Erreur initialisation panier:', error);
+      }
+    };
+
+    initializeCart();
+  }, [isAuthenticated, user?._id, fetchCart]);
+  
   const cartCount = cart?.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
-  console.log('Badge panier - count:', cartCount, 'items:', cart?.items?.length);
+  console.log('🛒 Badge panier - count:', cartCount, 'items:', cart?.items?.length);
 
   return (
     <Tabs

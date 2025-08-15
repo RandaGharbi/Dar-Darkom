@@ -1,12 +1,11 @@
-# Dockerfile Guerlain - Nouvelle version sans problèmes
+# Dockerfile Guerlain - Version corrigée pour Yarn 4
 # COMMIT: b2187e0 - Pipeline CI/CD corrigé définitivement
-# CORRIGÉ: yarn install --network-timeout 300000 au lieu de --immutable-cache
 FROM node:18-alpine AS base
 
 # Installation des dépendances système
 RUN apk add --no-cache libc6-compat
 
-# Configuration Yarn
+# Configuration Yarn 4
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 
 WORKDIR /app
@@ -16,19 +15,14 @@ COPY package.json yarn.lock turbo.json .yarnrc.yml ./
 
 # Vérification de la configuration Yarn
 RUN yarn --version
-RUN yarn config get nodeLinker
 
-# Installation des dépendances sans cache
+# Installation des dépendances
 RUN yarn install --network-timeout 300000
-
-# Vérification de la configuration
-RUN yarn workspaces list
 
 # Copie du code source
 COPY . .
 
-# Build du projet avec vérification
-RUN yarn workspaces list
+# Build du projet
 RUN yarn build
 
 # Stage Backend
@@ -50,8 +44,6 @@ RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=base /app/yarn.lock ./
-COPY --from=base /app/.yarnrc.yml ./
-COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/apps/web/.next ./apps/web/.next
 COPY --from=base /app/apps/web/public ./apps/web/public
 WORKDIR /app/apps/web
@@ -64,7 +56,6 @@ RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=base /app/yarn.lock ./
-COPY --from=base /app/.yarnrc.yml ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/apps/mobile/dist ./apps/mobile/dist
 WORKDIR /app/apps/mobile

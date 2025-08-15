@@ -668,15 +668,15 @@ export default function DiscountsPage() {
   });
   const queryClient = useQueryClient();
 
-  // Remplacer la récupération de tous les discounts par la collection soldes_france
+  // Récupérer tous les discounts
   const { data: discountsData, isLoading } = useQuery({
-    queryKey: ["discounts", "soldes_france"],
+    queryKey: ["discounts"],
     queryFn: async () => {
-      const response = await discountsAPI.getByCollection("soldes_france");
+      const response = await discountsAPI.getAll();
       console.log('API Response:', response);
       console.log('Response data:', response.data);
-      // L'API retourne { success: true, data: [...] }, nous retournons l'objet complet
-      return response.data;
+      // ✅ L'API retourne { success: true, data: [...] }, nous extrayons data
+      return response.data.data; // ✅ Extraire le tableau des réductions
     },
   });
 
@@ -706,7 +706,7 @@ export default function DiscountsPage() {
     mutationFn: ({ id, data }: { id: string; data: Partial<Discount> }) =>
       discountsAPI.update(id, data).then(res => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["discounts", "soldes_france"] });
+      queryClient.invalidateQueries({ queryKey: ["discounts"] });
       toast.success("Réduction modifiée avec succès");
       setIsEditMode(false);
       setEditingDiscountId(null);

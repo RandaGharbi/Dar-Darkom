@@ -41,7 +41,12 @@ const ShopScreen: React.FC = () => {
   const { isFavorite, addFavorite, removeFavorite } = useFavoritesStore();
 
   const handleBasketPress = async (item: any) => {
+    console.log('🛒 handleBasketPress appelé avec item:', item);
+    console.log('🛒 isAuthenticated:', isAuthenticated);
+    console.log('🛒 user:', user);
+    
     if (!isAuthenticated || !user?._id) {
+      console.log('❌ Utilisateur non authentifié, redirection vers login');
       router.push('/login');
       return;
     }
@@ -50,15 +55,22 @@ const ShopScreen: React.FC = () => {
       // Utilise d'abord l'ID numérique, sinon le _id MongoDB
       const productId = item.id || item._id;
       
+      console.log('🛒 productId extrait:', productId);
+      console.log('🛒 Type de productId:', typeof productId);
+      
       if (!productId) {
+        console.log('❌ ID du produit manquant');
         Alert.alert('Erreur', 'ID du produit manquant');
         return;
       }
       
+      console.log('🛒 Appel addToCart avec:', { userId: user._id, productId: productId.toString() });
       await addToCart(user._id, productId.toString());
+      console.log('✅ addToCart terminé avec succès');
       
       // Feedback visuel immédiat
       setAddedToCart(prev => new Set([...prev, productId.toString()]));
+      console.log('✅ Indicateur visuel ajouté');
       
       // Retirer l'indicateur après 2 secondes
       setTimeout(() => {
@@ -67,8 +79,10 @@ const ShopScreen: React.FC = () => {
           newSet.delete(productId.toString());
           return newSet;
         });
+        console.log('✅ Indicateur visuel retiré');
       }, 2000);
     } catch (error) {
+      console.error('❌ Erreur dans handleBasketPress:', error);
       Alert.alert('Erreur', 'Impossible d\'ajouter le produit au panier');
     }
   };

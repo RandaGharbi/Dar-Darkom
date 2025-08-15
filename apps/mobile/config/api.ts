@@ -40,6 +40,9 @@ const API_CONFIG = {
     
     // Orders
     CREATE_ORDER: '/api/orders/create',
+    USER_ORDERS: (userId: string) => `/api/orders/all/${userId}`, // ✅ Toutes les commandes d'un utilisateur
+    USER_ACTIVE_ORDERS: (userId: string) => `/api/orders/active/${userId}`, // ✅ Commandes actives seulement
+    USER_ORDER_HISTORY: (userId: string) => `/api/orders/history/${userId}`, // ✅ Historique des commandes
     
     // Cards
     ADD_CARD: '/api/cards/add',

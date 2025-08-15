@@ -14,7 +14,6 @@ import VisaIcon from "../assets/images/visa.png";
 import MastercardIcon from "../assets/images/masterCard.png";
 import CardIcon from "../assets/images/card.png";
 import { getCorrectImageUrl } from '../utils/imageUtils';
-import { StatusBadge } from '../components/StatusBadge';
 
 export default function OrderDetailsScreen() {
   const router = useRouter();
@@ -30,7 +29,6 @@ export default function OrderDetailsScreen() {
   const tax = order ? order.tax : 0;
   const total = order ? order.total : 0;
   const address = order && order.shippingAddress ? order.shippingAddress : { fullName: '', street: '', city: '', postalCode: '', country: '' };
-  const status = order ? order.status : "pending";
 
   const getCardLogo = (number: string) => {
     if (!number) return CardIcon;
@@ -55,20 +53,25 @@ export default function OrderDetailsScreen() {
         <Text style={styles.orderId}>Order #{order && order._id ? order._id : ''}</Text>
 
         {/* Produits */}
-        {products.map((item: any, idx: number) => (
-          <View key={idx} style={styles.productBlock}>
-            {item.image ? (
-              <Image source={{ uri: getCorrectImageUrl(item.image) || item.image }} style={styles.productImg} />
-            ) : null}
-            <View style={{ flex: 1 }}>
-              <Text style={styles.productName}>{item.name}</Text>
-              {item.desc ? (
-                <Text style={styles.productDesc}>{item.desc}</Text>
+        {/* ✅ Optimisation : Rendu conditionnel et limité pour éviter les problèmes de performance */}
+        {products && products.length > 0 ? (
+          products.slice(0, 10).map((item: any, idx: number) => (
+            <View key={`product-${idx}-${item.name || idx}`} style={styles.productBlock}>
+              {item.image ? (
+                <Image source={{ uri: getCorrectImageUrl(item.image) || item.image }} style={styles.productImg} />
               ) : null}
-              <Text style={styles.productQty}>x{item.qty}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.productName}>{item.name}</Text>
+                {item.desc ? (
+                  <Text style={styles.productDesc}>{item.desc}</Text>
+                ) : null}
+                <Text style={styles.productQty}>x{item.qty}</Text>
+              </View>
             </View>
-          </View>
-        ))}
+          ))
+        ) : (
+          <Text style={styles.noProducts}>Aucun produit disponible</Text>
+        )}
 
         {/* Paiement */}
         <Text style={styles.sectionTitle}>Payment</Text>
@@ -136,7 +139,6 @@ export default function OrderDetailsScreen() {
         {/* Statut */}
         <Text style={styles.sectionTitle}>Order Status</Text>
         <View style={styles.statusBlock}>
-          <StatusBadge status={status} size="large" />
           <Text style={styles.statusDate}>
             {/* Date de livraison estimée */}
             {(() => {
@@ -166,6 +168,7 @@ export default function OrderDetailsScreen() {
                 address: JSON.stringify(order?.shippingAddress || order?.address || order?.deliveryAddress || {}),
                 steps: JSON.stringify(order?.trackingSteps || []),
                 orderDate: order?.createdAt || order?.orderDate || new Date().toISOString(),
+                orderStatus: order?.status || 'active', // ✅ Ajouter le statut de la commande
               }
             })}
           >
@@ -390,5 +393,12 @@ const styles = StyleSheet.create({
     color: "#222",
     fontWeight: "bold",
     fontSize: 15,
+  },
+  noProducts: {
+    fontSize: 14,
+    color: "#8A7861",
+    textAlign: "center",
+    marginTop: 20,
+    fontStyle: "italic",
   },
 });

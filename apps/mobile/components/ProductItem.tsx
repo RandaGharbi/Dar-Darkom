@@ -57,13 +57,13 @@ const ProductItem: React.FC<ProductItemProps> = ({
         </TouchableOpacity>
       </View>
       <Text style={styles.brand}>{product.subtitle || ''}</Text>
-      <Text style={styles.name}>{product.title}</Text>
+      <Text style={styles.name}>{product.title || ''}</Text>
 
       {/* Align price and basket to the right */}
       <View style={styles.bottomRow}>
         <View style={{ flex: 1 }} />
         <View style={styles.priceRow}>
-          <Text style={styles.price}>€{product.price}</Text>
+          <Text style={styles.price}>€{product.price || 0}</Text>
           <TouchableOpacity onPress={onPressBasket}>
             <Image
               source={basket}

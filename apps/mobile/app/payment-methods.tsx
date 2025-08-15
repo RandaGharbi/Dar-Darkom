@@ -18,7 +18,6 @@ import { useSelectedCard } from "../context/PaymentContext";
 // Images locales
 import VisaIcon from "../assets/images/visa.png";
 import MastercardIcon from "../assets/images/masterCard.png";
-import PayPalIcon from "../assets/images/paypal.png";
 import CardIcon from "../assets/images/card.png";
 
 // Types
@@ -27,7 +26,6 @@ import CardIcon from "../assets/images/card.png";
 const icons = {
   Visa: VisaIcon,
   Mastercard: MastercardIcon,
-  PayPal: PayPalIcon,
   Card: CardIcon,
 };
 
@@ -101,22 +99,16 @@ export default function PaymentMethodsScreen() {
     </TouchableOpacity>
   );
 
-  const renderAddMethod = (label: "Credit or Debit Card" | "PayPal") => {
-    const iconSource = label === "PayPal" ? icons.PayPal : icons.Card;
+  const renderAddMethod = () => {
     return (
       <TouchableOpacity
-        key={label}
         style={[styles.item, loadingCards && styles.disabledItem]}
-        onPress={
-          label === "Credit or Debit Card" && !loadingCards
-            ? handleAddCard
-            : undefined
-        }
+        onPress={!loadingCards ? handleAddCard : undefined}
         disabled={loadingCards}
       >
-        <Image source={iconSource} style={styles.icon} />
-        <Text style={[styles.label, { marginLeft: 10 }]}>{label}</Text>
-        {loadingCards && label === "Credit or Debit Card" ? (
+        <Image source={icons.Card} style={styles.icon} />
+        <Text style={[styles.label, { marginLeft: 10 }]}>Credit or Debit Card</Text>
+        {loadingCards ? (
           <ActivityIndicator
             size="small"
             color="#888"
@@ -157,8 +149,7 @@ export default function PaymentMethodsScreen() {
         )}
         {/* Add Payment Method */}
         <Text style={styles.title}>Add Payment Method</Text>
-        {renderAddMethod("Credit or Debit Card")}
-        {renderAddMethod("PayPal")}
+        {renderAddMethod()}
       </ScrollView>
     </View>
   );
