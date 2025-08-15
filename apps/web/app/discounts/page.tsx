@@ -675,8 +675,21 @@ export default function DiscountsPage() {
       const response = await discountsAPI.getAll();
       console.log('API Response:', response);
       console.log('Response data:', response.data);
-      // ✅ L'API retourne { success: true, data: [...] }, nous extrayons data
-      return response.data.data; // ✅ Extraire le tableau des réductions
+      
+      // ✅ Gestion sécurisée de la réponse API avec typage correct
+      const responseData = response.data as any; // Type assertion temporaire
+      
+      if (responseData && Array.isArray(responseData)) {
+        // Si la réponse est directement un tableau
+        return responseData;
+      } else if (responseData && responseData.data && Array.isArray(responseData.data)) {
+        // Si la réponse a la structure { success: true, data: [...] }
+        return responseData.data;
+      } else {
+        // Fallback vers un tableau vide
+        console.warn('Structure de réponse API inattendue:', responseData);
+        return [];
+      }
     },
   });
 
