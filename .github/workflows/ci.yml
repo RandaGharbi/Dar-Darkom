@@ -1,6 +1,7 @@
 name: CI/CD Pipeline
 
 # Pipeline corrigé pour Yarn 4.9.2 et Docker sans cache
+# Commit: d265ca5 - Dockerfile corrigé avec yarn install --immutable
 on:
   push:
     branches: [ main, develop ]
