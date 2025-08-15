@@ -1,6 +1,6 @@
 # Dockerfile pour le projet Guerlain
-# CORRIGÉ: Utilise yarn install --immutable au lieu de --immutable-cache
-# Commit: 329f85a - Pipeline CI/CD corrigé
+# CORRIGÉ: Utilise yarn install --frozen-lockfile pour Docker
+# Optimisé pour les builds CI/CD sans cache local
 
 # -------------------------------
 # Base image
@@ -21,8 +21,8 @@
     COPY turbo.json ./
     COPY .yarnrc.yml ./
     
-    # Installer les dépendances
-    RUN yarn install --immutable
+    # Installer les dépendances (force rebuild)
+    RUN yarn install --frozen-lockfile
     
     # Copier le code source
     COPY . .
