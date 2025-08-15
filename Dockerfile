@@ -1,4 +1,6 @@
 # Dockerfile Guerlain - Nouvelle version sans problèmes
+# COMMIT: b2187e0 - Pipeline CI/CD corrigé définitivement
+# CORRIGÉ: yarn install --network-timeout 300000 au lieu de --immutable-cache
 FROM node:18-alpine AS base
 
 # Installation des dépendances système

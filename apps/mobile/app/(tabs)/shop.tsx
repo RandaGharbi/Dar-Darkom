@@ -41,12 +41,7 @@ const ShopScreen: React.FC = () => {
   const { isFavorite, addFavorite, removeFavorite } = useFavoritesStore();
 
   const handleBasketPress = async (item: any) => {
-    console.log('handleBasketPress appelé avec item:', item);
-    console.log('isAuthenticated:', isAuthenticated);
-    console.log('user:', user);
-    
     if (!isAuthenticated || !user?._id) {
-      console.log('Utilisateur non authentifié ou ID manquant');
       router.push('/login');
       return;
     }
@@ -54,19 +49,13 @@ const ShopScreen: React.FC = () => {
     try {
       // Utilise d'abord l'ID numérique, sinon le _id MongoDB
       const productId = item.id || item._id;
-      console.log('ProductID à envoyer:', productId);
-      console.log('UserID à envoyer:', user._id);
-      console.log('Type de productId:', typeof productId);
-      console.log('Type de user._id:', typeof user._id);
       
       if (!productId) {
-        console.error('ProductID manquant');
         Alert.alert('Erreur', 'ID du produit manquant');
         return;
       }
       
       await addToCart(user._id, productId.toString());
-      console.log('addToCart terminé avec succès');
       
       // Feedback visuel immédiat
       setAddedToCart(prev => new Set([...prev, productId.toString()]));
@@ -80,7 +69,6 @@ const ShopScreen: React.FC = () => {
         });
       }, 2000);
     } catch (error) {
-      console.error('Erreur ajout panier:', error);
       Alert.alert('Erreur', 'Impossible d\'ajouter le produit au panier');
     }
   };
@@ -121,17 +109,18 @@ const ShopScreen: React.FC = () => {
 
   // Transformer les produits pour correspondre au format attendu par ProductItem
   const transformedProducts = products
-    ?.filter((item: any) => item.productType !== "ingredient")
+    ?.filter((item: any) => item && item.productType !== "ingredient")
     .map((item: any) => ({
-      _id: item._id,
-      id: item.id,
-      uniqueId: (item._id || item.id).toString(),
+      _id: item._id || item.id,
+      id: item.id || item._id,
+      uniqueId: (item._id || item.id)?.toString() || '',
       title: item.title || item.name || 'Produit sans nom',
       subtitle: item.subtitle || '',
       image_url: item.image_url || item.image || '',
-      price: item.price,
-      category: item.category,
-    })) || [];
+      price: item.price || 0,
+      category: item.category || '',
+    }))
+    .filter((item: any) => item.title && item.price !== undefined) || [];
 
   if (error) {
     Alert.alert(

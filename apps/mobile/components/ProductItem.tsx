@@ -13,7 +13,7 @@ import basket from "../assets/images/basket.png";
 import { getCorrectImageUrl } from "../utils/imageUtils";
 
 type Product = {
-  id: number;
+  id: number | string;
   title: string;
   subtitle: string;
   price: number;
@@ -36,6 +36,11 @@ const ProductItem: React.FC<ProductItemProps> = ({
   isAddedToCart = false
 }) => {
 
+  // Vérifications de sécurité pour éviter les erreurs de rendu
+  if (!product || !product.title || !product.price) {
+    return null;
+  }
+
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
@@ -51,14 +56,14 @@ const ProductItem: React.FC<ProductItemProps> = ({
           />
         </TouchableOpacity>
       </View>
-      <Text style={styles.brand}>{product.subtitle}</Text>
+      <Text style={styles.brand}>{product.subtitle || ''}</Text>
       <Text style={styles.name}>{product.title}</Text>
 
       {/* Align price and basket to the right */}
       <View style={styles.bottomRow}>
         <View style={{ flex: 1 }} />
         <View style={styles.priceRow}>
-                      <Text style={styles.price}>€{product.price}</Text>
+          <Text style={styles.price}>€{product.price}</Text>
           <TouchableOpacity onPress={onPressBasket}>
             <Image
               source={basket}
