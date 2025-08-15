@@ -677,19 +677,29 @@ export default function DiscountsPage() {
       console.log('Response data:', response.data);
       
       // ✅ Gestion sécurisée de la réponse API avec typage correct
-      const responseData = response.data as any; // Type assertion temporaire
-      
-      if (responseData && Array.isArray(responseData)) {
-        // Si la réponse est directement un tableau
-        return responseData;
-      } else if (responseData && responseData.data && Array.isArray(responseData.data)) {
-        // Si la réponse a la structure { success: true, data: [...] }
-        return responseData.data;
-      } else {
-        // Fallback vers un tableau vide
-        console.warn('Structure de réponse API inattendue:', responseData);
-        return [];
+      interface ApiResponse {
+        data?: Discount[] | { data: Discount[] };
+        success?: boolean;
       }
+      
+      const responseData = response.data as ApiResponse;
+      
+      // Vérifier si la réponse est directement un tableau
+      if (responseData && Array.isArray(responseData.data)) {
+        return responseData.data;
+      }
+      
+      // Vérifier si la réponse a la structure { data: [...] }
+      if (responseData && responseData.data && typeof responseData.data === 'object' && 'data' in responseData.data) {
+        const nestedData = (responseData.data as { data: Discount[] }).data;
+        if (Array.isArray(nestedData)) {
+          return nestedData;
+        }
+      }
+      
+      // Fallback vers un tableau vide
+      console.warn('Structure de réponse API inattendue:', responseData);
+      return [];
     },
   });
 
