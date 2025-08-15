@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
@@ -11,7 +11,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Token manquant' }, { status: 401 });
     }
 
-    const { userId } = params;
+    const { userId } = await params;
 
     const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/messages/admin/mark-read/${userId}`, {
       method: 'PATCH',
