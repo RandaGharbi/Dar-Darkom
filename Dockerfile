@@ -14,13 +14,21 @@ WORKDIR /app
 # Copie des fichiers de configuration
 COPY package.json yarn.lock turbo.json .yarnrc.yml ./
 
+# Vérification de la configuration Yarn
+RUN yarn --version
+RUN yarn config get workspaces
+
 # Installation des dépendances sans cache
 RUN yarn install --network-timeout 300000
+
+# Vérification de la configuration
+RUN yarn workspaces list
 
 # Copie du code source
 COPY . .
 
-# Build du projet
+# Build du projet avec vérification
+RUN yarn workspaces list
 RUN yarn build
 
 # Stage Backend
