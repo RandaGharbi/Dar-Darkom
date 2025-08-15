@@ -22,8 +22,8 @@ RUN yarn install --network-timeout 300000
 # Copie du code source
 COPY . .
 
-# Build du projet
-RUN yarn build
+# Build du projet (exclure docs et mobile qui ne sont pas nécessaires pour la production)
+RUN yarn build --filter=backend --filter=web
 
 # Stage Backend
 FROM node:18-alpine AS backend-production
