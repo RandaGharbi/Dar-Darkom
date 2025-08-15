@@ -1,5 +1,6 @@
 name: CI/CD Pipeline
 
+# Pipeline corrigé pour Yarn 4.9.2 et Docker sans cache
 on:
   push:
     branches: [ main, develop ]
