@@ -8,7 +8,7 @@ jest.mock('../../i18n', () => ({
   default: {
     language: 'fr',
     isInitialized: true,
-    t: (key) => key,
+    t: (key: string) => key,
     use: () => ({
       init: () => Promise.resolve()
     })

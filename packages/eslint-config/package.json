@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "type-check": "echo 'No TypeScript files to check in eslint-config'"
+    "type-check": "echo 'No TypeScript files to check in eslint-config'",
+    "test": "echo 'No tests to run in eslint-config'"
   },
   "exports": {
     "./base": "./base.js",

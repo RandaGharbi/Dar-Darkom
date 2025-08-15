@@ -13,6 +13,10 @@ describe('ProductCard', () => {
     category: 'skinCare',
     productType: 'skinCare',
     image_url: 'https://via.placeholder.com/150',
+    brand: 'Test Brand',
+    ingredients: 'Test ingredients',
+    benefits: 'Test benefits',
+    howToUse: 'Test how to use',
   };
 
   it('affiche le titre, le prix et la note', () => {

@@ -31,7 +31,7 @@ jest.mock('../../../lib/api', () => ({
 
 jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
-    t: (key) => key
+    t: (key: string) => key
   })
 }));
 

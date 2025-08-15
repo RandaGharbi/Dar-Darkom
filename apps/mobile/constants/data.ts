@@ -5,6 +5,7 @@ const rawProducts: RawProduct[] = [
   {
     id: 1,
     title: "Abeille Royale SÉRUM HUILE-EN-EAU JEUNESSE",
+    subtitle: "Sérum anti-âge revitalisant",
     product_url: "https://www.guerlain.com/fr/fr-fr/p/abeille-royale-serum-huile-en-eau-jeunesse-P062033.html",
     image_url: "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw15709ea5/01-ProductsViewer/P062033/P062033_G062033_E01_hi-res.jpg?sw=655&sh=655&sfrm=png",
     price: 57,
@@ -16,6 +17,7 @@ const rawProducts: RawProduct[] = [
   {
     id: 2,
     title: "ABEILLE ROYALE HONEY TREATMENT CRÈME RICHE",
+    subtitle: "Crème hydratante anti-âge",
     product_url: "https://www.guerlain.com/fr/fr-fr/p/abeille-royale-honey-treatment-creme-riche-P061849.html",
     image_url: "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw477cb18a/primary_packshot_3/2025/SK/AR/G061849_3346470618497_AB-ROY_24_RICH-CR_50ML_JAR.jpg?sw=655&sh=655&sfrm=png",
     price: 14,
@@ -27,6 +29,7 @@ const rawProducts: RawProduct[] = [
   {
     id: 3,
     title: "ABEILLE ROYALE SOIN-EN-MOUSSE NETTOYANT",
+    subtitle: "Mousse nettoyante douce",
     product_url: "https://www.guerlain.com/fr/fr-fr/p/abeille-royale-soin-en-mousse-nettoyant-P061989.html",
     image_url: "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw9e857bd4/primary_packshot_3/2024/Skincare/AR/ABEILLE%20ROYALE%20SOIN-EN-MOUSSE%20175ml%20.jpg?sw=655&sh=655&sfrm=png",
     price: 59,
@@ -38,6 +41,7 @@ const rawProducts: RawProduct[] = [
   {
     id: 4,
     title: "Abeille Royale DOUBLE R RENEW & REPAIR ADVANCED SERUM",
+    subtitle: "Sérum réparateur avancé",
     product_url: "https://www.guerlain.com/fr/fr-fr/p/abeille-royale-double-r-renew-repair-advanced-serum-P061683.html",
     image_url: "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dwad25e632/primary_packshot_3/2022/Skincare/Revamp%20Packshot/ABEILLE_ROYALE_SERUM_DOUBLE_R_50ML_-_FORMAT_WEB%20(2).jpg?sw=655&sh=655&sfrm=png",
     price: 15,
@@ -49,6 +53,7 @@ const rawProducts: RawProduct[] = [
   {
     id: 5,
     title: "ABEILLE ROYALE CLARIFY & REPAIR CRÈME",
+    subtitle: "Crème éclaircissante réparatrice",
     product_url: "https://www.guerlain.com/fr/fr-fr/p/abeille-royale-clarify-repair-creme-P061846.html",
     image_url: "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw3664b13e/primary_packshot_3/2024/Skincare/AR/G061846_3346470618466_AB-ROY-24-CR-BRIGHT-POT-50ML.jpg?sw=655&sh=655&sfrm=png",
     price: 15,

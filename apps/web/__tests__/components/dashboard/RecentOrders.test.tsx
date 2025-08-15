@@ -7,27 +7,63 @@ import { Order } from '../../../lib/api';
 const mockOrders: Order[] = [
   {
     _id: '123456789012',
+    userId: 'user1',
     createdAt: '2024-01-15T10:30:00.000Z',
+    updatedAt: '2024-01-15T10:30:00.000Z',
     total: 125.50,
+    subtotal: 115.50,
+    shipping: 10.00,
+    tax: 0.00,
     status: 'active',
-    customerId: 'customer1',
-    products: []
+    isOrdered: true,
+    products: [],
+    shippingAddress: {
+      fullName: 'John Doe',
+      street: '123 Main St',
+      city: 'Paris',
+      postalCode: '75001',
+      country: 'France'
+    }
   },
   {
     _id: '987654321098',
+    userId: 'user2',
     createdAt: '2024-01-14T14:20:00.000Z',
+    updatedAt: '2024-01-14T14:20:00.000Z',
     total: 89.99,
+    subtotal: 79.99,
+    shipping: 10.00,
+    tax: 0.00,
     status: 'completed',
-    customerId: 'customer2',
-    products: []
+    isOrdered: true,
+    products: [],
+    shippingAddress: {
+      fullName: 'Jane Smith',
+      street: '456 Oak Ave',
+      city: 'Lyon',
+      postalCode: '69001',
+      country: 'France'
+    }
   },
   {
     _id: '456789123456',
+    userId: 'user3',
     createdAt: '2024-01-13T09:15:00.000Z',
+    updatedAt: '2024-01-13T09:15:00.000Z',
     total: 200.00,
+    subtotal: 190.00,
+    shipping: 10.00,
+    tax: 0.00,
     status: 'cancelled',
-    customerId: 'customer3',
-    products: []
+    isOrdered: false,
+    products: [],
+    shippingAddress: {
+      fullName: 'Bob Johnson',
+      street: '789 Pine St',
+      city: 'Marseille',
+      postalCode: '13001',
+      country: 'France'
+    }
   }
 ];
 
@@ -89,11 +125,23 @@ describe('RecentOrders', () => {
   it('truncates order ID to last 6 characters', () => {
     const longIdOrder: Order[] = [{
       _id: '123456789012345678901234',
+      userId: 'user1',
       createdAt: '2024-01-15T10:30:00.000Z',
+      updatedAt: '2024-01-15T10:30:00.000Z',
       total: 100,
+      subtotal: 90,
+      shipping: 10,
+      tax: 0,
       status: 'active',
-      customerId: 'customer1',
-      products: []
+      isOrdered: true,
+      products: [],
+      shippingAddress: {
+        fullName: 'Test User',
+        street: '123 Test St',
+        city: 'Test City',
+        postalCode: '12345',
+        country: 'France'
+      }
     }];
     
     render(<RecentOrders orders={longIdOrder} />);

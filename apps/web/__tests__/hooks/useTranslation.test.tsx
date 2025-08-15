@@ -4,7 +4,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 // Mock pour i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key) => key,
+    t: (key: string) => key,
     i18n: {
       language: 'fr',
       changeLanguage: jest.fn(),

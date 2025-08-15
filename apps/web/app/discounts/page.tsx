@@ -680,8 +680,8 @@ export default function DiscountsPage() {
     },
   });
 
-  // S'assurer que discounts est toujours un tableau en extrayant de discountsData.data
-  const discounts = Array.isArray(discountsData?.data) ? discountsData.data : [];
+  // S'assurer que discounts est toujours un tableau
+  const discounts = Array.isArray(discountsData) ? discountsData : [];
   
   // Debug: afficher les données reçues
   console.log('discountsData:', discountsData);

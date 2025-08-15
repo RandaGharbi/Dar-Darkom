@@ -103,7 +103,8 @@ const createTestQueryClient = () =>
 const renderWithProviders = () => {
   const queryClient = createTestQueryClient();
   const mockThemeContext = {
-    themeMode: 'light',
+    theme: mockTheme,
+    themeMode: 'light' as const,
     setThemeMode: jest.fn(),
     toggleTheme: jest.fn(),
   };

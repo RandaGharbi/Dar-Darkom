@@ -4,7 +4,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "type-check": "echo 'No TypeScript files to check in typescript-config'"
+    "type-check": "echo 'No TypeScript files to check in typescript-config'",
+    "test": "echo 'No tests to run in typescript-config'"
   },
   "publishConfig": {
     "access": "public"

@@ -12,6 +12,10 @@ describe('ProductList', () => {
       category: 'skinCare',
       productType: 'skinCare',
       image_url: 'https://via.placeholder.com/150',
+      brand: 'Test Brand',
+      ingredients: 'Test ingredients',
+      benefits: 'Test benefits',
+      howToUse: 'Test how to use',
     },
     {
       id: 2,
@@ -20,6 +24,10 @@ describe('ProductList', () => {
       category: 'hairCare',
       productType: 'hairCare',
       image_url: 'https://via.placeholder.com/150',
+      brand: 'Test Brand',
+      ingredients: 'Test ingredients',
+      benefits: 'Test benefits',
+      howToUse: 'Test how to use',
     },
   ];
 

@@ -269,7 +269,7 @@ export const Charts = ({ products, orders, users }: ChartsProps) => {
       <TopRow>
         <ChartCard>
           <ChartTitle>Revenue Trends</ChartTitle>
-          <ChartValue>${totalRevenue.toFixed(0)}</ChartValue>
+          <ChartValue>{totalRevenue.toFixed(0)} €</ChartValue>
           <ChartPeriod>Last 12 Months</ChartPeriod>
           <ChartChange>+12%</ChartChange>
           <LineChart>
@@ -291,7 +291,7 @@ export const Charts = ({ products, orders, users }: ChartsProps) => {
 
         <ChartCard>
           <ChartTitle>Sales by Product Category</ChartTitle>
-          <ChartValue>${(totalRevenue * 0.5).toFixed(0)}</ChartValue>
+          <ChartValue>{(totalRevenue * 0.5).toFixed(0)} €</ChartValue>
           <ChartPeriod>This Month</ChartPeriod>
           <ChartChange>+8%</ChartChange>
           <BarChart>

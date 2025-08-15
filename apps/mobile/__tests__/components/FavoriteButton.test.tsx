@@ -17,6 +17,10 @@ describe('FavoriteButton', () => {
       category: 'skinCare',
       productType: 'skinCare',
       image_url: 'https://via.placeholder.com/150',
+      brand: 'Test Brand',
+      ingredients: 'Test ingredients',
+      benefits: 'Test benefits',
+      howToUse: 'Test how to use',
     };
     const { getByTestId } = render(<FavoriteButton product={product} />);
     expect(getByTestId('favorite-icon')).toBeTruthy();

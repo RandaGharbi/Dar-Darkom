@@ -102,7 +102,7 @@ const LoginScreen: React.FC = () => {
         }
       }
     } catch (e) {
-      if (e.code === 'ERR_CANCELED') {
+      if (e instanceof Error && 'code' in e && e.code === 'ERR_CANCELED') {
         // L'utilisateur a annulé
       } else {
         Alert.alert('Erreur', 'Erreur lors de la connexion Apple');

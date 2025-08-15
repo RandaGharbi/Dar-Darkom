@@ -63,7 +63,7 @@ export default function OrderTrackingScreen() {
 
         {/* Timeline */}
         <View style={styles.timelineBlock}>
-          {timelineSteps.map((step, idx) => (
+          {timelineSteps.map((step: any, idx: number) => (
             <View key={step.label} style={styles.timelineRow}>
               <View style={styles.timelineIconCol}>
                 <Image source={step.icon || stepIcon} style={[styles.timelineIcon, !step.done && { opacity: 0.3 }]} />
@@ -98,7 +98,7 @@ export default function OrderTrackingScreen() {
         {/* Résumé de commande */}
         <Text style={styles.sectionTitle}>Order Summary</Text>
         <View style={styles.summaryBlock}>
-          {products.map((item, idx) => {
+          {products.map((item: any, idx: number) => {
             const imageUri =
               (item.image_url && typeof item.image_url === 'string' && item.image_url) ||
               (item.image && typeof item.image === 'string' && item.image) ||

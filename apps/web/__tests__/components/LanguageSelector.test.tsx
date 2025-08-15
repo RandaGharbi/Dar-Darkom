@@ -148,7 +148,9 @@ describe('LanguageSelector', () => {
     renderWithTheme();
     const buttons = screen.getAllByRole('button');
     const mainButton = buttons[0];
-    fireEvent.click(mainButton);
+    if (mainButton) {
+      fireEvent.click(mainButton);
+    }
     // Vérifie qu'au moins un drapeau français et un drapeau anglais sont présents
     expect(screen.getAllByText('🇫🇷').length).toBeGreaterThan(0);
     expect(screen.getAllByText('🇺🇸').length).toBeGreaterThan(0);

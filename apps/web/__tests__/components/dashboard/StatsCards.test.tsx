@@ -5,33 +5,77 @@ import { StatsCards } from '../../../components/dashboard/StatsCards';
 import { Product, Order, User } from '../../../lib/api';
 
 const mockProducts: Product[] = [
-  { id: '1', name: 'Product 1', price: 100, category: 'Body' },
-  { id: '2', name: 'Product 2', price: 50, category: 'Face' }
+  { 
+    _id: '1', 
+    id: 1, 
+    name: 'Product 1', 
+    price: 100, 
+    category: 'Body', 
+    product_url: 'http://example.com/1',
+    productType: 'product',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z'
+  },
+  { 
+    _id: '2', 
+    id: 2, 
+    name: 'Product 2', 
+    price: 50, 
+    category: 'Face', 
+    product_url: 'http://example.com/2',
+    productType: 'product',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z'
+  }
 ];
 
 const mockOrders: Order[] = [
   {
     _id: '1',
+    userId: 'user1',
     total: 150,
+    subtotal: 140,
+    shipping: 10,
+    tax: 0,
     status: 'completed',
+    isOrdered: true,
     createdAt: '2024-01-15T10:30:00.000Z',
-    customerId: 'customer1',
-    products: []
+    updatedAt: '2024-01-15T10:30:00.000Z',
+    products: [],
+    shippingAddress: {
+      fullName: 'Customer 1',
+      street: '123 Main St',
+      city: 'Paris',
+      postalCode: '75001',
+      country: 'France'
+    }
   },
   {
     _id: '2',
+    userId: 'user2',
     total: 200,
+    subtotal: 190,
+    shipping: 10,
+    tax: 0,
     status: 'active',
+    isOrdered: true,
     createdAt: '2024-01-14T14:20:00.000Z',
-    customerId: 'customer2',
-    products: []
+    updatedAt: '2024-01-14T14:20:00.000Z',
+    products: [],
+    shippingAddress: {
+      fullName: 'Customer 2',
+      street: '456 Oak Ave',
+      city: 'Lyon',
+      postalCode: '69001',
+      country: 'France'
+    }
   }
 ];
 
 const mockUsers: User[] = [
-  { _id: '1', name: 'User 1', email: 'user1@test.com' },
-  { _id: '2', name: 'User 2', email: 'user2@test.com' },
-  { _id: '3', name: 'User 3', email: 'user3@test.com' }
+  { _id: '1', name: 'User 1', email: 'user1@test.com', createdAt: '2024-01-01T00:00:00.000Z', updatedAt: '2024-01-01T00:00:00.000Z' },
+  { _id: '2', name: 'User 2', email: 'user2@test.com', createdAt: '2024-01-01T00:00:00.000Z', updatedAt: '2024-01-01T00:00:00.000Z' },
+  { _id: '3', name: 'User 3', email: 'user3@test.com', createdAt: '2024-01-01T00:00:00.000Z', updatedAt: '2024-01-01T00:00:00.000Z' }
 ];
 
 describe('StatsCards', () => {

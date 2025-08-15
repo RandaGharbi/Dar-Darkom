@@ -39,10 +39,10 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: Activer Corepack et installer Yarn 3.6.4
+    - name: Activer Corepack et installer Yarn 4.9.2
       run: |
         corepack enable
-        corepack prepare yarn@3.6.4 --activate
+        corepack prepare yarn@4.9.2 --activate
 
     - name: Install dependencies
       run: yarn install

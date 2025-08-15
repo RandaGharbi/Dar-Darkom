@@ -314,7 +314,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ userId }) => {
 
   if (error) {
     // Si l'erreur est 404 ou similaire, c'est probablement un utilisateur sans commandes
-    const isNotFoundError = error?.response?.status === 404 || 
+    const isNotFoundError = (error && 'response' in error && (error.response as { status?: number })?.status === 404) || 
                            error?.message?.includes('not found') ||
                            error?.message?.includes('404');
     

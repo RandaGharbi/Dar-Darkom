@@ -8,7 +8,7 @@ export type RawProduct = {
   numberOfReviews: number;
   collection: string;     
   typeOfCare: string;
-  subtitle: string;
+  subtitle?: string;
 
 };
 

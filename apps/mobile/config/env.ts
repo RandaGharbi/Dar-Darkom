@@ -76,3 +76,8 @@ export const getCurrentEnv = () => {
 };
 
 export const config = getCurrentEnv();
+
+// Export getBaseUrl function for useApiUrl hook
+export const getBaseUrl = async (): Promise<string> => {
+  return config.API_BASE_URL;
+};
