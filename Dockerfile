@@ -16,7 +16,7 @@ COPY package.json yarn.lock turbo.json .yarnrc.yml ./
 
 # Vérification de la configuration Yarn
 RUN yarn --version
-RUN yarn config get workspaces
+RUN yarn config get nodeLinker
 
 # Installation des dépendances sans cache
 RUN yarn install --network-timeout 300000
