@@ -91,7 +91,8 @@ const OrdersHistoryScreen = () => {
               image={item.image || { uri: item.products?.[0]?.image || '' }}
               orderNumber={item.orderNumber || item._id}
               date={item.createdAt ? new Date(item.createdAt).toLocaleDateString() : item.date}
-                              total={item.total ? `€${item.total}` : item.total}
+              total={item.total ? `€${item.total}` : item.total}
+              status={item.status}
               onPress={() => router.push({
                 pathname: '/order-details',
                 params: { order: JSON.stringify(item) }

@@ -14,6 +14,7 @@ import VisaIcon from "../assets/images/visa.png";
 import MastercardIcon from "../assets/images/masterCard.png";
 import CardIcon from "../assets/images/card.png";
 import { getCorrectImageUrl } from '../utils/imageUtils';
+import { StatusBadge } from '../components/StatusBadge';
 
 export default function OrderDetailsScreen() {
   const router = useRouter();
@@ -135,11 +136,7 @@ export default function OrderDetailsScreen() {
         {/* Statut */}
         <Text style={styles.sectionTitle}>Order Status</Text>
         <View style={styles.statusBlock}>
-          <Text style={styles.statusText}>
-            {order && order.isOrdered
-              ? "Commandé"
-              : (status ? status.charAt(0).toUpperCase() + status.slice(1) : "")}
-          </Text>
+          <StatusBadge status={status} size="large" />
           <Text style={styles.statusDate}>
             {/* Date de livraison estimée */}
             {(() => {
@@ -331,20 +328,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   statusBlock: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
-  },
-  statusText: {
-    fontSize: 14,
-    color: "#222",
-    fontWeight: "500",
-    flex: 1,
   },
   statusDate: {
     fontSize: 13,
-    color: "#8A7861",
-    textAlign: "right",
+    color: '#8A7861',
+    textAlign: 'right',
     minWidth: 90,
   },
   trackingBlock: {

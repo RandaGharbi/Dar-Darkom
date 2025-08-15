@@ -8,12 +8,14 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import ChevronIcon from '../assets/images/chevron.png';
+import { StatusBadge } from './StatusBadge';
 
 type Props = {
   image: ImageSourcePropType;
   orderNumber: string;
   date: string;
   total: string;
+  status?: string;
   onPress: () => void;
 };
 
@@ -22,18 +24,23 @@ export const OrderCard: React.FC<Props> = ({
   orderNumber,
   date,
   total,
+  status = 'active',
   onPress,
-}) => (
-  <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
-    <Image source={image} style={styles.image} />
-    <View style={styles.details}>
-      <Text style={styles.orderNumber}>Order number: {orderNumber}</Text>
-      <Text style={styles.orderMeta}>Order date: {date}</Text>
-      <Text style={styles.orderMeta}>Total: {total}</Text>
-    </View>
-    <Image source={ChevronIcon} style={styles.chevron} />
-  </TouchableOpacity>
-);
+}) => {
+  return (
+    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
+      <Image source={image} style={styles.image} />
+      <View style={styles.details}>
+        <Text style={styles.orderNumber}>Order number: {orderNumber}</Text>
+        <Text style={styles.orderMeta}>Order date: {date}</Text>
+        <Text style={styles.orderMeta}>Total: {total}</Text>
+        {/* Badge de statut */}
+        <StatusBadge status={status} size="small" />
+      </View>
+      <Image source={ChevronIcon} style={styles.chevron} />
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -42,7 +49,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd', // ligne simple entre chaque item
+    borderBottomColor: '#ddd',
   },
   image: {
     width: 60,

@@ -1,2 +1,4 @@
 // Configuration temporaire pour forcer l'URL API
-export const FORCE_API_URL = 'http://192.168.43.184:5000'; 
+// Pour simulateur iOS, utiliser localhost
+// Pour appareil physique iOS, utiliser l'IP de votre Mac
+export const FORCE_API_URL = 'http://localhost:5000'; 

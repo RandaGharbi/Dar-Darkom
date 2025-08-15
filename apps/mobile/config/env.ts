@@ -21,12 +21,24 @@ const detectEnvironment = () => {
   
   if (Platform.OS === 'ios') {
     if (Constants.isDevice) {
-      // Appareil physique iOS
+      // Appareil physique iOS - essayer plusieurs IPs communes
       console.log('📱 Détecté: Appareil physique iOS');
-      return 'http://192.168.1.100:5000'; // Changez cette IP selon votre réseau
+      
+      // Essayer d'abord l'IP locale de votre machine de développement
+      // Remplacez ces IPs par celles de votre réseau
+      const possibleIPs = [
+        'http://192.168.1.100:5000',  // Votre IP actuelle
+        'http://192.168.1.101:5000',  // Alternative 1
+        'http://192.168.1.102:5000',  // Alternative 2
+        'http://10.0.0.1:5000',       // Réseau 10.x.x.x
+        'http://172.16.0.1:5000',     // Réseau 172.x.x.x
+      ];
+      
+      // Retourner la première IP (vous pouvez changer l'ordre selon votre réseau)
+      return possibleIPs[0];
     } else {
-      // Simulateur iOS
-      console.log('📱 Détecté: Simulateur iOS');
+      // Simulateur iOS - TOUJOURS utiliser localhost
+      console.log('📱 Détecté: Simulateur iOS - utilisation de localhost');
       return 'http://localhost:5000';
     }
   }
@@ -77,7 +89,57 @@ export const getCurrentEnv = () => {
 
 export const config = getCurrentEnv();
 
+// Fonction pour tester la connectivité réseau
+export const testNetworkConnectivity = async (url: string): Promise<boolean> => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 secondes de timeout
+    
+    const response = await fetch(`${url}/health`, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+    return response.ok;
+  } catch (error) {
+    console.log(`❌ Échec de connexion à ${url}:`, error);
+    return false;
+  }
+};
+
+// Fonction pour obtenir l'URL de base avec fallback
+export const getBaseUrlWithFallback = async (): Promise<string> => {
+  const baseUrl = config.API_BASE_URL;
+  
+  // Tester d'abord l'URL principale
+  if (await testNetworkConnectivity(baseUrl)) {
+    console.log('✅ Connexion réussie à:', baseUrl);
+    return baseUrl;
+  }
+  
+  // Si l'URL principale échoue, essayer les alternatives pour iOS
+  if (Platform.OS === 'ios' && Constants.isDevice) {
+    const fallbackIPs = [
+      'http://192.168.1.101:5000',
+      'http://192.168.1.102:5000',
+      'http://10.0.0.1:5000',
+      'http://172.16.0.1:5000',
+    ];
+    
+    for (const ip of fallbackIPs) {
+      if (await testNetworkConnectivity(ip)) {
+        console.log('✅ Connexion de fallback réussie à:', ip);
+        return ip;
+      }
+    }
+  }
+  
+  console.log('⚠️ Aucune connexion réseau trouvée, utilisation de l\'URL par défaut');
+  return baseUrl;
+};
+
 // Export getBaseUrl function for useApiUrl hook
 export const getBaseUrl = async (): Promise<string> => {
-  return config.API_BASE_URL;
+  return getBaseUrlWithFallback();
 };
