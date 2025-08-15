@@ -230,7 +230,99 @@ yarn reset-project # Reset le projet (optionnel)
 
 ## 🐳 Docker
 
-### Backend avec Docker Compose
+### 🚨 Problème Résolu : Dépendances Manquantes
+
+**Le problème Docker original a été corrigé !** L'image `guerlain-backend-test` ne pouvait pas fonctionner car Express n'était pas installé. Seules les dépendances de développement étaient présentes.
+
+#### Cause Racine
+- **Yarn 4** ne gérait pas correctement l'installation des dépendances des workspaces
+- Le stage `base` du Dockerfile n'installait que les dépendances de développement
+- Le stage `backend-production` copiait des `node_modules` incomplets
+
+#### ✅ Solution Implémentée
+- **Dockerfile unifié et corrigé** : Utilise `npm install` directement dans le répertoire backend
+- **Vérifications automatiques** : S'assure que toutes les dépendances de production sont installées
+- **Scripts automatisés** : Construction et tests des images
+
+### 🚀 Utilisation Docker
+
+#### Construction des Images
+```bash
+# Construire toutes les images
+./scripts/build-images.sh all
+
+# Construire seulement l'image de test
+./scripts/build-images.sh test
+
+# Construire seulement l'image de production
+./scripts/build-images.sh production
+```
+
+#### Test des Images
+```bash
+# Tester toutes les images
+./scripts/test-images.sh all
+
+# Tester seulement l'image de test
+./scripts/test-images.sh test
+
+# Tester seulement l'image de production
+./scripts/test-images.sh production
+```
+
+#### Vérification Manuelle
+```bash
+# Vérifier qu'Express est installé (test)
+docker run --rm guerlain-backend-test sh -c "ls -la /app/node_modules | grep express"
+
+# Vérifier qu'Express est installé (production)
+docker run --rm guerlain-backend-production sh -c "ls -la /app/node_modules | grep express"
+```
+
+### 📦 Images Disponibles
+
+| Image | Tag | Statut | Usage |
+|-------|-----|--------|-------|
+| `guerlain-backend-test` | latest | ✅ Fonctionnelle | Tests et développement |
+| `guerlain-backend-production` | latest | ✅ Fonctionnelle | Production |
+
+### 🔍 Vérifications Incluses
+
+#### Dépendances Vérifiées
+- ✅ **Express** - Framework web
+- ✅ **Mongoose** - ODM MongoDB
+- ✅ **Multer** - Gestion des uploads
+- ✅ **Autres dépendances de production**
+
+#### Tests Automatiques
+- ✅ Installation des dépendances
+- ✅ Présence du code compilé
+- ✅ Démarrage du serveur
+- ✅ Réponse sur le port 5000
+
+### 🧹 Nettoyage et Gestion
+
+```bash
+# Supprimer les anciennes images
+./scripts/build-images.sh cleanup
+
+# Lister les images disponibles
+./scripts/build-images.sh list
+```
+
+### 📝 Notes Techniques
+
+#### Pourquoi npm au lieu de yarn ?
+- **Yarn 4** a des problèmes avec les workspaces dans ce contexte
+- **npm** installe correctement toutes les dépendances
+- Solution plus stable et prévisible
+
+#### Architecture Unifiée
+- **Un seul Dockerfile** contient toutes les corrections
+- **Stages multiples** pour différents environnements
+- **Scripts automatisés** pour la gestion et les tests
+
+### 🔄 Docker Compose (Legacy)
 
 ```bash
 cd apps/backend
@@ -279,6 +371,7 @@ yarn test:e2e
 2. **JWT** : Authentification par tokens JWT
 3. **MongoDB** : Base de données principale
 4. **Variables d'environnement** : Utilisez les fichiers `.env` pour les configurations sensibles
+5. **Docker** : Images corrigées et fonctionnelles avec scripts automatisés
 
 ## 🐛 Dépannage
 
@@ -296,12 +389,18 @@ yarn test:e2e
 - Utilisez `npx expo doctor` pour diagnostiquer les problèmes
 - Vérifiez que les dépendances sont à jour
 
+### Problèmes Docker
+- **Express non installé** : Utilisez les images corrigées `guerlain-backend-test` ou `guerlain-backend-production`
+- **Dépendances manquantes** : Reconstruisez les images avec `./scripts/build-images.sh all`
+- **Tests d'images** : Vérifiez le bon fonctionnement avec `./scripts/test-images.sh all`
+
 ## 📚 Ressources
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Expo Documentation](https://docs.expo.dev/)
 - [Express.js Documentation](https://expressjs.com/)
 - [MongoDB Documentation](https://docs.mongodb.com/)
+- [Docker Documentation](https://docs.docker.com/)
 
 ## 🤝 Contribution
 

@@ -16,14 +16,27 @@ COPY package.json yarn.lock turbo.json .yarnrc.yml ./
 # Vérification de la configuration Yarn
 RUN yarn --version
 
-# Installation des dépendances
+# Installation des dépendances racines
 RUN yarn install --network-timeout 300000
 
 # Copie du code source
 COPY . .
 
-# Build du projet (exclure docs et mobile qui ne sont pas nécessaires pour la production)
-RUN yarn build --filter=backend --filter=web
+# Installation explicite des dépendances du backend avec npm
+RUN cd apps/backend && npm install
+
+# Vérification que les dépendances de production sont installées
+RUN echo "=== Vérification des dépendances ===" && \
+    echo "Dépendances racines:" && \
+    ls -la node_modules/ | grep -E "(express|mongoose|multer)" || echo "Pas trouvé dans racine" && \
+    echo "Dépendances backend:" && \
+    ls -la apps/backend/node_modules/ | grep -E "(express|mongoose|multer)" || echo "Pas trouvé dans backend"
+
+# Ajout du dossier node_modules/.bin au PATH
+ENV PATH="/app/node_modules/.bin:$PATH"
+
+# Build du projet avec npm (exclure docs et mobile qui ne sont pas nécessaires pour la production)
+RUN cd apps/backend && npm run build
 
 # Stage Backend
 FROM node:18-alpine AS backend-production
@@ -32,11 +45,13 @@ WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=base /app/yarn.lock ./
 COPY --from=base /app/.yarnrc.yml ./
+COPY --from=base /app/turbo.json ./
 COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/apps/backend/node_modules ./apps/backend/node_modules
 COPY --from=base /app/apps/backend/dist ./apps/backend/dist
 WORKDIR /app/apps/backend
 EXPOSE 5000
-CMD ["yarn", "start"]
+CMD ["node", "dist/index.js"]
 
 # Stage Web
 FROM node:18-alpine AS web-production

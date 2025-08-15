@@ -36,15 +36,6 @@ Dockerfile*
 docker-compose*
 .dockerignore
 
-# Documentation
-README.md
-*.md
-
-# Tests
-coverage
-.nyc_output
-.jest
-
 # Logs
 logs
 *.log
@@ -57,12 +48,25 @@ pids
 
 # Coverage directory used by tools like istanbul
 coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output
 
 # Dependency directories
 jspm_packages/
 
 # Optional npm cache directory
 .npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -73,45 +77,38 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
 
-# next.js build output
+# Next.js build output
 .next
 
-# nuxt.js build output
+# Nuxt.js build / generate output
 .nuxt
 
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
+# Storybook build outputs
+.out
+.storybook-out
 
 # Temporary folders
 tmp/
 temp/
 
-# Exports and uploads (will be mounted as volumes)
-apps/backend/exports
-apps/backend/uploads
+# Mobile specific
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/expo/
+
+# Test files
+__tests__
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
 
 # Cypress
-cypress/videos
-cypress/screenshots 
+cypress/videos/
+cypress/screenshots/ 
