@@ -96,6 +96,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Verify Dockerfile
+      run: |
+        echo "=== Dockerfile content ==="
+        cat Dockerfile
+        echo "=== Checking for yarn install command ==="
+        grep -n "yarn install" Dockerfile
+        echo "=== Checking for Yarn version ==="
+        grep -n "yarn@4.9.2" Dockerfile
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -117,6 +126,7 @@ jobs:
         no-cache: true
         build-args: |
           BUILDKIT_INLINE_CACHE=0
+        platforms: linux/amd64
 
     - name: Build and push Web image
       uses: docker/build-push-action@v5
@@ -126,8 +136,8 @@ jobs:
         target: web-production
         push: true
         tags: ghcr.io/randagharbi/guerlain/web:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        no-cache: true
+        platforms: linux/amd64
 
     - name: Build and push Mobile image
       uses: docker/build-push-action@v5
@@ -137,8 +147,8 @@ jobs:
         target: mobile-production
         push: true
         tags: ghcr.io/randagharbi/guerlain/mobile:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        no-cache: true
+        platforms: linux/amd64
 
   # Déploiement en staging
   deploy-staging:
