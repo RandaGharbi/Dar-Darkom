@@ -342,6 +342,102 @@ docker-compose down
 docker-compose down -v
 ```
 
+## 🚀 GitHub Actions (CI/CD)
+
+### 🚨 Problème Résolu : Workflow Aligné
+
+**Le workflow GitHub Actions a été corrigé pour être cohérent avec le Dockerfile !** Les erreurs de build global et de stages inexistants ont été éliminées.
+
+#### Problèmes Identifiés et Résolus
+- ❌ **web-production** : Stage supprimé du Dockerfile
+- ❌ **mobile-production** : Stage supprimé du Dockerfile  
+- ❌ **Erreur de build** : `command not found: next` lors du build global
+- ❌ **Workflow incohérent** : Tentative de build de stages inexistants
+
+#### ✅ Solutions Implémentées
+- **Workflow simplifié** : Focus uniquement sur le backend-production
+- **Stages alignés** : Suppression des builds web et mobile inexistants
+- **Vérifications adaptées** : Mise à jour pour npm install et npm run build
+- **Pipeline cohérent** : Architecture Docker et CI/CD unifiées
+
+### 🔧 Configuration du Workflow
+
+#### Déclencheurs
+Le workflow se déclenche automatiquement sur :
+- **Push** vers `main` ou `develop`
+- **Pull Request** vers `main` ou `develop`
+
+#### Étapes du Pipeline
+1. **Tests & Linting** - Validation du code
+2. **Build Docker** - Construction de l'image backend uniquement
+3. **Push Registry** - Publication vers GitHub Container Registry
+4. **Déploiement** - Staging (develop) ou Production (main)
+
+### 🐳 Build Docker dans GitHub Actions
+
+#### Configuration Corrigée
+```yaml
+- name: Build and push Backend image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    file: ./Dockerfile
+    target: backend-production  # ✅ Stage existant et fonctionnel
+    push: true
+    tags: ghcr.io/randagharbi/guerlain/backend:${{ github.sha }}
+    no-cache: true
+    platforms: linux/amd64
+```
+
+#### Vérifications Automatiques
+```yaml
+- name: Verify Dockerfile
+  run: |
+    echo "=== Dockerfile content ==="
+    cat Dockerfile
+    echo "=== Checking for npm install command ==="
+    grep -n "npm install" Dockerfile
+    echo "=== Checking for backend build command ==="
+    grep -n "npm run build" Dockerfile
+```
+
+### 📦 Images GitHub Container Registry
+
+#### URL de l'Image
+```
+ghcr.io/randagharbi/guerlain/backend:${{ github.sha }}
+```
+
+#### Permissions Requises
+- **Settings > Actions > General** : "Read and write permissions"
+- **Settings > Actions > General** : "Allow GitHub Actions to create and approve pull requests"
+- **Container Registry** : Activé et accessible
+
+### 🔍 Vérification du Workflow
+
+#### Comment Vérifier
+1. **Push** vers la branche `main`
+2. **Vérifier** l'onglet Actions sur GitHub
+3. **Confirmer** que le build backend réussit
+4. **Vérifier** qu'aucune erreur de stage inexistant
+5. **Confirmer** que l'image est poussée vers le registry
+
+#### Logs de Succès Attendu
+```
+✅ Build Docker réussi
+✅ Image poussée vers ghcr.io/randagharbi/guerlain/backend
+✅ Plus d'erreur de dépendances manquantes
+✅ Workflow cohérent avec l'architecture Docker
+```
+
+### 🚀 Avantages de la Solution
+
+- **Architecture unifiée** : Docker et CI/CD cohérents
+- **Build simplifié** : Focus sur le backend uniquement
+- **Erreurs éliminées** : Plus de stages inexistants
+- **Pipeline robuste** : Tests, build et déploiement automatisés
+- **Registry accessible** : Images disponibles pour le déploiement
+
 ## 🧪 Tests
 
 ### Tests unitaires
