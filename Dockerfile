@@ -5,15 +5,19 @@ FROM node:18-alpine AS base
 RUN apk add --no-cache libc6-compat
 RUN corepack enable
 
+# Préparer Yarn avec la bonne version
+RUN corepack prepare yarn@4.9.2 --activate
+
 # Définir le répertoire de travail
 WORKDIR /app
 
 # Copier les fichiers de configuration
 COPY package.json yarn.lock ./
 COPY turbo.json ./
+COPY .yarnrc.yml ./
 
-# Installer les dépendances globales
-RUN yarn install --immutable-cache
+# Installer les dépendances avec la bonne version de Yarn
+RUN yarn install --immutable
 
 # Copier le code source
 COPY . .
@@ -25,6 +29,7 @@ RUN yarn build
 FROM node:18-alpine AS backend-production
 
 RUN corepack enable
+RUN corepack prepare yarn@4.9.2 --activate
 
 WORKDIR /app
 
@@ -32,6 +37,7 @@ WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=base /app/yarn.lock ./
 COPY --from=base /app/turbo.json ./
+COPY --from=base /app/.yarnrc.yml ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/apps/backend ./apps/backend
 
@@ -48,6 +54,7 @@ CMD ["yarn", "start"]
 FROM node:18-alpine AS web-production
 
 RUN corepack enable
+RUN corepack prepare yarn@4.9.2 --activate
 
 WORKDIR /app
 
@@ -55,6 +62,7 @@ WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=base /app/yarn.lock ./
 COPY --from=base /app/turbo.json ./
+COPY --from=base /app/.yarnrc.yml ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/apps/web ./apps/web
 
@@ -71,6 +79,7 @@ CMD ["yarn", "start"]
 FROM node:18-alpine AS mobile-production
 
 RUN corepack enable
+RUN corepack prepare yarn@4.9.2 --activate
 
 WORKDIR /app
 
@@ -78,6 +87,7 @@ WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=base /app/yarn.lock ./
 COPY --from=base /app/turbo.json ./
+COPY --from=base /app/.yarnrc.yml ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/apps/mobile ./apps/mobile
 
@@ -94,6 +104,7 @@ CMD ["yarn", "start"]
 FROM node:18-alpine AS production
 
 RUN corepack enable
+RUN corepack prepare yarn@4.9.2 --activate
 
 WORKDIR /app
 
@@ -101,6 +112,7 @@ WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=base /app/yarn.lock ./
 COPY --from=base /app/turbo.json ./
+COPY --from=base /app/.yarnrc.yml ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/apps/backend/dist ./apps/backend/dist
 COPY --from=base /app/apps/web/.next ./apps/web/.next
