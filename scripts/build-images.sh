@@ -10,7 +10,7 @@ echo "🚀 Construction des images Docker Guerlain..."
 # Fonction pour construire l'image de test
 build_test_image() {
     echo "📦 Construction de l'image de test..."
-    docker build --target backend-production -t guerlain-backend-test .
+    docker build --target backend-test -t guerlain-backend-test .
     echo "✅ Image de test construite: guerlain-backend-test"
 }
 
