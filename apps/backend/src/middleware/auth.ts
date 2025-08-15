@@ -25,7 +25,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         (req.path.includes('/notifications') && !authHeader)) {
       req.user = {
         id: 'demo',
-        email: 'demo@guerlain.com',
+        email: 'demo@nourane.com',
         name: 'Demo User'
       };
       return next();

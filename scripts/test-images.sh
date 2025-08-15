@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Script de test des images Docker Guerlain
+# Script de test des images Docker Nourane
 # Usage: ./scripts/test-images.sh [test|production|all]
 
 set -e
 
-echo "🧪 Test des images Docker Guerlain..."
+echo "🧪 Test des images Docker Nourane..."
 
 # Fonction pour tester l'image de test
 test_test_image() {
@@ -13,7 +13,7 @@ test_test_image() {
     
     # Vérifier qu'Express est installé
     echo "  - Vérification d'Express..."
-    if docker run --rm guerlain-backend-test sh -c "ls -la /app/node_modules | grep express" >/dev/null 2>&1; then
+    if docker run --rm nourane-backend-test sh -c "ls -la /app/node_modules | grep express" >/dev/null 2>&1; then
         echo "    ✅ Express est installé"
     else
         echo "    ❌ Express n'est pas installé"
@@ -22,7 +22,7 @@ test_test_image() {
     
     # Vérifier que le code compilé existe
     echo "  - Vérification du code compilé..."
-    if docker run --rm guerlain-backend-test sh -c "ls -la /app/apps/backend/dist" >/dev/null 2>&1; then
+    if docker run --rm nourane-backend-test sh -c "ls -la /app/apps/backend/dist" >/dev/null 2>&1; then
         echo "    ✅ Code compilé présent"
     else
         echo "    ❌ Code compilé manquant"
@@ -38,7 +38,7 @@ test_production_image() {
     
     # Vérifier qu'Express est installé
     echo "  - Vérification d'Express..."
-    if docker run --rm guerlain-backend-production sh -c "ls -la /app/node_modules | grep express" >/dev/null 2>&1; then
+    if docker run --rm nourane-backend-production sh -c "ls -la /app/node_modules | grep express" >/dev/null 2>&1; then
         echo "    ✅ Express est installé"
     else
         echo "    ❌ Express n'est pas installé"
@@ -47,7 +47,7 @@ test_production_image() {
     
     # Vérifier que le code compilé existe
     echo "  - Vérification du code compilé..."
-    if docker run --rm guerlain-backend-production sh -c "ls -la /app/apps/backend/dist" >/dev/null 2>&1; then
+    if docker run --rm nourane-backend-production sh -c "ls -la /app/apps/backend/dist" >/dev/null 2>&1; then
         echo "    ✅ Code compilé présent"
     else
         echo "    ❌ Code compilé manquant"
@@ -56,7 +56,7 @@ test_production_image() {
     
     # Test de démarrage rapide
     echo "  - Test de démarrage..."
-    CONTAINER_ID=$(docker run -d --name guerlain-test-prod guerlain-backend-production)
+    CONTAINER_ID=$(docker run -d --name nourane-test-prod nourane-backend-production)
     sleep 5
     
     if docker logs $CONTAINER_ID | grep -q "Server running on port 5000"; then

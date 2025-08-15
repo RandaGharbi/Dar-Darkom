@@ -1,4 +1,4 @@
-# Dockerfile pour le projet Guerlain - VERSION CORRIGÉE
+# Dockerfile pour le projet Nourane - VERSION CORRIGÉE
 # Utilise yarn install standard pour éviter les problèmes de cache
 # Date: 2025-01-15
 

@@ -1,4 +1,4 @@
-package com.rindaa.Guerlain
+package com.rindaa.Nourane
 
 import android.app.Application
 import android.content.res.Configuration

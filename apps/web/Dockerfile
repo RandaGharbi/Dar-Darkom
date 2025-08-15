@@ -1,4 +1,4 @@
-# Dockerfile pour le frontend web Guerlain
+# Dockerfile pour le frontend web Nourane
 FROM node:18-alpine AS base
 
 # Installer les dépendances système

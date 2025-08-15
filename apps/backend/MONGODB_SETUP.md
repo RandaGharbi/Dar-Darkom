@@ -1,4 +1,4 @@
-# 🗄️ Configuration MongoDB Atlas pour Guerlain
+# 🗄️ Configuration MongoDB Atlas pour Nourane
 
 ## 📋 Étapes de configuration
 
@@ -17,7 +17,7 @@
 2. **Configurer le cluster** :
    - **Provider** : AWS, Google Cloud, ou Azure
    - **Region** : Europe (pour de meilleures performances)
-   - **Cluster Name** : `guerlain-cluster`
+   - **Cluster Name** : `nourane-cluster`
    - Cliquez sur **"Create Cluster"**
 
 ### **3. Configurer la sécurité**
@@ -26,7 +26,7 @@
 1. Dans le menu de gauche, cliquez sur **"Database Access"**
 2. Cliquez sur **"Add New Database User"**
 3. **Username** : `guerlain_admin`
-4. **Password** : `Guerlain2024!` (ou un mot de passe sécurisé)
+4. **Password** : `Nourane2024!` (ou un mot de passe sécurisé)
 5. **Database User Privileges** : `Atlas admin`
 6. Cliquez sur **"Add User"**
 
@@ -56,10 +56,10 @@ cp .env.example .env
 #### **Éditer le fichier .env** :
 ```env
 # Configuration MongoDB Atlas
-MONGODB_URI=mongodb+srv://guerlain_admin:Guerlain2024!@cluster0.xxxxx.mongodb.net/guerlain?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://guerlain_admin:Nourane2024!@cluster0.xxxxx.mongodb.net/nourane?retryWrites=true&w=majority
 
 # Configuration JWT
-JWT_SECRET=guerlain-jwt-secret-2024-change-in-production
+JWT_SECRET=nourane-jwt-secret-2024-change-in-production
 
 # Configuration Email (Gmail)
 EMAIL_USER=your-email@gmail.com
@@ -157,10 +157,10 @@ Si vous avez déjà des données en local :
 
 ```bash
 # Exporter les données locales
-mongodump --uri="mongodb://localhost:27017/guerlain" --out=./backup
+mongodump --uri="mongodb://localhost:27017/nourane" --out=./backup
 
 # Importer vers MongoDB Atlas
-mongorestore --uri="mongodb+srv://guerlain_admin:password@cluster0.xxxxx.mongodb.net/guerlain" ./backup/guerlain/
+mongorestore --uri="mongodb+srv://guerlain_admin:password@cluster0.xxxxx.mongodb.net/nourane" ./backup/nourane/
 ```
 
 ---

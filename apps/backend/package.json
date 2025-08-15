@@ -17,8 +17,9 @@
     "init-db": "node scripts/init-db.js",
     "import-soldes": "node scripts/importSoldesFrance.js",
     "test-email": "node scripts/testEmail.js",
-    "docker:build": "docker build -t guerlain-backend .",
-    "docker:run": "docker run -p 5000:5000 guerlain-backend",
+    "createAdmin": "ts-node src/scripts/createAdmin.ts",
+    "docker:build": "docker build -t nourane-backend .",
+    "docker:run": "docker run -p 5000:5000 nourane-backend",
     "healthcheck": "curl -f http://localhost:5000/health || exit 1"
   },
   "keywords": [],

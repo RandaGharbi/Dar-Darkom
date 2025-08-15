@@ -187,7 +187,7 @@ export const appleSignIn = async (req: Request, res: Response) => {
   const { token } = req.body;
   try {
     const appleUser = await appleSignin.verifyIdToken(token, {
-      audience: 'com.rindaa.Guerlain',
+      audience: 'com.rindaa.Nourane',
       ignoreExpiration: true,
     });
     let user = await User.findOne({ appleId: appleUser.sub });

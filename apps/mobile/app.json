@@ -1,11 +1,11 @@
 {
   "expo": {
-      "name": "Guerlain",
+      "name": "Nourane",
   "slug": "Nourane",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logoGuerlain.png",
-    "scheme": "guerlain",
+    "scheme": "nourane",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

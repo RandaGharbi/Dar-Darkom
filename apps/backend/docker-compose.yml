@@ -2,11 +2,11 @@ version: '3.8'
 services:
   backend:
     build: .
-    container_name: guerlain-backend
+    container_name: nourane-backend
     ports:
       - "4000:4000"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/guerlain
+      - MONGO_URI=mongodb://mongo:27017/nourane
     depends_on:
       - mongo
     volumes:
@@ -14,7 +14,7 @@ services:
       - /app/node_modules
   mongo:
     image: mongo:6.0
-    container_name: guerlain-mongo
+    container_name: nourane-mongo
     restart: always
     ports:
       - "27017:27017"

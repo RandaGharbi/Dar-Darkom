@@ -27,8 +27,8 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="guerlain"/>
-        <data android:scheme="exp+guerlain"/>
+        <data android:scheme="nourane"/>
+        <data android:scheme="exp+nourane"/>
       </intent-filter>
     </activity>
   </application>

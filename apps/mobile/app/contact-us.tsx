@@ -479,8 +479,8 @@ const ContactUsPage: React.FC = () => {
     if (item.isFromUser) {
       senderName = 'Moi';
     } else {
-      // Pour les messages admin, afficher "Support Guerlain"
-      senderName = 'Support Guerlain';
+      // Pour les messages admin, afficher "Support Nourane"
+      senderName = 'Support Nourane';
     }
 
     return (

@@ -57,10 +57,12 @@ export default function ProfileScreen() {
             style={styles.profileImage}
             onError={() => {
               console.log('❌ Image failed to load:', user.profileImage);
+              console.log('❌ Corrected URL:', user.profileImage ? getCorrectImageUrl(user.profileImage) : 'No profile image');
               setImageError(true);
             }}
             onLoad={() => {
               console.log('✅ Image loaded successfully');
+              console.log('✅ URL loaded:', user.profileImage ? getCorrectImageUrl(user.profileImage) || user.profileImage : 'No profile image');
               setImageError(false);
             }}
           />

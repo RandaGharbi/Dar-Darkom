@@ -18,6 +18,7 @@ import { API_BASE_URL } from '../services/api';
 
 import googleIcon from "../assets/images/gmail.png";
 import emailIcon from "../assets/images/email.png";
+import appleIcon from "../assets/images/apple.png";
 
 const LoginScreen: React.FC = () => {
   const router = useRouter();
@@ -112,6 +113,11 @@ const LoginScreen: React.FC = () => {
       </Text>
 
       <View style={styles.buttonContainer}>
+      <SocialButton
+          icon={appleIcon}
+          text="Continue with Apple"
+          onPress={() => promptAsync()}
+        />
         <SocialButton
           icon={googleIcon}
           text="Continue with Google"

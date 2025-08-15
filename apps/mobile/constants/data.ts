@@ -1262,7 +1262,7 @@ export const rawBodyCare: RawShop[] = [
     id: 6,
     Name: "MON GUERLAIN LAIT CORPS",
     Subtitle: "ABEILLE ROYALE",
-    Image: "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw5a509e3d/primary_packshot_3/2022/Fragrance/Mon_Guerlain/G013142_3346470131422_MON-G-17-B-LOT-200ML-BTL.jpg?sw=655&sh=655&sfrm=png",
+    Image: "https://www.guerlain.com/dw/image/v2/BDCZ_PRD/on/demandware.static/-/Sites-GSA_master_catalog/default/dw5a509e3d/primary_packshot_3/2022/Fragrance/Mon_Nourane/G013142_3346470131422_MON-G-17-B-LOT-200ML-BTL.jpg?sw=655&sh=655&sfrm=png",
     product_url: "https://www.guerlain.com/fr/fr-fr/p/mon-guerlain-lait-corps-P013142.html",
     price: 66.00,
     category: "Body",

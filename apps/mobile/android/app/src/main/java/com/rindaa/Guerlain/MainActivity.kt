@@ -1,4 +1,4 @@
-package com.rindaa.Guerlain
+package com.rindaa.Nourane
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

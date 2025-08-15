@@ -1,4 +1,4 @@
-# 🐳 Docker & CI/CD - Guide de déploiement Guerlain
+# 🐳 Docker & CI/CD - Guide de déploiement Nourane
 
 ## 📋 Table des matières
 
@@ -35,7 +35,7 @@ node --version
 ### Structure des fichiers Docker
 
 ```
-Guerlain/
+Nourane/
 ├── Dockerfile                    # Dockerfile principal (monorepo)
 ├── docker-compose.yml           # Orchestration des services
 ├── apps/
@@ -79,7 +79,7 @@ Guerlain/
 ```bash
 # Cloner le repository
 git clone <repository-url>
-cd Guerlain
+cd Nourane
 
 # Copier le fichier d'environnement
 cp .env.example .env
@@ -99,7 +99,7 @@ EMAIL_PASSWORD=your-app-password-16-characters
 JWT_SECRET=your-secret-jwt-key
 
 # Configuration MongoDB (optionnel, valeurs par défaut)
-MONGODB_URI=mongodb://admin:guerlain123@mongodb:27017/guerlain?authSource=admin
+MONGODB_URI=mongodb://admin:guerlain123@mongodb:27017/nourane?authSource=admin
 ```
 
 ### 3. Démarrage des services
@@ -199,7 +199,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 ```bash
 # Cloner le repository sur le serveur
 git clone <repository-url>
-cd Guerlain
+cd Nourane
 
 # Configuration de l'environnement
 cp .env.example .env
@@ -347,4 +347,4 @@ Pour toute question ou problème :
 
 ---
 
-**Guerlain** - Système de gestion e-commerce avec CI/CD automatisé 🚀 
+**Nourane** - Système de gestion e-commerce avec CI/CD automatisé 🚀 
