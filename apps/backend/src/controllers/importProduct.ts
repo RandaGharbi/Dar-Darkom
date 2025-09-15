@@ -2,28 +2,32 @@ import fs from "fs";
 import Product from "../models/Product";
 import { Request, Response } from "express";
 import {
-  RawIngredientCategory,
-  RawBodyCare,
-  RawHairCare,
-  RawSkinCare,
-  RawProduct,
-  TransformedIngredient,
-  TransformedBodyCare,
-  TransformedHairCare,
-  TransformedSkinCare,
-  TransformedProduct,
+  RawPastry,
+  RawMeat,
+  RawFish,
+  RawHotDishes,
+  RawSalad,
+  RawVegetarian,
+  TransformedPastry,
+  TransformedMeat,
+  TransformedFish,
+  TransformedHotDishes,
+  TransformedSalad,
+  TransformedVegetarian,
   ImportResult,
   ImportResponse,
 } from "../types";
+import mongoose from "mongoose";
 
 // Fonction pour générer un ID unique basé sur le type et l'ID original
 function generateUniqueId(originalId: number, productType: string): number {
   const typePrefixes = {
-    ingredient: 1000000,
-    bodyCare: 2000000,
-    hairCare: 3000000,
-    skinCare: 4000000,
-    product: 5000000,
+    pastry: 6000000,
+    meat: 7000000,
+    fish: 8000000,
+    hotDishes: 9000000,
+    salad: 10000000,
+    vegetarian: 11000000,
   };
   return typePrefixes[productType as keyof typeof typePrefixes] + originalId;
 }
@@ -31,60 +35,29 @@ function generateUniqueId(originalId: number, productType: string): number {
 // Contrôleur Express pour importer tous les produits avec le nouveau schéma unifié
 export const importAllProducts = async (req: Request, res: Response) => {
   try {
+    console.log("🚀 Début de l'importation des catégories alimentaires...");
+    console.log("🔍 Base de données active:", mongoose.connection.db?.databaseName || "Non connecté");
+    console.log("🔍 Collection cible: products");
+    
     // Suppression des données existantes
     await Product.deleteMany({});
+    console.log("✅ Données existantes supprimées");
 
     let totalImported = 0;
     const importResults: ImportResult[] = [];
 
-    // 1. Import des ingrédients
+    // 1. Import des pâtisseries tunisiennes
     try {
-      const ingredientsData = fs.readFileSync(
-        "./src/data/rawIngredient.json",
+      console.log("🥮 Import des pâtisseries tunisiennes...");
+      const pastryData = fs.readFileSync(
+        "./src/data/rawPastry.json",
         "utf8"
       );
-      const ingredients: RawIngredientCategory[] = JSON.parse(ingredientsData);
+      const pastries: RawPastry[] = JSON.parse(pastryData);
 
-      const ingredientsToInsert: TransformedIngredient[] = ingredients.flatMap(
-        (category) =>
-          category.ingredients.map((ingredient) => ({
-            id: generateUniqueId(ingredient.id, "ingredient"),
-            name: ingredient.name,
-            description: ingredient.description,
-            image: ingredient.image,
-            category: category.category,
-            product_url: "", // Les ingrédients n'ont pas d'URL produit
-            price: 0, // Prix à définir selon les besoins
-            productType: "ingredient" as const,
-          }))
-      );
-
-      if (ingredientsToInsert.length > 0) {
-        await Product.insertMany(ingredientsToInsert, { ordered: false });
-        totalImported += ingredientsToInsert.length;
-        importResults.push({
-          type: "ingredients",
-          count: ingredientsToInsert.length,
-        });
-      }
-    } catch (error) {
-      importResults.push({
-        type: "ingredients",
-        error: error instanceof Error ? error.message : "Erreur inconnue",
-      });
-    }
-
-    // 2. Import des produits de soin du corps
-    try {
-      const bodyCareData = fs.readFileSync(
-        "./src/data/rawBodyCare.json",
-        "utf8"
-      );
-      const bodyCare: RawBodyCare[] = JSON.parse(bodyCareData);
-
-      const bodyCareToInsert: TransformedBodyCare[] = bodyCare.map(
+      const pastriesToInsert: TransformedPastry[] = pastries.map(
         (product) => ({
-          id: generateUniqueId(product.id, "bodyCare"),
+          id: generateUniqueId(product.id, "pastry"),
           name: product.Name,
           title: product.Name,
           subtitle: product.Subtitle,
@@ -93,36 +66,43 @@ export const importAllProducts = async (req: Request, res: Response) => {
           price: product.price,
           category: product.category,
           arrivals: product.Arrivals,
-          productType: "bodyCare" as const,
+          quantity: product.quantity,
+          status: product.status,
+          productType: "pastry" as const,
+          dailySpecial: product.dailySpecial,
         })
       );
 
-      if (bodyCareToInsert.length > 0) {
-        await Product.insertMany(bodyCareToInsert, { ordered: false });
-        totalImported += bodyCareToInsert.length;
+      if (pastriesToInsert.length > 0) {
+        await Product.insertMany(pastriesToInsert, { ordered: false });
+        totalImported += pastriesToInsert.length;
         importResults.push({
-          type: "bodyCare",
-          count: bodyCareToInsert.length,
+          type: "pastry",
+          count: pastriesToInsert.length,
         });
+        console.log(`✅ ${pastriesToInsert.length} pâtisseries importées`);
       }
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
       importResults.push({
-        type: "bodyCare",
-        error: error instanceof Error ? error.message : "Erreur inconnue",
+        type: "pastry",
+        error: errorMsg,
       });
+      console.error(`❌ Erreur import pâtisseries: ${errorMsg}`);
     }
 
-    // 3. Import des produits capillaires
+    // 2. Import des plats de viande
     try {
-      const hairCareData = fs.readFileSync(
-        "./src/data/rawHairCare.json",
+      console.log("🥩 Import des plats de viande...");
+      const meatData = fs.readFileSync(
+        "./src/data/rawMeat.json",
         "utf8"
       );
-      const hairCare: RawHairCare[] = JSON.parse(hairCareData);
+      const meats: RawMeat[] = JSON.parse(meatData);
 
-      const hairCareToInsert: TransformedHairCare[] = hairCare.map(
+      const meatsToInsert: TransformedMeat[] = meats.map(
         (product) => ({
-          id: generateUniqueId(product.id, "hairCare"),
+          id: generateUniqueId(product.id, "meat"),
           name: product.Name,
           title: product.Name,
           subtitle: product.Subtitle,
@@ -131,36 +111,43 @@ export const importAllProducts = async (req: Request, res: Response) => {
           price: product.price,
           category: product.category,
           arrivals: product.Arrivals,
-          productType: "hairCare" as const,
+          quantity: product.quantity,
+          status: product.status,
+          productType: "meat" as const,
+          dailySpecial: product.dailySpecial,
         })
       );
 
-      if (hairCareToInsert.length > 0) {
-        await Product.insertMany(hairCareToInsert, { ordered: false });
-        totalImported += hairCareToInsert.length;
+      if (meatsToInsert.length > 0) {
+        await Product.insertMany(meatsToInsert, { ordered: false });
+        totalImported += meatsToInsert.length;
         importResults.push({
-          type: "hairCare",
-          count: hairCareToInsert.length,
+          type: "meat",
+          count: meatsToInsert.length,
         });
+        console.log(`✅ ${meatsToInsert.length} plats de viande importés`);
       }
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
       importResults.push({
-        type: "hairCare",
-        error: error instanceof Error ? error.message : "Erreur inconnue",
+        type: "meat",
+        error: errorMsg,
       });
+      console.error(`❌ Erreur import plats de viande: ${errorMsg}`);
     }
 
-    // 4. Import des produits de soin de la peau
+    // 3. Import des plats de poisson
     try {
-      const skinCareData = fs.readFileSync(
-        "./src/data/rawSkinCare.json",
+      console.log("🐟 Import des plats de poisson...");
+      const fishData = fs.readFileSync(
+        "./src/data/rawFish.json",
         "utf8"
       );
-      const skinCare: RawSkinCare[] = JSON.parse(skinCareData);
+      const fishes: RawFish[] = JSON.parse(fishData);
 
-      const skinCareToInsert: TransformedSkinCare[] = skinCare.map(
+      const fishesToInsert: TransformedFish[] = fishes.map(
         (product) => ({
-          id: generateUniqueId(product.id, "skinCare"),
+          id: generateUniqueId(product.id, "fish"),
           name: product.Name,
           title: product.Name,
           subtitle: product.Subtitle,
@@ -169,67 +156,168 @@ export const importAllProducts = async (req: Request, res: Response) => {
           price: product.price,
           category: product.category,
           arrivals: product.Arrivals,
-          productType: "skinCare" as const,
+          quantity: product.quantity,
+          status: product.status,
+          productType: "fish" as const,
+          dailySpecial: product.dailySpecial,
         })
       );
 
-      if (skinCareToInsert.length > 0) {
-        await Product.insertMany(skinCareToInsert, { ordered: false });
-        totalImported += skinCareToInsert.length;
+      if (fishesToInsert.length > 0) {
+        await Product.insertMany(fishesToInsert, { ordered: false });
+        totalImported += fishesToInsert.length;
         importResults.push({
-          type: "skinCare",
-          count: skinCareToInsert.length,
+          type: "fish",
+          count: fishesToInsert.length,
         });
+        console.log(`✅ ${fishesToInsert.length} plats de poisson importés`);
       }
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
       importResults.push({
-        type: "skinCare",
-        error: error instanceof Error ? error.message : "Erreur inconnue",
+        type: "fish",
+        error: errorMsg,
       });
+      console.error(`❌ Erreur import plats de poisson: ${errorMsg}`);
     }
 
-    // 5. Import des produits généraux
+    // 4. Import des plats chauds
     try {
-      const productsData = fs.readFileSync(
-        "./src/data/rawProducts.json",
+      console.log("🔥 Import des plats chauds...");
+      const hotDishesData = fs.readFileSync(
+        "./src/data/rawHotDishes.json",
         "utf8"
       );
-      const products: RawProduct[] = JSON.parse(productsData);
+      const hotDishes: RawHotDishes[] = JSON.parse(hotDishesData);
 
-      const productsToInsert: TransformedProduct[] = products.map(
+      const hotDishesToInsert: TransformedHotDishes[] = hotDishes.map(
         (product) => ({
-          id: generateUniqueId(product.id, "product"),
-          name: product.title,
-          title: product.title,
-          image_url: product.image_url,
+          id: generateUniqueId(product.id, "hotDishes"),
+          name: product.Name,
+          title: product.Name,
+          subtitle: product.Subtitle,
+          image: product.Image,
           product_url: product.product_url,
           price: product.price,
-          customerRating: product.customerRating,
-          numberOfReviews: product.numberOfReviews,
-          productBrand: product.category, // correction ici
-          typeOfCare: product.typeOfCare,
-          category: product.category,    // correction ici
-          status: product.status || "Active", // Ajout du champ status
-          productType: "product" as const,
+          category: product.category,
+          arrivals: product.Arrivals,
+          quantity: product.quantity,
+          status: product.status,
+          productType: "hotDishes" as const,
+          dailySpecial: product.dailySpecial,
         })
       );
 
-      if (productsToInsert.length > 0) {
-        await Product.insertMany(productsToInsert, { ordered: false });
-        totalImported += productsToInsert.length;
+      if (hotDishesToInsert.length > 0) {
+        await Product.insertMany(hotDishesToInsert, { ordered: false });
+        totalImported += hotDishesToInsert.length;
         importResults.push({
-          type: "products",
-          count: productsToInsert.length,
+          type: "hotDishes",
+          count: hotDishesToInsert.length,
         });
+        console.log(`✅ ${hotDishesToInsert.length} plats chauds importés`);
       }
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
       importResults.push({
-        type: "products",
-        error: error instanceof Error ? error.message : "Erreur inconnue",
+        type: "hotDishes",
+        error: errorMsg,
       });
+      console.error(`❌ Erreur import plats chauds: ${errorMsg}`);
+    }
+
+    // 5. Import des salades
+    try {
+      console.log("🥗 Import des salades...");
+      const saladData = fs.readFileSync(
+        "./src/data/rawSalad.json",
+        "utf8"
+      );
+      const salads: RawSalad[] = JSON.parse(saladData);
+
+      const saladsToInsert: TransformedSalad[] = salads.map(
+        (product) => ({
+          id: generateUniqueId(product.id, "salad"),
+          name: product.Name,
+          title: product.Name,
+          subtitle: product.Subtitle,
+          image: product.Image,
+          product_url: product.product_url,
+          price: product.price,
+          category: product.category,
+          arrivals: product.Arrivals,
+          quantity: product.quantity,
+          status: product.status,
+          productType: "salad" as const,
+          dailySpecial: product.dailySpecial,
+        })
+      );
+
+      if (saladsToInsert.length > 0) {
+        await Product.insertMany(saladsToInsert, { ordered: false });
+        totalImported += saladsToInsert.length;
+        importResults.push({
+          type: "salad",
+          count: saladsToInsert.length,
+        });
+        console.log(`✅ ${saladsToInsert.length} salades importées`);
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
+      importResults.push({
+        type: "salad",
+        error: errorMsg,
+      });
+      console.error(`❌ Erreur import salades: ${errorMsg}`);
+    }
+
+    // 6. Import des plats végétariens
+    try {
+      console.log("🥬 Import des plats végétariens...");
+      const vegetarianData = fs.readFileSync(
+        "./src/data/rawVegetarian.json",
+        "utf8"
+      );
+      const vegetarians: RawVegetarian[] = JSON.parse(vegetarianData);
+
+      const vegetariansToInsert: TransformedVegetarian[] = vegetarians.map(
+        (product) => ({
+          id: generateUniqueId(product.id, "vegetarian"),
+          name: product.Name,
+          title: product.Name,
+          subtitle: product.Subtitle,
+          image: product.Image,
+          product_url: product.product_url,
+          price: product.price,
+          category: product.category,
+          arrivals: product.Arrivals,
+          quantity: product.quantity,
+          status: product.status,
+          productType: "vegetarian" as const,
+          dailySpecial: product.dailySpecial,
+        })
+      );
+
+      if (vegetariansToInsert.length > 0) {
+        await Product.insertMany(vegetariansToInsert, { ordered: false });
+        totalImported += vegetariansToInsert.length;
+        importResults.push({
+          type: "vegetarian",
+          count: vegetariansToInsert.length,
+        });
+        console.log(`✅ ${vegetariansToInsert.length} plats végétariens importés`);
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
+      importResults.push({
+        type: "vegetarian",
+        error: errorMsg,
+      });
+      console.error(`❌ Erreur import plats végétariens: ${errorMsg}`);
     }
 
     // Statistiques finales
+    console.log("\n📊 Statistiques par type:");
     const stats = await Product.aggregate([
       {
         $group: {
@@ -240,14 +328,14 @@ export const importAllProducts = async (req: Request, res: Response) => {
       },
     ]);
 
-    console.log("\n📊 Statistiques par type:");
-    stats.forEach((stat) => {
+    stats.forEach((stat: any) => {
       console.log(
-        `  ${stat._id}: ${
-          stat.count
-        } produits, prix moyen: ${stat.avgPrice.toFixed(2)}€`
+        `  ${stat._id}: ${stat.count} produits, prix moyen: ${stat.avgPrice?.toFixed(2) || '0.00'}€`
       );
     });
+
+    console.log(`\n🎉 Importation terminée avec succès !`);
+    console.log(`📈 Total des produits importés: ${totalImported}`);
 
     const response: ImportResponse = {
       message: "Importation terminée avec succès",
@@ -261,6 +349,41 @@ export const importAllProducts = async (req: Request, res: Response) => {
     console.error("❌ Erreur lors de l'importation:", error);
     return res.status(500).json({
       error: "Erreur lors de l'importation des produits",
+      details: error instanceof Error ? error.message : "Erreur inconnue",
+    });
+  }
+};
+
+// Endpoint de test pour vérifier les données
+export const testProducts = async (req: Request, res: Response) => {
+  try {
+    console.log("🧪 Test de vérification des produits...");
+    
+    const count = await Product.countDocuments();
+    console.log(`📊 Nombre total de produits: ${count}`);
+    
+    const products = await Product.find().limit(5);
+    console.log("🔍 Premiers produits:", products.map(p => ({ id: p.id, name: p.name, type: p.productType })));
+    
+    const stats = await Product.aggregate([
+      {
+        $group: {
+          _id: "$productType",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    
+    return res.status(200).json({
+      message: "Test de vérification",
+      totalCount: count,
+      sampleProducts: products,
+      statistics: stats,
+    });
+  } catch (error) {
+    console.error("❌ Erreur lors du test:", error);
+    return res.status(500).json({
+      error: "Erreur lors du test",
       details: error instanceof Error ? error.message : "Erreur inconnue",
     });
   }

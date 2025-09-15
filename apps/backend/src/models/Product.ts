@@ -1,37 +1,55 @@
 import mongoose, { Schema } from 'mongoose';
-import { IProduct } from '../types';
+
+// Interface pour les produits alimentaires
+export interface IProduct {
+  id: number;
+  name: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  product_url: string;
+  price: number;
+  category: string;
+  arrivals: string;
+  quantity: number;
+  status: string;
+  productType: 'pastry' | 'meat' | 'fish' | 'hotDishes' | 'salad' | 'vegetarian';
+  nessma_recipe?: {
+    url: string;
+    description: string;
+  };
+  dailySpecial: boolean;
+}
 
 const ProductSchema: Schema = new Schema({
   id: { type: Number, required: true, unique: true },
   name: { type: String, required: true },
-  title: { type: String },
+  title: { type: String, required: true },
   subtitle: { type: String },
-  description: { type: String },
-  product_url: { type: String, required: false, default: '' },
-  image_url: { type: String },
-  image: { type: String },
+  image: { type: String, required: true },
+  product_url: { type: String, required: true },
   price: { type: Number, required: true },
-  customerRating: { type: Number },
-  numberOfReviews: { type: Number },
-  productCollection: { type: String },
-  productBrand: { type: String },
-  typeOfCare: { type: String },
   category: { type: String, required: true },
-  arrivals: { type: String },
-  productType: { 
+  arrivals: { type: String, default: 'Non' },
+  quantity: { type: Number, default: 0 },
+  status: { 
     type: String, 
-    required: true, 
-    enum: ['ingredient', 'bodyCare', 'hairCare', 'skinCare', 'product'],
-    default: 'product'
-  },
-  status: {
-    type: String,
     enum: ['Active', 'Inactive'],
     default: 'Active'
   },
-  quantity: {
-    type: Number,
-    default: 0
+  productType: { 
+    type: String, 
+    required: true, 
+    enum: ['pastry', 'meat', 'fish', 'hotDishes', 'salad', 'vegetarian'],
+    default: 'pastry'
+  },
+  dailySpecial: {
+    type: Boolean,
+    default: false
+  },
+  nessma_recipe: {
+    url: { type: String },
+    description: { type: String }
   }
 }, {
   timestamps: true

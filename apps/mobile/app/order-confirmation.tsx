@@ -9,6 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useSafeNavigation } from "../hooks/useSafeNavigation";
 import OrderSummary from "../components/OrderSummary";
 import { useAuth } from "../context/AuthContext";
 import { useOrder } from "../context/OrderContext";
@@ -16,6 +17,7 @@ import { useOrder } from "../context/OrderContext";
 export default function OrderConfirmationScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const { safeBack } = useSafeNavigation();
   const { lastOrder } = useOrder();
   const params = useLocalSearchParams();
 
@@ -60,7 +62,7 @@ export default function OrderConfirmationScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.backBtn} onPress={safeBack}>
             <Text style={styles.backText}>←</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Order Confirmation</Text>

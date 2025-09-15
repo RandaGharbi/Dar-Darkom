@@ -34,15 +34,24 @@ httpClient.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
-  (error) => {
+  async (error) => {
     // Handle common errors
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      AsyncStorage.removeItem('authToken');
-      // You can trigger a logout here if needed
+      // Token expired or invalid - only remove token if we have a response
+      try {
+        await AsyncStorage.removeItem('authToken');
+        console.log('Auth token removed due to 401 error');
+      } catch (storageError) {
+        console.error('Error removing auth token:', storageError);
+      }
+    } else if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {
+      // Network error - don't remove token, just log the error
+      console.error('Network Error:', error.message);
+    } else {
+      // Other errors
+      console.error('HTTP Error:', error.response?.data || error.message);
     }
     
-    console.error('HTTP Error:', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );

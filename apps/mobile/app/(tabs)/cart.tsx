@@ -1,361 +1,339 @@
-import React from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from "react-native";
-import CartItemRow from "../../components/CartItemRow";
-import GoBackIcon from "../../assets/images/back.png";
-import { useRouter } from "expo-router";
-import { useCartStore } from "../../context/CartStore";
-import { useAuth } from "../../context/AuthContext";
-import { Swipeable } from "react-native-gesture-handler";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { config } from "../../config/env";
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeNavigation } from '../../hooks/useSafeNavigation';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper';
 
-const CartScreen: React.FC = () => {
-  const { cart, updateCartItem, removeFromCart, fetchCart } = useCartStore();
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+}
+
+export default function CartScreen() {
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
   const insets = useSafeAreaInsets();
-
-  // Redirige si non connecté
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/"); // ou '/login'
+  const { safeBack } = useSafeNavigation();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([
+    {
+      id: '1',
+      name: 'Homemade Couscous',
+      price: 12.99,
+      quantity: 1,
+      imageUrl: 'https://www.bennasafi.com/media/medium/1578061341_couscous.bel.alouch.png'
+    },
+    {
+      id: '2',
+      name: 'Brik with Egg',
+      price: 8.99,
+      quantity: 2,
+      imageUrl: 'https://cuisine.nessma.tv/uploads/11/2019-11/189127a525113fd0dc613fb76b8509af.png'
+    },
+    {
+      id: '3',
+      name: 'Tajine',
+      price: 15.99,
+      quantity: 1,
+      imageUrl: 'https://cuisine.nessma.tv/uploads/7/2022-01/daurade-grillee-citron.jpg'
     }
-  }, [isAuthenticated, router]);
+  ]);
 
-  // Charge le panier une seule fois au montage
-  React.useEffect(() => {
-    if (isAuthenticated && user?._id) {
-      fetchCart(user._id);
-    }
-  }, [isAuthenticated, user?._id, fetchCart]); // fetchCart est stable depuis Zustand
+  const handleQuantityChange = (itemId: string, change: number) => {
+    setCartItems(prevItems => 
+      prevItems.map(item => {
+        if (item.id === itemId) {
+          const newQuantity = item.quantity + change;
+          if (newQuantity <= 0) {
+            return null; // Remove item if quantity becomes 0
+          }
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      }).filter(Boolean) as CartItem[]
+    );
+  };
 
-  const subtotal =
-    cart?.items?.reduce((sum, item) => {
-      const product = typeof item.productId === "object" ? item.productId : {};
-      const price =
-        product && "price" in product && typeof product.price === "number"
-          ? product.price
-          : 0;
-      return sum + price * item.quantity;
-    }, 0) || 0;
-  const taxRate = 0.1; // 10% de taxes (modifie selon ton besoin)
-  const taxes = subtotal * taxRate;
-  const total = subtotal + taxes;
+  const handleBack = () => {
+    safeBack();
+  };
 
-  // Bloc Order Summary à placer juste après la liste
-  const renderOrderSummary = () => (
-    <SafeAreaView style={{ backgroundColor: "transparent" }}>
-      <View style={styles.orderSummaryContainer}>
-        <View style={styles.divider} />
-        <Text style={styles.summaryTitle}>Order Summary</Text>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>{subtotal.toFixed(2)}€</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Shipping</Text>
-          <Text style={styles.summaryValue}>Free</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Taxes</Text>
-          <Text style={styles.summaryValue}>{taxes.toFixed(2)}€</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text style={[styles.summaryLabel, styles.totalText]}>Total</Text>
-          <Text style={[styles.summaryValue, styles.totalText]}>
-            {total.toFixed(2)}€
-          </Text>
-        </View>
-      </View>
-    </SafeAreaView>
-  );
+  const calculateSubtotal = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const calculateTax = () => {
+    return calculateSubtotal() * 0.05; // 5% tax
+  };
+
+  const calculateTotal = () => {
+    return calculateSubtotal() + calculateTax();
+  };
+
+  const handleScroll = (event: any) => {
+    const scrollY = event.nativeEvent.contentOffset.y;
+    setIsScrolled(scrollY > 10);
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", paddingTop: 32 }}>
-      {/* Header avec GoBack et titre centré */}
-      <View style={styles.headerRow}>
-        <TouchableOpacity
-          style={styles.goBackBtn}
-          onPress={() => router.back()}
-        >
-          <Image source={GoBackIcon} style={styles.goBackIcon} />
+    <SafeAreaWrapper backgroundColor="#fff" edges={['top']}>
+      {/* Header sticky */}
+      <View style={[
+        styles.stickyHeader, 
+        { top: insets.top },
+        isScrolled && styles.stickyHeaderScrolled
+      ]}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.title}>Cart</Text>
-        <View style={{ width: 32 }} />
+        <Text style={styles.headerTitle}>My Cart</Text>
+        <View style={styles.placeholder} />
       </View>
+      
+      <ScrollView 
+        style={styles.container}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
 
-      {/* Affichage conditionnel si panier vide */}
-      {!cart?.items || cart.items.length === 0 ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 60,
-          }}
-        >
-          <Text style={{ color: "#888", fontSize: 18, textAlign: "center" }}>
-            Votre panier est vide
-          </Text>
+        {/* Cart Items */}
+        <View style={styles.cartItems}>
+          {cartItems.map((item, index) => (
+            <View key={item.id}>
+              <View style={styles.cartItem}>
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.itemImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.itemInfo}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+                </View>
+                <View style={styles.quantityControls}>
+                  <TouchableOpacity 
+                    style={styles.quantityButton}
+                    onPress={() => handleQuantityChange(item.id, -1)}
+                  >
+                    <Ionicons name="remove" size={16} color="#333" />
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{item.quantity}</Text>
+                  <TouchableOpacity 
+                    style={styles.quantityButton}
+                    onPress={() => handleQuantityChange(item.id, 1)}
+                  >
+                    <Ionicons name="add" size={16} color="#333" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              {index < cartItems.length - 1 && <View style={styles.separator} />}
+            </View>
+          ))}
         </View>
-      ) : (
-        <>
-          {/* Liste des produits + Order Summary juste après */}
-          <FlatList
-            data={cart.items}
-            keyExtractor={(item, index) => {
-              const product =
-                typeof item.productId === "object" ? item.productId : {};
-              return product &&
-                "_id" in product &&
-                typeof product._id === "string"
-                ? product._id
-                : typeof item.productId === "string"
-                  ? item.productId
-                  : index.toString();
-            }}
-            renderItem={({ item }) => {
-              const product =
-                typeof item.productId === "object" ? item.productId : {};
-              // Correction : on récupère l'id numérique
-              const id =
-                product && "id" in product && typeof product.id === "number"
-                  ? product.id
-                  : typeof item.productId === "number"
-                    ? item.productId
-                    : null;
-              const name =
-                product && "name" in product && typeof product.name === "string"
-                  ? product.name
-                  : "";
-              const volume =
-                product &&
-                "subtitle" in product &&
-                typeof product.subtitle === "string"
-                  ? product.subtitle
-                  : "";
-              const image =
-                (product &&
-                  "image_url" in product &&
-                  typeof product.image_url === "string" &&
-                  product.image_url) ||
-                (product &&
-                  "image" in product &&
-                  typeof product.image === "string" &&
-                  product.image) ||
-                `${config.API_BASE_URL}/images/placeholder.png`;
-              const price =
-                product &&
-                "price" in product &&
-                typeof product.price === "number"
-                  ? product.price
-                  : 0;
-              return (
-                <Swipeable
-                  renderRightActions={() => (
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: "#FF4D4F",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: 80,
-                        height: "90%",
-                        borderRadius: 10,
-                        marginVertical: 5,
-                      }}
-                      onPress={() =>
-                        id !== null &&
-                        Alert.alert(
-                          "Confirmation",
-                          "Voulez-vous vraiment supprimer ce produit du panier ?",
-                          [
-                            { text: "Annuler", style: "cancel" },
-                            {
-                              text: "Supprimer",
-                              style: "destructive",
-                              onPress: () => removeFromCart(user?._id || "", id?.toString() || ""),
-                            },
-                          ]
-                        )
-                      }
-                    >
-                      <Text style={{ color: "white", fontWeight: "bold" }}>
-                        Supprimer
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                >
-                  <CartItemRow
-                    item={{
-                      id: id || 0,
-                      name,
-                      volume,
-                      image,
-                      price,
-                      quantity: item.quantity,
-                    }}
-                    onChangeQuantity={(delta) =>
-                      id !== null &&
-                      updateCartItem(
-                        user?._id || "",
-                        id.toString(),
-                        item.quantity + delta
-                      )
-                    }
-                    onDelete={() =>
-                      id !== null &&
-                      Alert.alert(
-                        "Confirmation",
-                        "Voulez-vous vraiment supprimer ce produit du panier ?",
-                        [
-                          { text: "Annuler", style: "cancel" },
-                          {
-                            text: "Supprimer",
-                            style: "destructive",
-                            onPress: () =>
-                              removeFromCart(user?._id || "", id.toString()),
-                          },
-                        ]
-                      )
-                    }
-                  />
-                </Swipeable>
-              );
-            }}
-            style={{ marginTop: 8 }}
-            ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-            ListFooterComponent={renderOrderSummary}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 120 }}
-          />
 
-          {/* Bouton Checkout flottant en bas */}
-          <SafeAreaView
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "#fff",
-              padding: 16,
-              borderTopLeftRadius: 18,
-              borderTopRightRadius: 18,
-              shadowColor: "#000",
-              shadowOpacity: 0.08,
-              shadowRadius: 8,
-              elevation: 8,
-              paddingBottom: (insets.bottom || 0) + 70,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#ED9626",
-                borderRadius: 24,
-                paddingVertical: 13,
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-              }}
-              onPress={() => router.push("/checkout")}
-            >
-              <Text style={{ color: "#000", fontWeight: "bold", fontSize: 18 }}>
-                Checkout
-              </Text>
-            </TouchableOpacity>
-          </SafeAreaView>
-        </>
-      )}
-    </SafeAreaView>
+        {/* Payment Summary */}
+        <View style={styles.paymentSummary}>
+          <Text style={styles.summaryTitle}>Payment Summary</Text>
+          
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Subtotal</Text>
+            <Text style={styles.summaryValue}>${calculateSubtotal().toFixed(2)}</Text>
+          </View>
+          
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Tax</Text>
+            <Text style={styles.summaryValue}>${calculateTax().toFixed(2)}</Text>
+          </View>
+          
+          <View style={styles.summarySeparator} />
+          
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalValue}>${calculateTotal().toFixed(2)}</Text>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Checkout Button */}
+      <View style={styles.checkoutContainer}>
+        <TouchableOpacity style={styles.checkoutButton}>
+          <Text style={styles.checkoutText}>Proceed to Checkout</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaWrapper>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    backgroundColor: '#fff',
+    paddingTop: 100, // Espace pour le header sticky + safe area
+    paddingBottom: 20,
+  },
+  stickyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 0,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  goBackBtn: {
-    width: 32,
-    height: 32,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  goBackIcon: {
-    width: 20,
-    height: 20,
-    resizeMode: "contain",
-    tintColor: "#000",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1,
-  },
-  itemSeparator: {
-    height: 1,
-    backgroundColor: "#F2F2F2",
-    marginVertical: 2,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#E5E5E5",
-    marginVertical: 16,
-  },
-  orderSummaryContainer: {
-    marginTop: 0,
-    marginBottom: 0,
-    paddingBottom: 0,
-    paddingHorizontal: 17,
-  },
-  summaryTitle: { fontWeight: "bold", fontSize: 16, marginBottom: 8 },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 10,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    color: "#8A7861",
-  },
-  summaryValue: {
-    fontSize: 13,
-    color: "#222",
-    textAlign: "right",
-  },
-  totalText: { fontSize: 13 },
-  checkoutButton: {
-    position: "absolute",
-    left: 20,
-    right: 20,
-    backgroundColor: "#ED9626",
-    borderRadius: 24,
     paddingVertical: 16,
-    alignItems: "center",
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+  },
+  stickyHeaderScrolled: {
+    backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
     elevation: 2,
   },
-  checkoutButtonText: {
-    color: "#000",
-    fontWeight: "bold",
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
     fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  placeholder: {
+    width: 40,
+  },
+  cartItems: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  cartItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  itemImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 16,
+  },
+  itemInfo: {
+    flex: 1,
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  itemPrice: {
+    fontSize: 14,
+    color: '#666',
+  },
+  quantityControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  quantityButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f8f9fa',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginHorizontal: 16,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    marginLeft: 76,
+  },
+  paymentSummary: {
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  summaryLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
+  summaryValue: {
+    fontSize: 14,
+    color: '#333',
+  },
+  summarySeparator: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    marginVertical: 12,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  totalLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  totalValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  checkoutContainer: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  checkoutButton: {
+    backgroundColor: '#FF6B35',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  checkoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
-export default CartScreen;

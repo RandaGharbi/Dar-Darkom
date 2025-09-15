@@ -29,11 +29,11 @@ export const createOrder = async (req: Request, res: Response) => {
     // Prépare les items de la commande avec tous les détails produit
     const items = cart.items.map((item) => {
       const product = item.productId as unknown as IProduct;
-      console.log("Image du produit:", product.image, product.image_url);
+      console.log("Image du produit:", product.image);
       return {
         name: product.name,
         qty: item.quantity,
-        image: product.image || product.image_url || '',
+        image: product.image || '',
         price: product.price,
       };
     });

@@ -1,7 +1,7 @@
 import { config } from './env';
 
 // Centralized API configuration
-const API_CONFIG = {
+export const API_CONFIG = {
   // Backend base URL - Uses environment configuration
   BASE_URL: config.API_BASE_URL,
   
@@ -14,6 +14,8 @@ const API_CONFIG = {
     ME: '/api/me',
     UPDATE_USER: '/api/update',
     UPLOAD_PROFILE_IMAGE: '/api/upload-profile-image',
+    APPLE: '/api/apple',
+    GOOGLE: '/api/google',
     
     // Products
     PRODUCTS: '/api/products',
@@ -24,12 +26,9 @@ const API_CONFIG = {
     PRODUCTS_BY_CATEGORY: (category: string) => `/api/products/category/${encodeURIComponent(category)}`,
     PRODUCTS_BY_BRAND: '/api/products/brand',
     PRODUCTS_BY_PRICE_RANGE: '/api/products/price-range',
+    DAILY_SPECIAL: '/api/products/daily-special',
     
-    // Favorites
-    FAVORITES: '/api/favorites',
-    ADD_FAVORITE: '/api/favorites/add',
-    REMOVE_FAVORITE: (id: number) => `/api/favorites/remove/${id}`,
-    TOGGLE_FAVORITE: '/api/favorites/toggle',
+
     
     // Cart
     CART: '/api/cart',

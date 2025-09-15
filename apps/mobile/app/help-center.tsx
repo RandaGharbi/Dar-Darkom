@@ -11,6 +11,7 @@ import {
 import FAQItem from "../components/FAQItem";
 import { FAQItemType } from "../constants/types";
 import { useRouter } from 'expo-router';
+import { useSafeNavigation } from '../hooks/useSafeNavigation';
 import aboutIcon from "../assets/images/about.png";
 import shippingIcon from "../assets/images/shipping.png";
 import returnsIcon from "../assets/images/returns.png";
@@ -42,13 +43,14 @@ const faqData: FAQItemType[] = [
 
 const HelpCenterScreen = () => {
   const router = useRouter();
+  const { safeBack } = useSafeNavigation();
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.goBackButton}
-          onPress={() => router.back()}
+          onPress={safeBack}
         >
           <Image source={goBackIcon} style={styles.goBackIcon} />
         </TouchableOpacity>

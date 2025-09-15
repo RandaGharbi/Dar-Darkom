@@ -41,8 +41,6 @@ export class SchedulerService {
       const now = new Date();
       const toleranceTime = new Date(now.getTime() + 2 * 60 * 1000); // +2 minutes
       
-      console.log('🕐 [SCHEDULER] Heure actuelle:', now.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }));
-      console.log('🕐 [SCHEDULER] Tolérance jusqu\'à:', toleranceTime.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }));
       
       // Récupérer tous les exports actifs qui doivent s'exécuter maintenant (avec tolérance)
       const scheduledExports = await ScheduledExport.find({
@@ -131,7 +129,7 @@ export class SchedulerService {
             'Nom': product.name,
             'Prix': product.price.toFixed(2) + ' €',
             'Catégorie': product.category || 'Non catégorisé',
-            'Description': product.description || ''
+            'Description': product.subtitle || ''
           }));
           filename = `produits_${new Date().toISOString().split('T')[0]}`;
           records = data.length;

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { useSafeNavigation } from '../hooks/useSafeNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API_CONFIG from '../config/api';
 
@@ -21,6 +22,7 @@ import BackIcon from '../assets/images/back.png';
 export default function PersonalInfo() {
   const router = useRouter();
   const { user, isAuthenticated, setUser } = useAuth();
+  const { safeBack } = useSafeNavigation();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -37,11 +39,13 @@ export default function PersonalInfo() {
         console.log('📝 Setting user data:', {
           name: user.name,
           email: user.email,
+          displayEmail: user.displayEmail,
           phoneNumber: user.phoneNumber,
           address: user.address
         });
         setName(user.name || '');
-        setEmail(user.email || '');
+        // Utiliser displayEmail si disponible (pour masquer les emails Apple privés), sinon utiliser l'email normal
+        setEmail(user.displayEmail || user.email || '');
         setPhone(user.phoneNumber || '');
         setAddress(user.address || '');
       } else {
@@ -54,15 +58,32 @@ export default function PersonalInfo() {
   }, [user]);
 
   const handleSave = async () => {
-    if (!name.trim() || !email.trim() || !phone.trim()) {
-      Alert.alert('Error', 'Please fill in all fields.');
+    if (!name.trim()) {
+      Alert.alert('Error', 'Please enter your name.');
       return;
     }
     
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email)) {
-      Alert.alert('Error', 'Please enter a valid email address.');
-      return;
+    // Pour les utilisateurs Apple/Google, l'email peut être privé
+    if (user?.appleId || user?.googleId) {
+      if (!name.trim()) {
+        Alert.alert('Error', 'Please enter your name.');
+        return;
+      }
+    } else {
+      // Pour les utilisateurs avec mot de passe, vérifier email et téléphone
+      if (!email.trim() || !phone.trim()) {
+        Alert.alert('Error', 'Please fill in all fields.');
+        return;
+      }
+    }
+    
+    // Valider l'email seulement si ce n'est pas un utilisateur Apple/Google avec email privé
+    if (!user?.appleId && !user?.googleId) {
+      const emailRegex = /\S+@\S+\.\S+/;
+      if (!emailRegex.test(email)) {
+        Alert.alert('Error', 'Please enter a valid email address.');
+        return;
+      }
     }
 
     if (!isAuthenticated) {
@@ -85,7 +106,8 @@ export default function PersonalInfo() {
         },
         body: JSON.stringify({
           name: name.trim(),
-          email: email.trim(),
+          // Pour les utilisateurs Apple avec email privé, ne pas envoyer l'email modifié
+          ...(user?.email?.includes('@privaterelay.appleid.com') ? {} : { email: email.trim() }),
           phoneNumber: phone.trim(),
           address: address.trim(),
         }),
@@ -117,7 +139,7 @@ export default function PersonalInfo() {
         }
         
         Alert.alert('Success', 'Your information has been updated successfully!');
-        router.back();
+        safeBack();
       } else {
         const responseText = await response.text();
         console.log('❌ Error response text:', responseText);
@@ -154,7 +176,7 @@ export default function PersonalInfo() {
     >
       {/* Header horizontal avec icône back + titre */}
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={safeBack} style={styles.backButton}>
           <Image source={BackIcon} style={styles.backIcon} />
         </Pressable>
 
@@ -177,18 +199,29 @@ export default function PersonalInfo() {
         accessibilityLabel="Name input"
       />
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={styles.label}>
+        Email {user?.appleId || user?.googleId ? '(Optionnel)' : ''}
+      </Text>
       <TextInput
-        style={styles.input}
-        placeholder="Your email"
+        style={[
+          styles.input,
+          (user?.appleId || user?.googleId) && styles.disabledInput
+        ]}
+        placeholder={user?.appleId || user?.googleId ? "Email privé (Apple/Google)" : "Your email"}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
         spellCheck={false}
+        editable={!user?.appleId && !user?.googleId}
         accessibilityLabel="Email input"
       />
+      {(user?.appleId || user?.googleId) && (
+        <Text style={styles.privateEmailNote}>
+          🔒 Email protégé par {user?.appleId ? 'Apple' : 'Google'} - Non modifiable
+        </Text>
+      )}
 
       <Text style={styles.label}>Phone Number</Text>
       <TextInput
@@ -279,6 +312,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginBottom: 20,
     fontSize: 16,
+  },
+  disabledInput: {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#ddd',
+    color: '#666',
+  },
+  privateEmailNote: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+    marginTop: -15,
+    marginBottom: 15,
+    textAlign: 'center',
   },
   saveButton: {
     backgroundColor: 'black',

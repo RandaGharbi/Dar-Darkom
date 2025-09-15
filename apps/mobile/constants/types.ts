@@ -48,6 +48,23 @@ export type Product = {
   productType: 'ingredient' | 'bodyCare' | 'hairCare' | 'skinCare' | 'product';
 };
 
+// Type pour les produits alimentaires du backend
+export type FoodProduct = {
+  id: number;
+  name: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  product_url: string;
+  price: number;
+  category: string;
+  arrivals: string;
+  quantity: number;
+  status: string;
+  productType: 'pastry' | 'meat' | 'fish' | 'hotDishes' | 'salad' | 'vegetarian';
+  dailySpecial: boolean;
+};
+
 export type Order = {
   productUrl: string;
 };

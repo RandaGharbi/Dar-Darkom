@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { StatusBar } from 'expo-status-bar';
-import { FavoritesProvider } from '../context/FavoritesContext';
+import { CategoriesProvider } from '../context/CategoriesContext';
 import { AuthProvider } from '../context/AuthContext';
 import { OrderProvider } from "../context/OrderContext";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -27,7 +27,7 @@ function AppContent() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <FavoritesProvider>
+        <CategoriesProvider>
           <OrderProvider>
             <SelectedCardProvider>
               <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
@@ -48,7 +48,7 @@ function AppContent() {
               </View>
             </SelectedCardProvider>
           </OrderProvider>
-        </FavoritesProvider>
+        </CategoriesProvider>
       </AuthProvider>
     </ThemeProvider>
   );

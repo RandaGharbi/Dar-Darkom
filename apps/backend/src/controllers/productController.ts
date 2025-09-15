@@ -223,3 +223,24 @@ export const updateProduct = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Erreur lors de la modification du produit', error: err });
   }
 };
+
+// Récupérer les plats du jour (produits avec dailySpecial = true, excluant les pâtisseries)
+export const getDailySpecialProducts = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Récupérer les plats du jour en excluant les pâtisseries et limiter à 10 plats
+    const dailySpecialProducts = await Product.find({ 
+      dailySpecial: true,
+      category: { $ne: "Pâtisserie" } // Exclure les pâtisseries
+    })
+    .limit(10) // Limiter à 10 plats maximum
+    .sort({ createdAt: -1 }); // Trier par date de création (plus récents en premier)
+    
+    res.status(200).json(dailySpecialProducts);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des plats du jour:', error);
+    res.status(500).json({
+      message: "Erreur lors de la récupération des plats du jour",
+      error: error instanceof Error ? error.message : 'Erreur inconnue'
+    });
+  }
+};

@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAuth } from "../context/AuthContext";
+import { useSafeNavigation } from "../hooks/useSafeNavigation";
 import { apiService, Card } from "../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelectedCard } from "../context/PaymentContext";
@@ -34,6 +35,7 @@ const CHECK_COLOR = "#F2910D";
 export default function PaymentMethodsScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const { safeBack } = useSafeNavigation();
   const [cards, setCards] = useState<Card[]>([]);
   const [loadingCards, setLoadingCards] = useState(true);
   const { selectedCardId, setSelectedCardId } = useSelectedCard();
@@ -71,7 +73,7 @@ export default function PaymentMethodsScreen() {
 
 
   const handleGoBack = () => {
-    router.back();
+    safeBack();
   };
 
   const handleAddCard = () => {

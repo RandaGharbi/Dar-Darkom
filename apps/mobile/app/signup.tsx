@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { useSafeNavigation } from '../hooks/useSafeNavigation';
 import uploadImg from '../assets/images/upload.png';
 import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerResult, ImagePickerAsset } from 'expo-image-picker';
@@ -70,6 +71,7 @@ const SignupScreen: React.FC<SignupProps> = () => {
 
   const router = useRouter();
   const { signup, isAuthenticated, loading: authLoading } = useAuth();
+  const { safeBack } = useSafeNavigation();
 
   // Rediriger si déjà connecté
   useEffect(() => {
@@ -216,7 +218,7 @@ const SignupScreen: React.FC<SignupProps> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.closeIcon} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.closeIcon} onPress={safeBack}>
         <Text style={{ fontSize: 22 }}>×</Text>
       </TouchableOpacity>
       <Text style={styles.title}>Create your account</Text>

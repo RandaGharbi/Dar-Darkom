@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useCartStore } from "../context/CartStore";
+import { useSafeNavigation } from "../hooks/useSafeNavigation";
 import { useSelectedCard } from "../context/PaymentContext";
 import ChevronRight from '../assets/images/chevronRight.png';
 import CardIcon from '../assets/images/card.png';
@@ -24,6 +25,7 @@ import { useMutation } from '@tanstack/react-query';
 export default function CheckoutScreen() {
   const router = useRouter();
   const { cart, clearCart, fetchCart } = useCartStore();
+  const { safeBack } = useSafeNavigation();
   const { user } = useAuth();
   const { selectedCardId } = useSelectedCard();
   const [cards, setCards] = useState<Card[]>([]);
@@ -139,7 +141,7 @@ export default function CheckoutScreen() {
       contentContainerStyle={{ paddingBottom: 32 }}
     >
       <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity onPress={safeBack} style={styles.backBtn}>
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Checkout</Text>

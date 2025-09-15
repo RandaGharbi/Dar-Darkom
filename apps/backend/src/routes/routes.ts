@@ -48,8 +48,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Route pour uploader une image de profil utilisateur
-// @ts-expect-error - Ignorer les conflits de types multer
-router.post('/upload-profile-image', upload.single('profileImage'), (req, res) => {
+router.post('/upload-profile-image', upload.single('profileImage') as any, (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }

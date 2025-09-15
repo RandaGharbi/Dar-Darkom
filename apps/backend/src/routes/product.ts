@@ -10,20 +10,27 @@ import {
     deleteProductById,
     deleteAllProducts,
     createProduct,
-    updateProduct
+    updateProduct,
+    getDailySpecialProducts
 } from '../controllers/productController';
-import { importAllProducts } from '../controllers/importProduct';
+import { importAllProducts, testProducts } from '../controllers/importProduct';
 
 const router = express.Router();
 
 // Route pour importer les produits
 router.post('/import', importAllProducts);
 
+// Route de test pour vérifier les produits
+router.get('/test', testProducts);
+
 // Route POST pour créer un produit (alternative explicite)
 router.post('/addProduct', createProduct);
 
 // Route PUT pour modifier un produit
 router.put('/:productId', updateProduct);
+
+// Route GET pour récupérer les plats du jour
+router.get('/daily-special', getDailySpecialProducts);
 
 // Route GET pour récupérer tous les produits
 router.get('/', getAllProducts);

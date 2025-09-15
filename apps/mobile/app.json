@@ -1,11 +1,11 @@
 {
   "expo": {
-      "name": "Nourane",
-  "slug": "Nourane",
+    "name": "DAR DARKOM",
+    "slug": "dar-darkom",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logoGuerlain.png",
-    "scheme": "nourane",
+    "icon": "./assets/images/DarLogo.png",
+    "scheme": "dar-darkom",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -13,20 +13,28 @@
       "bundleIdentifier": "com.rindaa.Nourane",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "usesAppleSignIn": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "374983345955-i49tvob0g5q3c167ljvic8vbtfdj07i1.apps.googleusercontent.com"
+        }
       }
     },
     "android": {
       "edgeToEdgeEnabled": true,
       "package": "com.rindaa.Nourane",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logoGuerlain.png",
+        "foregroundImage": "./assets/images/DarLogo.png",
         "backgroundColor": "#ffffff"
       },
       "splash": {
-        "image": "./assets/images/logoGuerlain.png",
+        "image": "./assets/images/DarLogo.png",
         "resizeMode": "contain",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -38,7 +46,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logoGuerlain.png",
+          "image": "./assets/images/DarLogo.png",
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "imageWidth": 200

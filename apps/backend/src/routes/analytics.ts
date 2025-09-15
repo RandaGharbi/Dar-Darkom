@@ -433,11 +433,11 @@ router.get('/export', adminAuth, async (req, res) => {
           'Nom': product.name,
           'Prix': product.price.toFixed(2) + ' €',
           'Catégorie': product.category || 'Non catégorisé',
-          'Marque': product.productBrand || 'Non spécifiée',
-          'Description': product.description || '',
+          'Marque': 'Non spécifiée',
+          'Description': product.subtitle || '',
           'Stock': product.quantity || 0,
           'Type': product.productType || 'product',
-          'Date de création': new Date(product.createdAt).toLocaleDateString('fr-FR')
+          'Date de création': new Date().toLocaleDateString('fr-FR')
         }));
         filename = `produits_${new Date().toISOString().split('T')[0]}`;
         break;

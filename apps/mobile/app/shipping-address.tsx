@@ -13,6 +13,7 @@ import {
   Image,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeNavigation } from "../hooks/useSafeNavigation";
 import {
   addAddress,
   getAddressesByUser,
@@ -41,6 +42,7 @@ export interface Address {
 export default function ShippingAddressScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const { safeBack } = useSafeNavigation();
   const userId = user?._id || "";
   // const { user } = useContext(AuthContext); // Décommente si tu utilises un contexte Auth
 
@@ -205,7 +207,7 @@ export default function ShippingAddressScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={{ flex: 1, backgroundColor: "#fff" }} contentContainerStyle={{ paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
         <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.backBtn} onPress={safeBack}>
             <Text style={styles.backText}>←</Text>
           </TouchableOpacity>
           <Text style={styles.title}>Shipping Address</Text>

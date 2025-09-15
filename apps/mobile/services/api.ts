@@ -95,54 +95,32 @@ class ApiService {
     return this.request<Product[]>(getEndpoint('PRODUCTS_BY_TYPE', typeOfCare));
   }
 
-  // Favoris
-  async getFavorites(token: string): Promise<ApiResponse<any[]>> {
-    return this.request<any[]>(API_CONFIG.ENDPOINTS.FAVORITES, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  // Récupérer les plats du jour (produits avec dailySpecial = true)
+  async getDailySpecialProducts(): Promise<ApiResponse<any[]>> {
+    return this.request<any[]>(API_CONFIG.ENDPOINTS.DAILY_SPECIAL);
   }
 
-  async addToFavorites(product: Product, token: string): Promise<ApiResponse<any>> {
-    const body = {
-      productId: product.id,
-      title: product.title || product.name,
-      subtitle: product.subtitle || '',
-      price: product.price,
-      image_url: product.image_url || product.image || '',
-      category: product.category,
-    };
-    return this.request<any>(API_CONFIG.ENDPOINTS.ADD_FAVORITE, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json', // Ajout du header manquant
-      },
-      body: JSON.stringify(body),
-    });
+  // Récupérer les produits de poisson
+  async getFishProducts(): Promise<ApiResponse<Product[]>> {
+    return this.request<Product[]>('/api/products/type/fish');
   }
 
-  async removeFromFavorites(productId: number, token: string): Promise<ApiResponse<any>> {
-    const endpoint = getEndpoint('REMOVE_FAVORITE', productId);
-    return this.request<any>(endpoint, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  // Récupérer les produits végétariens
+  async getVegetarianProducts(): Promise<ApiResponse<Product[]>> {
+    return this.request<Product[]>('/api/products/type/vegetarian');
   }
 
-  async toggleFavorite(productId: number, token: string): Promise<ApiResponse<any>> {
-    const body = { productId };
-    return this.request<any>(API_CONFIG.ENDPOINTS.TOGGLE_FAVORITE, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    });
+  // Récupérer les produits de viande
+  async getMeatProducts(): Promise<ApiResponse<Product[]>> {
+    return this.request<Product[]>('/api/products/category/Viandes');
   }
+
+  // Récupérer les produits de salade
+  async getSaladProducts(): Promise<ApiResponse<Product[]>> {
+    return this.request<Product[]>('/api/products/type/salad');
+  }
+
+
 
   // Authentification
   async login(email: string, password: string): Promise<ApiResponse<any>> {

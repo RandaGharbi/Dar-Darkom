@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { useSafeNavigation } from '../../hooks/useSafeNavigation';
 import { useProducts } from '../../hooks/useProducts';
 import { useAuth } from '../../context/AuthContext';
 import { useCartStore } from '../../context/CartStore';
@@ -10,6 +11,7 @@ export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { data: products, isLoading, error } = useProducts();
+  const { safeBack } = useSafeNavigation();
   const { isAuthenticated, user } = useAuth();
   const { addToCart } = useCartStore();
 
@@ -54,7 +56,7 @@ export default function ProductDetailsScreen() {
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.iconBtn} onPress={safeBack}>
           <Text style={styles.icon}>←</Text>
         </TouchableOpacity>
       </View>

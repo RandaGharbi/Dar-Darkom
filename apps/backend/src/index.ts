@@ -16,6 +16,7 @@ import addressRoutes from './routes/address';
 import cartRoutes from './routes/cart';
 import ordersRoutes from './routes/orders';
 import notificationRoutes from './routes/notifications';
+import audioRoutes from './routes/audioRoutes';
 import { connectDB } from './database/connectToDB';
 import { schedulerService } from './services/schedulerService';
 
@@ -65,6 +66,7 @@ app.use('/api/addresses', addressRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/audio', audioRoutes);
 
 // WebSocket pour les notifications
 io.on('connection', (socket: Socket) => {

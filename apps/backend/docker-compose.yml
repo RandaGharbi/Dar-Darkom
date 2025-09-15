@@ -4,7 +4,7 @@ services:
     build: .
     container_name: nourane-backend
     ports:
-      - "4000:4000"
+      - "5000:5000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/nourane
     depends_on:

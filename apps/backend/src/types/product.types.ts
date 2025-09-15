@@ -1,65 +1,99 @@
-// Types pour les données brutes des fichiers JSON
-export interface RawIngredientCategory {
-  category: string;
-  ingredients: Array<{
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-  }>;
-}
+// Types pour les données brutes des fichiers JSON - Catégories alimentaires uniquement
 
-export interface RawBodyCare {
-  id: number;
-  Name: string;
-  Subtitle: string;
-  Image: string;
-  product_url: string;
-  price: number;
-  category: string;
-  Arrivals: string;
-}
-
-export interface RawHairCare {
+export interface RawPastry {
   id: number;
   Subtitle: string;
   Name: string;
-  product_url: string;
   Image: string;
+  product_url: string;
   price: number;
   Arrivals: string;
   category: string;
+  quantity: number;
+  status: string;
+  productType: string;
+  dailySpecial: boolean;
 }
 
-export interface RawProduct {
-  category: string;
+export interface RawMeat {
   id: number;
-  title: string;
+  Subtitle: string;
+  Name: string;
+  Image: string;
   product_url: string;
-  image_url: string;
   price: number;
-  customerRating: number;
-  numberOfReviews: number;
-  collection: string;
-  typeOfCare: string;
-  status?: string;
+  Arrivals: string;
+  category: string;
+  quantity: number;
+  status: string;
+  productType: string;
+  dailySpecial: boolean;
+}
+
+export interface RawFish {
+  id: number;
+  Subtitle: string;
+  Name: string;
+  Image: string;
+  product_url: string;
+  price: number;
+  Arrivals: string;
+  category: string;
+  quantity: number;
+  status: string;
+  productType: string;
+  dailySpecial: boolean;
+}
+
+export interface RawHotDishes {
+  id: number;
+  Subtitle: string;
+  Name: string;
+  Image: string;
+  product_url: string;
+  price: number;
+  Arrivals: string;
+  category: string;
+  quantity: number;
+  status: string;
+  productType: string;
+  dailySpecial: boolean;
+}
+
+export interface RawSalad {
+  id: number;
+  Subtitle: string;
+  Name: string;
+  Image: string;
+  product_url: string;
+  price: number;
+  Arrivals: string;
+  category: string;
+  quantity: number;
+  status: string;
+  productType: string;
+  dailySpecial: boolean;
+}
+
+export interface RawVegetarian {
+  id: number;
+  Subtitle: string;
+  Name: string;
+  Image: string;
+  product_url: string;
+  price: number;
+  Arrivals: string;
+  category: string;
+  quantity: number;
+  status: string;
+  productType: string;
+  dailySpecial: boolean;
 }
 
 // Types pour les produits transformés
-export type ProductType = 'ingredient' | 'bodyCare' | 'hairCare' | 'skinCare' | 'product';
+export type ProductType = 'pastry' | 'meat' | 'fish' | 'hotDishes' | 'salad' | 'vegetarian';
 
-export interface TransformedIngredient {
-  id: number;
-  name: string;
-  description: string;
-  image: string;
-  category: string;
-  product_url: string;
-  price: number;
-  productType: 'ingredient';
-}
-
-export interface TransformedBodyCare {
+export interface TransformedPastry {
   id: number;
   name: string;
   title: string;
@@ -69,10 +103,13 @@ export interface TransformedBodyCare {
   price: number;
   category: string;
   arrivals: string;
-  productType: 'bodyCare';
+  quantity: number;
+  status: string;
+  productType: 'pastry';
+  dailySpecial: boolean;
 }
 
-export interface TransformedHairCare {
+export interface TransformedMeat {
   id: number;
   name: string;
   title: string;
@@ -82,21 +119,13 @@ export interface TransformedHairCare {
   price: number;
   category: string;
   arrivals: string;
-  productType: 'hairCare';
+  quantity: number;
+  status: string;
+  productType: 'meat';
+  dailySpecial: boolean;
 }
 
-export interface RawSkinCare {
-  id: number;
-  Subtitle: string;
-  Name: string;
-  Image: string;
-  product_url: string;
-  price: number;
-  Arrivals: string;
-  category: string;
-}
-
-export interface TransformedSkinCare {
+export interface TransformedFish {
   id: number;
   name: string;
   title: string;
@@ -106,49 +135,79 @@ export interface TransformedSkinCare {
   price: number;
   category: string;
   arrivals: string;
-  productType: 'skinCare';
+  quantity: number;
+  status: string;
+  productType: 'fish';
+  dailySpecial: boolean;
 }
 
-export interface TransformedProduct {
+export interface TransformedHotDishes {
   id: number;
   name: string;
   title: string;
-  image_url: string;
+  subtitle: string;
+  image: string;
   product_url: string;
   price: number;
-  customerRating: number;
-  numberOfReviews: number;
-  productBrand: string;
-  typeOfCare: string;
   category: string;
-  status?: string;
-  productType: 'product';
+  arrivals: string;
+  quantity: number;
+  status: string;
+  productType: 'hotDishes';
+  dailySpecial: boolean;
+}
+
+export interface TransformedSalad {
+  id: number;
+  name: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  product_url: string;
+  price: number;
+  category: string;
+  arrivals: string;
+  quantity: number;
+  status: string;
+  productType: 'salad';
+  dailySpecial: boolean;
+}
+
+export interface TransformedVegetarian {
+  id: number;
+  name: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  product_url: string;
+  price: number;
+  category: string;
+  arrivals: string;
+  quantity: number;
+  status: string;
+  productType: 'vegetarian';
+  dailySpecial: boolean;
 }
 
 // Type union pour tous les produits transformés
-export type TransformedProductUnion = 
-  | TransformedIngredient 
-  | TransformedBodyCare 
-  | TransformedHairCare 
-  | TransformedSkinCare
-  | TransformedProduct;
+export type TransformedProduct = 
+  | TransformedPastry
+  | TransformedMeat
+  | TransformedFish
+  | TransformedHotDishes
+  | TransformedSalad
+  | TransformedVegetarian;
 
-// Types pour les résultats d'importation
+// Types pour l'import
 export interface ImportResult {
   type: string;
   count?: number;
   error?: string;
 }
 
-export interface ImportStatistics {
-  _id: ProductType;
-  count: number;
-  avgPrice: number;
-}
-
 export interface ImportResponse {
   message: string;
   totalImported: number;
   importResults: ImportResult[];
-  statistics: ImportStatistics[];
+  statistics: any[];
 } 

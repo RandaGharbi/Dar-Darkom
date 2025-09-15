@@ -75,10 +75,10 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   // Ajoute un produit au panier
-  addToCart: async (userId: string, productId: string) => {
+  addToCart: async (userId: string, productId: string): Promise<boolean> => {
     if (!userId || !productId) {
       console.error('addToCart: userId ou productId manquant', { userId, productId });
-      return;
+      return false;
     }
     
     console.log('addToCart appelé avec:', { userId, productId });
@@ -134,6 +134,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       
       // Synchronise avec la réponse du backend
       set({ cart: response.data, loading: false });
+      return true;
     } catch (e: any) {
       console.error('Erreur lors de l\'ajout au panier:', e);
       console.error('Détails de l\'erreur:', e.response?.data);
@@ -142,6 +143,8 @@ export const useCartStore = create<CartState>((set, get) => ({
       
       // Rollback en cas d'erreur
       await get().fetchCart(userId);
+      set({ loading: false });
+      return false;
     }
   },
 

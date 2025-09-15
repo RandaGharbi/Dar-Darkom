@@ -7,8 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import favoritesIconInactive from "../assets/images/inactiveFavorites.png";
-import favoritesIconActive from "../assets/images/activeFavorites.png";
+
 import basket from "../assets/images/basket.png";
 import { getCorrectImageUrl } from "../utils/imageUtils";
 
@@ -22,16 +21,12 @@ type Product = {
 
 type ProductItemProps = {
   product: Product;
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
   onPressBasket: () => void;
   isAddedToCart?: boolean;
 };
 
 const ProductItem: React.FC<ProductItemProps> = ({
   product,
-  isFavorite,
-  onToggleFavorite,
   onPressBasket,
   isAddedToCart = false
 }) => {
@@ -45,16 +40,16 @@ const ProductItem: React.FC<ProductItemProps> = ({
     <View style={styles.card}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: getCorrectImageUrl(product.image_url) || product.image_url }}
+          source={{ 
+            uri: getCorrectImageUrl(product.image_url) || product.image_url || 'https://via.placeholder.com/200x150/FF6B35/FFFFFF?text=Plat+Tunisien'
+          }}
           style={styles.image}
           resizeMode="cover"
+          onError={() => {
+            console.log('❌ Image failed to load:', product.image_url);
+          }}
         />
-        <TouchableOpacity style={styles.heartIcon} onPress={onToggleFavorite}>
-          <Image
-            source={isFavorite ? favoritesIconActive : favoritesIconInactive}
-            style={styles.wishlistIcon}
-          />
-        </TouchableOpacity>
+
       </View>
       <Text style={styles.brand}>{product.subtitle || ''}</Text>
       <Text style={styles.name}>{product.title || ''}</Text>
@@ -97,12 +92,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 8,
   },
-  heartIcon: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    padding: 4, // plus de background ici
-  },
+
   wishlistIcon: {
     width: 14,
     height: 14,
