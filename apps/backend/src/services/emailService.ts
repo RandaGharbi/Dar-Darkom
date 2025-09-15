@@ -86,9 +86,9 @@ export class EmailService {
 
       // Envoyer l'email avec pièce jointe
       const mailOptions = {
-        from: process.env.EMAIL_USER || 'noreply@guerlain.com',
+        from: process.env.EMAIL_USER || 'noreply@nourane.com',
         to: to,
-        subject: `[Guerlain] Export planifié: ${scheduleName}`,
+        subject: `[Nourane] Export planifié: ${scheduleName}`,
         html: emailContent,
         attachments: [
           {
@@ -122,9 +122,9 @@ export class EmailService {
       ).join(', ');
 
       const mailOptions = {
-        from: process.env.EMAIL_USER || 'noreply@guerlain.com',
+        from: process.env.EMAIL_USER || 'noreply@nourane.com',
         to: to,
-        subject: `[Guerlain] Erreur - Export planifié: ${scheduleName}`,
+        subject: `[Nourane] Erreur - Export planifié: ${scheduleName}`,
         html: this.generateErrorEmailContent(scheduleName, error)
       };
 
@@ -179,7 +179,7 @@ export class EmailService {
             <p>Bonjour,</p>
             <p>
               Excellente nouvelle ! Votre export planifié <b>"${scheduleName}"</b> a été généré avec succès.<br>
-              <span style="color: #2d8f85;"><b>Chez Guerlain, nous mettons la puissance de vos données à votre service pour booster votre activité !</b></span>
+              <span style="color: #2d8f85;"><b>Chez Nourane, nous mettons la puissance de vos données à votre service pour booster votre activité !</b></span>
             </p>
             <ul class="info-list">
               <li>📦 <b>Type d’export :</b> ${typeNames[exportData.type]}</li>
@@ -198,19 +198,19 @@ export class EmailService {
               <img src="https://img.icons8.com/color/48/000000/ok--v1.png" alt="Succès">
             </div>
             <div class="tip">
-              <b>💡 Astuce Guerlain :</b><br>
+              <b>💡 Astuce Nourane :</b><br>
               Analysez régulièrement vos exports pour identifier de nouvelles opportunités de croissance et optimiser vos ventes.<br>
               Notre équipe est là pour vous accompagner dans la valorisation de vos données !
             </div>
             <p>
-              Merci de faire confiance à Guerlain pour la gestion de vos données.<br>
-              <b>L’équipe Guerlain</b>
+              Merci de faire confiance à Nourane pour la gestion de vos données.<br>
+              <b>L’équipe Nourane</b>
             </p>
           </div>
           <div class="footer">
             <p>
-              Cet email a été généré automatiquement par le système Guerlain.<br>
-              Pour toute question ou pour découvrir nos solutions d’analyse avancée, contactez-nous à <a href="mailto:support@guerlain.com">support@guerlain.com</a>.
+              Cet email a été généré automatiquement par le système Nourane.<br>
+              Pour toute question ou pour découvrir nos solutions d’analyse avancée, contactez-nous à <a href="mailto:support@nourane.com">support@nourane.com</a>.
             </p>
           </div>
         </div>
@@ -238,7 +238,7 @@ export class EmailService {
       <body>
         <div class="container">
           <div class="header">
-            <h2 style="color: #dc2626; margin: 0;">⚠️ Erreur Export Guerlain</h2>
+            <h2 style="color: #dc2626; margin: 0;">⚠️ Erreur Export Nourane</h2>
           </div>
           
           <div class="content">
@@ -253,11 +253,11 @@ export class EmailService {
             
             <p>L'équipe technique a été notifiée et travaille à résoudre ce problème.</p>
             
-            <p>Cordialement,<br>L'équipe Guerlain</p>
+            <p>Cordialement,<br>L'équipe Nourane</p>
           </div>
           
           <div class="footer">
-            <p>Cet email a été généré automatiquement par le système Guerlain.</p>
+            <p>Cet email a été généré automatiquement par le système Nourane.</p>
           </div>
         </div>
       </body>
@@ -282,9 +282,9 @@ export class EmailService {
     
     try {
       const mailOptions = {
-        from: process.env.EMAIL_USER || 'noreply@guerlain.com',
+        from: process.env.EMAIL_USER || 'noreply@nourane.com',
         to: notification.to,
-        subject: '[Guerlain] Nouvelle réponse à votre message',
+        subject: '[Nourane] Nouvelle réponse à votre message',
         html: this.generateMessageEmailContent(notification)
       };
 
@@ -304,7 +304,7 @@ export class EmailService {
       <html>
       <head>
         <meta charset="utf-8">
-        <title>Réponse à votre message - Guerlain</title>
+        <title>Réponse à votre message - Nourane</title>
         <style>
           body {
             font-family: 'Arial', sans-serif;
@@ -352,7 +352,7 @@ export class EmailService {
       </head>
       <body>
         <div class="header">
-          <h1>Guerlain Paris</h1>
+          <h1>Nourane Paris</h1>
           <p>Notre équipe vous répond</p>
         </div>
         
@@ -371,7 +371,7 @@ export class EmailService {
           <a href="${notification.replyUrl}" class="btn">Répondre au message</a>
           
           <div class="footer">
-            <p>Merci de votre confiance en Guerlain Paris</p>
+            <p>Merci de votre confiance en Nourane Paris</p>
             <p>68 Avenue des Champs-Élysées, 75008 Paris</p>
           </div>
         </div>

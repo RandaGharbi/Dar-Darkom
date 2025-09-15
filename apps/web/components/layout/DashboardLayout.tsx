@@ -267,7 +267,7 @@ const AdaptiveLogo = () => {
   return (
     <LogoImg 
       src="/logoGuerlain.png" 
-      alt="Guerlain" 
+      alt="Nourane" 
       onClick={handleLogoClick}
       style={{ cursor: 'pointer' }}
     />

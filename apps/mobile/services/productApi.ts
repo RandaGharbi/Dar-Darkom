@@ -42,10 +42,13 @@ export const productApi = {
 
   // Récupérer les produits par gamme de prix
   getProductsByPriceRange: async (minPrice: string, maxPrice: string): Promise<Product[]> => {
-    const response = await httpClient.post(API_CONFIG.ENDPOINTS.PRODUCTS_BY_PRICE_RANGE, { 
-      minPrice, 
-      maxPrice 
-    });
+    const response = await httpClient.get(getEndpoint('PRODUCTS_BY_PRICE_RANGE', minPrice, maxPrice));
+    return response.data;
+  },
+
+  // Récupérer les plats du jour (produits avec dailySpecial = true)
+  getDailySpecialProducts: async (): Promise<Product[]> => {
+    const response = await httpClient.get(API_CONFIG.ENDPOINTS.DAILY_SPECIAL);
     return response.data;
   },
 }; 

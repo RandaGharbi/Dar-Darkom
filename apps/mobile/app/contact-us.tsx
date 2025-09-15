@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, FlatList, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeNavigation } from '../hooks/useSafeNavigation';
 import { useAuth } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ContactInfo from '../components/ContactInfo';
@@ -31,6 +32,7 @@ interface Conversation {
 const ContactUsPage: React.FC = () => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { safeBack } = useSafeNavigation();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [newMessage, setNewMessage] = useState('');
@@ -479,8 +481,8 @@ const ContactUsPage: React.FC = () => {
     if (item.isFromUser) {
       senderName = 'Moi';
     } else {
-      // Pour les messages admin, afficher "Support Guerlain"
-      senderName = 'Support Guerlain';
+      // Pour les messages admin, afficher "Support Nourane"
+      senderName = 'Support Nourane';
     }
 
     return (
@@ -510,7 +512,7 @@ const ContactUsPage: React.FC = () => {
     <SafeAreaView style={styles.safe}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.goBackButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.goBackButton} onPress={safeBack}>
           <Image source={goBackIcon} style={styles.goBackIcon} />
         </TouchableOpacity>
 

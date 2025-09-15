@@ -1,6 +1,6 @@
 import httpClient from './httpClient';
 import API_CONFIG, { getEndpoint } from '../config/api';
-import { Product } from '../constants/types';
+import { Product, FoodProduct } from '../constants/types';
 
 // Type definitions
 export interface ApiResponse<T> {
@@ -123,37 +123,27 @@ class ApiService {
     return this.request('POST', API_CONFIG.ENDPOINTS.PRODUCTS_BY_BRAND, { brandCreator });
   }
 
+  // Récupérer les produits par gamme de prix
   async getProductsByPriceRange(minPrice: string, maxPrice: string): Promise<ApiResponse<Product[]>> {
-    return this.request('POST', API_CONFIG.ENDPOINTS.PRODUCTS_BY_PRICE_RANGE, {
-      minPrice,
-      maxPrice,
-    });
+    return this.request('POST', API_CONFIG.ENDPOINTS.PRODUCTS_BY_PRICE_RANGE, { minPrice, maxPrice });
   }
 
-  // Favorites APIs
-  async getFavorites(): Promise<ApiResponse<any[]>> {
-    return this.request('GET', API_CONFIG.ENDPOINTS.FAVORITES);
+  // Récupérer les plats du jour (produits avec dailySpecial = true)
+  async getDailySpecialProducts(): Promise<ApiResponse<FoodProduct[]>> {
+    console.log('🔍 [apiService] getDailySpecialProducts - Début');
+    console.log('🔍 [apiService] URL complète:', `${this.baseUrl}${API_CONFIG.ENDPOINTS.DAILY_SPECIAL}`);
+    
+    try {
+      const response = await this.request('GET', API_CONFIG.ENDPOINTS.DAILY_SPECIAL);
+      console.log('📡 [apiService] getDailySpecialProducts - Réponse:', response);
+      return response;
+    } catch (error) {
+      console.error('💥 [apiService] getDailySpecialProducts - Erreur:', error);
+      throw error;
+    }
   }
 
-  async addToFavorites(product: Product): Promise<ApiResponse<any>> {
-    const body = {
-      productId: product.id,
-      title: product.title || product.name,
-      subtitle: product.subtitle || '',
-      price: product.price,
-      image_url: product.image_url || product.image || '',
-      category: product.category,
-    };
-    return this.request('POST', API_CONFIG.ENDPOINTS.ADD_FAVORITE, body);
-  }
 
-  async removeFromFavorites(productId: number): Promise<ApiResponse<any>> {
-    return this.request('DELETE', getEndpoint('REMOVE_FAVORITE', productId));
-  }
-
-  async toggleFavorite(productId: number): Promise<ApiResponse<any>> {
-    return this.request('POST', API_CONFIG.ENDPOINTS.TOGGLE_FAVORITE, { productId });
-  }
 
   // Cart APIs
   async getCart(userId: string): Promise<ApiResponse<Cart>> {

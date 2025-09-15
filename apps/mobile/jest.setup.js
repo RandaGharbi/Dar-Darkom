@@ -200,11 +200,11 @@ jest.mock('./app/(tabs)/index', () => {
   };
 });
 
-jest.mock('./app/(tabs)/favorites', () => {
+jest.mock('./app/(tabs)/categories', () => {
   const React = require('react');
   const { Text } = require('react-native');
-  return function FavoritesScreen() {
-    return React.createElement(Text, null, 'Favoris');
+  return function CategoriesScreen() {
+    return React.createElement(Text, null, 'Catégories');
   };
 });
 

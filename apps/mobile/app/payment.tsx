@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeNavigation } from '../hooks/useSafeNavigation';
 import visaImg from '../assets/images/visa.png';
 import mastercardImg from '../assets/images/masterCard.png';
 import { apiService } from '../services/api';
@@ -32,6 +33,7 @@ function formatExpiryDate(text: string) {
 export default function PaymentScreen() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { safeBack } = useSafeNavigation();
   const [cardNumber, setCardNumber] = useState('');
   const [cvv, setCvv] = useState('');
   const [nameOnCard, setNameOnCard] = useState('');
@@ -245,7 +247,7 @@ export default function PaymentScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity onPress={safeBack} style={styles.backBtn}>
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Payment</Text>

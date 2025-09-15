@@ -102,9 +102,9 @@ describe('DashboardLayout', () => {
   it('hides sidebar when hideSidebar is true', () => {
     renderWithProviders(true);
     // Le logo dans la sidebar ne devrait pas être visible
-    const logos = screen.getAllByAltText('Guerlain');
+    const logos = screen.getAllByAltText('Nourane');
     if (!Array.isArray(logos) || logos.length === 0) {
-      throw new Error('Logo Guerlain non trouvé');
+      throw new Error('Logo Nourane non trouvé');
     }
     expect(logos.length).toBe(1); // Seulement le logo dans la topbar
   });

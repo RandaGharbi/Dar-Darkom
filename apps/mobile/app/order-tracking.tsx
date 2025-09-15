@@ -10,6 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useSafeNavigation } from "../hooks/useSafeNavigation";
 
 const stepIcon = require("../assets/images/step.png");
 const deliveryIcon = require("../assets/images/delivery.png");
@@ -18,6 +19,7 @@ const orderIcon = require("../assets/images/order.png");
 export default function OrderTrackingScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { safeBack } = useSafeNavigation();
 
   // Lecture des données dynamiques
   const orderId = params.orderId || "";
@@ -70,7 +72,7 @@ export default function OrderTrackingScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.backBtn} onPress={safeBack}>
             <Text style={styles.backText}>←</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Order Tracking</Text>

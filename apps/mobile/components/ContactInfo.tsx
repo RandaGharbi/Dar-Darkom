@@ -10,7 +10,7 @@ const ContactInfo: React.FC = () => {
       <Text style={styles.subtitle}>
         If you have any questions or need assistance, please reach out to us.
         We&apos;re committed to providing exceptional support and ensuring your
-        experience with Guerlain is seamless.
+        experience with Nourane is seamless.
       </Text>
 
       <View style={styles.contactBox}>
@@ -21,9 +21,9 @@ const ContactInfo: React.FC = () => {
           <Text style={styles.label}>Email</Text>
           <Text
             style={styles.link}
-            onPress={() => Linking.openURL("mailto:support@guerlain.com")}
+            onPress={() => Linking.openURL("mailto:support@nourane.com")}
           >
-                          support@guerlain.com
+                          support@nourane.com
           </Text>
         </View>
       </View>

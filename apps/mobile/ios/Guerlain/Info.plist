@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>Guerlain</string>
+    <string>Nourane</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,14 +27,14 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>guerlain</string>
-          <string>com.rindaa.Guerlain</string>
+          <string>nourane</string>
+          <string>com.rindaa.Nourane</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+guerlain</string>
+          <string>exp+nourane</string>
         </array>
       </dict>
     </array>

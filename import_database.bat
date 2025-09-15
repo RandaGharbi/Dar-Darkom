@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 REM Configuration
-set DB_NAME=Guerlain
+set DB_NAME=Nourane
 set DB_HOST=localhost
 set DB_PORT=27017
 set IMPORT_DIR=database_export

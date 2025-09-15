@@ -1,4 +1,4 @@
-# Makefile pour Guerlain - Commandes simplifiées
+# Makefile pour Nourane - Commandes simplifiées
 
 .PHONY: help build up down logs clean test deploy backup restore
 
@@ -15,7 +15,7 @@ NC = \033[0m # No Color
 
 # Aide
 help: ## Afficher cette aide
-	@echo "$(BLUE)Guerlain - Commandes disponibles:$(NC)"
+	@echo "$(BLUE)Nourane - Commandes disponibles:$(NC)"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(GREEN)%-15s$(NC) %s\n", $$1, $$2}'
 
@@ -152,7 +152,7 @@ ssl-generate: ## Générer des certificats SSL auto-signés
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 		-keyout nginx/ssl/key.pem \
 		-out nginx/ssl/cert.pem \
-		-subj "/C=FR/ST=France/L=Paris/O=Guerlain/CN=localhost"
+		-subj "/C=FR/ST=France/L=Paris/O=Nourane/CN=localhost"
 	@echo "$(GREEN)Certificats SSL générés!$(NC)"
 
 # Utilitaires
@@ -181,7 +181,7 @@ ci-build: ## Build pour CI/CD
 
 # Informations
 info: ## Afficher les informations du projet
-	@echo "$(BLUE)=== Informations Guerlain ===$(NC)"
+	@echo "$(BLUE)=== Informations Nourane ===$(NC)"
 	@echo "$(YELLOW)Version:$(NC) $(shell git describe --tags --always --dirty)"
 	@echo "$(YELLOW)Branch:$(NC) $(shell git branch --show-current)"
 	@echo "$(YELLOW)Commit:$(NC) $(shell git rev-parse --short HEAD)"

@@ -6,12 +6,11 @@ import Constants from 'expo-constants';
  * @returns true si c'est un appareil physique, false si c'est un émulateur/simulateur
  */
 const isPhysicalDevice = (): boolean => {
-  // Méthode alternative car Constants.isDevice peut être undefined
+  // Méthode plus fiable pour détecter les simulateurs
   if (Platform.OS === 'ios') {
-    // Sur iOS, on peut utiliser d'autres indicateurs
-    // Si Constants.isDevice est undefined, on assume que c'est un appareil physique
-    // car sur simulateur, il est généralement défini comme false
-    return Constants.isDevice !== false;
+    // Sur iOS, on peut utiliser plusieurs indicateurs
+    // Constants.isDevice est plus fiable sur iOS
+    return Constants.isDevice === true;
   }
   return false; // Pour Android, on assume émulateur par défaut
 };
@@ -24,18 +23,23 @@ const isPhysicalDevice = (): boolean => {
 export const getCorrectImageUrl = (imageUrl: string | null): string | null => {
   if (!imageUrl) return null;
   
-  // Si l'URL contient localhost, la corriger selon la plateforme
-  if (imageUrl.includes('localhost')) {
+  // Si c'est une URL d'exemple, retourner une image placeholder
+  if (imageUrl.includes('example.com')) {
+    return 'https://via.placeholder.com/200x150/FF6B35/FFFFFF?text=Plat+Tunisien';
+  }
+  
+  // Si l'URL contient localhost ou 10.0.2.2, la corriger selon la plateforme
+  if (imageUrl.includes('localhost') || imageUrl.includes('10.0.2.2')) {
     if (Platform.OS === 'android') {
       // Android émulateur utilise l'IP réseau
-      return imageUrl.replace('localhost', '192.168.43.184');
+      return imageUrl.replace(/localhost|10\.0\.2\.2/g, '192.168.1.74');
     } else if (Platform.OS === 'ios') {
       if (isPhysicalDevice()) {
         // iPhone physique - utiliser l'IP de votre ordinateur
-        return imageUrl.replace('localhost', '192.168.1.73');
+        return imageUrl.replace(/localhost|10\.0\.2\.2/g, '192.168.1.74');
       } else {
         // Simulateur iOS utilise localhost
-        return imageUrl;
+        return imageUrl.replace(/10\.0\.2\.2/g, 'localhost');
       }
     }
   }
@@ -50,11 +54,11 @@ export const getCorrectImageUrl = (imageUrl: string | null): string | null => {
   
   if (Platform.OS === 'android') {
     // Android émulateur utilise l'IP réseau
-    baseUrl = 'http://192.168.43.184:5000';
+    baseUrl = 'http://192.168.1.74:5000';
   } else if (Platform.OS === 'ios') {
     if (isPhysicalDevice()) {
       // iPhone physique - utiliser l'IP de votre ordinateur
-      baseUrl = 'http://192.168.1.73:5000';
+      baseUrl = 'http://192.168.1.74:5000';
     } else {
       // Simulateur iOS utilise localhost
       baseUrl = 'http://localhost:5000';

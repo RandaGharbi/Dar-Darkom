@@ -1,85 +1,112 @@
 import React from 'react';
-import { Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Product } from '../constants/types';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 
-type ProductCardProps = {
-  product: Product;
-  cardWidth?: number;
-};
+interface ProductCardProps {
+  name: string;
+  price: string;
+  tag: string;
+  image?: string;
+  onAddToCart: () => void;
+}
 
-const ProductCard = ({ product, cardWidth }: ProductCardProps) => {
-  const router = useRouter();
-  
-  // Fonction pour valider les URLs d'images
-  const isValidImageUrl = (url: string): boolean => {
-    if (!url || typeof url !== 'string') return false;
-    try {
-      const urlObj = new URL(url);
-      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-    } catch {
-      return false;
-    }
-  };
-
-  // Fonction pour obtenir une URL d'image valide
-  const getValidImageUrl = (): string => {
-    const imageUrl = product.image_url || product.image;
-    if (imageUrl && isValidImageUrl(imageUrl)) {
-      return imageUrl;
-    }
-    return 'https://via.placeholder.com/150';
-  };
-
-  // Détecte si c'est un ingrédient (pas de prix, pas d'avis, champ name)
-  const isIngredient = !!product.name && !product.price;
-
-  // Fonction pour naviguer vers les détails du produit (seulement pour les produits, pas les ingrédients)
-  const handleProductPress = () => {
-    if (!isIngredient && product.id) {
-      router.push(`/product-details/${product.id}`);
-    }
-  };
-
+export default function ProductCard({ name, price, tag, image, onAddToCart }: ProductCardProps) {
   return (
-    <TouchableOpacity
-      style={[styles.card, cardWidth ? { width: cardWidth } : null]}
-      onPress={handleProductPress}
-      activeOpacity={0.8}
-    >
-      <Image
-        source={{ uri: getValidImageUrl() }}
-        style={styles.image}
-      />
-      <Text style={styles.title}>{product.title || product.name || 'Sans nom'}</Text>
-      {!isIngredient && (
-        <Text style={styles.price}>
-          {product.price
-            ? `${product.price} €`
-            : 'Prix inconnu'}
+    <View style={styles.container}>
+      {/* Image du produit */}
+      <View style={styles.imageContainer}>
+        <View style={styles.productImage}>
+          <Text style={styles.imagePlaceholder}>🍽️</Text>
+        </View>
+        <View style={styles.tagContainer}>
+          <Text style={styles.tagText}>{tag}</Text>
+        </View>
+      </View>
+      
+      {/* Informations du produit */}
+      <View style={styles.productInfo}>
+        <Text style={styles.productName} numberOfLines={2}>
+          {name}
         </Text>
-      )}
-
-      {product.typeOfCare && <Text style={styles.care}>{product.typeOfCare}</Text>}
-    </TouchableOpacity>
+        <Text style={styles.productPrice}>{price}</Text>
+      </View>
+      
+      {/* Bouton d'ajout au panier - toujours en bas */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={onAddToCart}>
+          <Text style={styles.addButtonText}>+ Ajouter</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  card: {
-    flex: 1,
-    margin: 8,
+  container: {
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 12,
-    elevation: 2,
-    minWidth: 160,
-    maxWidth: 200,
+    marginRight: 12,
+    width: 140,
+    height: 200, // Hauteur fixe pour toutes les cartes
+    justifyContent: 'space-between', // Distribue l'espace entre les éléments
   },
-  image: { width: '100%', height: 120, borderRadius: 12 },
-  title: { fontWeight: '600', marginTop: 8 },
-  price: { color: '#2a9d8f', fontWeight: 'bold', marginTop: 4 },
-  care: { color: '#aaa', fontSize: 12, marginTop: 2 },
+  imageContainer: {
+    position: 'relative',
+    marginBottom: 8,
+  },
+  productImage: {
+    width: '100%',
+    height: 80,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imagePlaceholder: {
+    fontSize: 28,
+  },
+  tagContainer: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: '#8B4513',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  tagText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  productInfo: {
+    marginBottom: 8,
+  },
+  productName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+    lineHeight: 16,
+  },
+  productPrice: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#8B4513',
+  },
+  buttonContainer: {
+    // Plus de positionnement absolu, le bouton sera naturellement en bas
+  },
+  addButton: {
+    backgroundColor: '#8B4513',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
 });
-
-export default ProductCard;

@@ -1,24 +1,24 @@
 #!/bin/bash
 
-# Script de construction des images Docker Guerlain
+# Script de construction des images Docker Nourane
 # Usage: ./scripts/build-images.sh [test|production|all]
 
 set -e
 
-echo "🚀 Construction des images Docker Guerlain..."
+echo "🚀 Construction des images Docker Nourane..."
 
 # Fonction pour construire l'image de test
 build_test_image() {
     echo "📦 Construction de l'image de test..."
-    docker build --target backend-test -t guerlain-backend-test .
-    echo "✅ Image de test construite: guerlain-backend-test"
+    docker build --target backend-test -t nourane-backend-test .
+    echo "✅ Image de test construite: nourane-backend-test"
 }
 
 # Fonction pour construire l'image de production
 build_production_image() {
     echo "🏭 Construction de l'image de production..."
-    docker build --target backend-production -t guerlain-backend-production .
-    echo "✅ Image de production construite: guerlain-backend-production"
+    docker build --target backend-production -t nourane-backend-production .
+    echo "✅ Image de production construite: nourane-backend-production"
 }
 
 # Fonction pour construire toutes les images
@@ -30,14 +30,14 @@ build_all_images() {
 # Fonction pour nettoyer les anciennes images
 cleanup_old_images() {
     echo "🧹 Nettoyage des anciennes images..."
-    docker rmi guerlain-backend-test guerlain-backend-production guerlain-backend-test-fixed 2>/dev/null || true
+    docker rmi nourane-backend-test nourane-backend-production nourane-backend-test-fixed 2>/dev/null || true
     echo "✅ Nettoyage terminé"
 }
 
 # Fonction pour lister les images
 list_images() {
     echo "📋 Images disponibles:"
-    docker images | grep guerlain || echo "Aucune image guerlain trouvée"
+    docker images | grep nourane || echo "Aucune image nourane trouvée"
 }
 
 # Gestion des arguments

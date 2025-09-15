@@ -1,5 +1,5 @@
 # Configuration
-$DB_NAME = "Guerlain"
+$DB_NAME = "Nourane"
 $DB_HOST = "localhost"
 $DB_PORT = "27017"
 $EXPORT_DIR = "database_export"

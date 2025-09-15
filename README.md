@@ -1,6 +1,6 @@
-# Guerlain - Plateforme E-commerce Guerlain
+# Nourane - Plateforme E-commerce Nourane
 
-Une plateforme e-commerce complète pour les produits Guerlain, comprenant une application web, une API backend et une application mobile.
+Une plateforme e-commerce complète pour les produits Nourane, comprenant une application web, une API backend et une application mobile.
 
 ## 🏗️ Architecture
 
@@ -24,7 +24,7 @@ Ce projet utilise une architecture monorepo avec trois applications principales 
 ```bash
 # Cloner le repository
 git clone <repository-url>
-cd Guerlain
+cd Nourane
 
 # Installer les dépendances
 yarn install
@@ -63,7 +63,7 @@ API REST pour la gestion des produits, utilisateurs, commandes et authentificati
 Créez un fichier `.env` dans `apps/backend/` :
 
 ```env
-MONGO_URI=mongodb://localhost:27017/guerlain
+MONGO_URI=mongodb://localhost:27017/nourane
 JWT_SECRET=votre_secret_jwt_super_securise
 PORT=5000
 NODE_ENV=development
@@ -232,7 +232,7 @@ yarn reset-project # Reset le projet (optionnel)
 
 ### 🚨 Problème Résolu : Dépendances Manquantes
 
-**Le problème Docker original a été corrigé !** L'image `guerlain-backend-test` ne pouvait pas fonctionner car Express n'était pas installé. Seules les dépendances de développement étaient présentes.
+**Le problème Docker original a été corrigé !** L'image `nourane-backend-test` ne pouvait pas fonctionner car Express n'était pas installé. Seules les dépendances de développement étaient présentes.
 
 #### Cause Racine
 - **Yarn 4** ne gérait pas correctement l'installation des dépendances des workspaces
@@ -273,18 +273,18 @@ yarn reset-project # Reset le projet (optionnel)
 #### Vérification Manuelle
 ```bash
 # Vérifier qu'Express est installé (test)
-docker run --rm guerlain-backend-test sh -c "ls -la /app/node_modules | grep express"
+docker run --rm nourane-backend-test sh -c "ls -la /app/node_modules | grep express"
 
 # Vérifier qu'Express est installé (production)
-docker run --rm guerlain-backend-production sh -c "ls -la /app/node_modules | grep express"
+docker run --rm nourane-backend-production sh -c "ls -la /app/node_modules | grep express"
 ```
 
 ### 📦 Images Disponibles
 
 | Image | Tag | Statut | Usage |
 |-------|-----|--------|-------|
-| `guerlain-backend-test` | latest | ✅ Fonctionnelle | Tests et développement |
-| `guerlain-backend-production` | latest | ✅ Fonctionnelle | Production |
+| `nourane-backend-test` | latest | ✅ Fonctionnelle | Tests et développement |
+| `nourane-backend-production` | latest | ✅ Fonctionnelle | Production |
 
 ### 🔍 Vérifications Incluses
 
@@ -384,7 +384,7 @@ Le workflow se déclenche automatiquement sur :
     file: ./Dockerfile
     target: backend-production  # ✅ Stage existant et fonctionnel
     push: true
-    tags: ghcr.io/randagharbi/guerlain/backend:${{ github.sha }}
+    tags: ghcr.io/randagharbi/nourane/backend:${{ github.sha }}
     no-cache: true
     platforms: linux/amd64
 ```
@@ -405,7 +405,7 @@ Le workflow se déclenche automatiquement sur :
 
 #### URL de l'Image
 ```
-ghcr.io/randagharbi/guerlain/backend:${{ github.sha }}
+ghcr.io/randagharbi/nourane/backend:${{ github.sha }}
 ```
 
 #### Permissions Requises
@@ -425,7 +425,7 @@ ghcr.io/randagharbi/guerlain/backend:${{ github.sha }}
 #### Logs de Succès Attendu
 ```
 ✅ Build Docker réussi
-✅ Image poussée vers ghcr.io/randagharbi/guerlain/backend
+✅ Image poussée vers ghcr.io/randagharbi/nourane/backend
 ✅ Plus d'erreur de dépendances manquantes
 ✅ Workflow cohérent avec l'architecture Docker
 ```
@@ -486,7 +486,7 @@ yarn test:e2e
 - Vérifiez que les dépendances sont à jour
 
 ### Problèmes Docker
-- **Express non installé** : Utilisez les images corrigées `guerlain-backend-test` ou `guerlain-backend-production`
+- **Express non installé** : Utilisez les images corrigées `nourane-backend-test` ou `nourane-backend-production`
 - **Dépendances manquantes** : Reconstruisez les images avec `./scripts/build-images.sh all`
 - **Tests d'images** : Vérifiez le bon fonctionnement avec `./scripts/test-images.sh all`
 
@@ -520,7 +520,7 @@ Pour que les exports planifiés puissent envoyer des emails automatiquement, vou
 #### 2. Créer un mot de passe d'application
 1. Sécurité > Mots de passe d'application
 2. Sélectionnez "Application" > "Autre (nom personnalisé)"
-3. Nommez-le "Guerlain Exports"
+3. Nommez-le "Nourane Exports"
 4. Copiez le mot de passe généré (16 caractères)
 
 #### 3. Configuration dans le fichier .env
@@ -568,7 +568,7 @@ const transporter = nodemailer.createTransport({
 
 ### Fonctionnalités
 - **Service d'email complet** avec nodemailer
-- **Emails HTML stylisés** avec le design Guerlain
+- **Emails HTML stylisés** avec le design Nourane
 - **Pièces jointes** automatiques (CSV/Excel)
 - **Planification automatique** : quotidien, hebdomadaire, mensuel
 - **Notifications d'erreur** en cas de problème
@@ -585,8 +585,8 @@ const transporter = nodemailer.createTransport({
    - **Emails** : Adresses des destinataires
 
 ### Format des Emails
-- **Email de Succès** : `[Guerlain] Export planifié: [Nom]` avec pièce jointe
-- **Email d'Erreur** : `[Guerlain] Erreur - Export planifié: [Nom]` avec détails
+- **Email de Succès** : `[Nourane] Export planifié: [Nom]` avec pièce jointe
+- **Email d'Erreur** : `[Nourane] Erreur - Export planifié: [Nom]` avec détails
 
 ## 🎯 Collection Soldes France
 

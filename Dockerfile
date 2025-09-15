@@ -1,4 +1,4 @@
-# Dockerfile Guerlain - Version corrigée pour Yarn 4
+# Dockerfile Nourane - Version corrigée pour Yarn 4
 # COMMIT: b2187e0 - Pipeline CI/CD corrigé définitivement
 FROM node:18-alpine AS base
 

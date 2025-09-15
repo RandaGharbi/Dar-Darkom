@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script de déploiement pour Guerlain
+# Script de déploiement pour Nourane
 set -e
 
 # Configuration

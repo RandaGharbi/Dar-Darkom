@@ -1,59 +1,31 @@
 import React, { useCallback } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import Header from "../../components/Header";
-import ProductList from "../../components/ProductList";
-import { useProductsByType } from "../../hooks/useProducts";
+import TodaysSpecial from "../../components/TodaysSpecial";
+import CategoriesGrid from "../../components/CategoriesGrid";
 import SafeAreaWrapper from "../../components/SafeAreaWrapper";
+// MiniAudioPlayer supprimé - intégré dans Today's Special
 
 export default function App() {
   const onLayoutRootView = useCallback(() => {
     // Plus besoin de gérer le splash ici
   }, []);
 
-  // Utiliser React Query pour récupérer les données par type
-  const { data: featuredProducts } = useProductsByType('product');
-  const { data: ingredients } = useProductsByType('ingredient');
-
-  const sections = [
-    { id: 'header', type: 'header' },
-    { id: 'featured', type: 'featured' },
-    { id: 'ingredients', type: 'ingredients' }
-  ];
-
-  const renderItem = ({ item }: { item: any }) => {
-    switch (item.type) {
-      case 'header':
-        return <Header />;
-      case 'featured':
-        return (
-          <View>
-            <ProductList title="Produits en vedette" products={featuredProducts} layout="horizontal" />
-          </View>
-        );
-      case 'ingredients':
-        return (
-          <View>
-            <ProductList title="Ingrédients" products={ingredients} layout="grid" />
-          </View>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <SafeAreaWrapper 
       backgroundColor="#fff"
       edges={['top']} // Exclure le bottom car la tab bar gère déjà les safe areas
     >
-      <FlatList
+      <Header />
+      <ScrollView
         style={styles.container}
-        data={sections}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.scrollContent}
         onLayout={onLayoutRootView}
         showsVerticalScrollIndicator={false}
-      />
+      >
+        <TodaysSpecial />
+        <CategoriesGrid />
+      </ScrollView>
     </SafeAreaWrapper>
   );
 }
@@ -61,8 +33,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
+    flex: 1,
   },
-
+  scrollContent: {
+    paddingTop: 140, // Espace pour le header fixe + safe area
+    paddingBottom: 20,
+  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',

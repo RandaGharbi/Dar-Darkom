@@ -7,6 +7,9 @@ import { FORCE_API_URL } from './api-config';
 const detectEnvironment = () => {
   // Variables d'environnement pour forcer une URL spécifique
   const forcedApiUrl = process.env.EXPO_PUBLIC_API_URL || FORCE_API_URL;
+  console.log('🔧 FORCE_API_URL:', FORCE_API_URL);
+  console.log('🔧 EXPO_PUBLIC_API_URL:', process.env.EXPO_PUBLIC_API_URL);
+  console.log('🔧 forcedApiUrl:', forcedApiUrl);
   if (forcedApiUrl) {
     console.log('🔧 URL API forcée:', forcedApiUrl);
     return forcedApiUrl;
@@ -16,7 +19,7 @@ const detectEnvironment = () => {
   if (Platform.OS === 'android') {
     // Pour tous les émulateurs Android (y compris Nox), utiliser l'IP réseau
     console.log('📱 Détecté: Émulateur Android (incluant Nox Player)');
-    return 'http://192.168.43.184:5000';
+    return 'http://192.168.1.74:5000';
   }
   
   if (Platform.OS === 'ios') {
@@ -37,9 +40,9 @@ const detectEnvironment = () => {
       // Retourner la première IP (vous pouvez changer l'ordre selon votre réseau)
       return possibleIPs[0];
     } else {
-      // Simulateur iOS - TOUJOURS utiliser localhost
-      console.log('📱 Détecté: Simulateur iOS - utilisation de localhost');
-      return 'http://localhost:5000';
+      // Simulateur iOS - utiliser l'IP locale au lieu de localhost
+      console.log('📱 Détecté: Simulateur iOS - utilisation de l\'IP locale');
+      return 'http://192.168.1.100:5000'; // Remplacez par votre IP locale
     }
   }
   

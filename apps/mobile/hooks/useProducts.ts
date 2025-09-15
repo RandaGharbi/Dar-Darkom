@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productApi } from '../services/productApi';
 import { apiService } from '../services/api';
-import { Product } from '../constants/types';
+import { Product, FoodProduct } from '../constants/types';
 
 // Query keys
 export const productKeys = {
@@ -36,15 +36,41 @@ export const useProducts = () => {
 // Hook pour récupérer les produits par type
 export const useProductsByType = (productType: string) => {
   return useQuery({
-    queryKey: ['products', 'type', productType],
+    queryKey: [...productKeys.all, 'type', productType],
     queryFn: async () => {
       const response = await apiService.getProductsByType(productType);
       if (!response.success) {
-        throw new Error(response.error || 'Erreur lors de la récupération des produits');
+        throw new Error(response.error || 'Erreur lors de la récupération des produits par type');
       }
       return response.data as Product[];
     },
-    enabled: !!productType,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+// Hook pour récupérer les plats du jour (produits avec dailySpecial = true)
+export const useDailySpecialProducts = () => {
+  return useQuery({
+    queryKey: [...productKeys.all, 'dailySpecial'],
+    queryFn: async () => {
+      console.log('🔍 [useDailySpecialProducts] Début de la requête...');
+      try {
+        const response = await apiService.getDailySpecialProducts();
+        console.log('📡 [useDailySpecialProducts] Réponse reçue:', response);
+        
+        if (!response.success) {
+          console.error('❌ [useDailySpecialProducts] Erreur API:', response.error);
+          throw new Error(response.error || 'Erreur lors de la récupération des plats du jour');
+        }
+        
+        console.log('✅ [useDailySpecialProducts] Données reçues:', response.data);
+        return response.data as FoodProduct[];
+      } catch (error) {
+        console.error('💥 [useDailySpecialProducts] Exception:', error);
+        throw error;
+      }
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });

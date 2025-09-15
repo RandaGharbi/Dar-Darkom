@@ -10,6 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useSafeNavigation } from "../hooks/useSafeNavigation";
 import VisaIcon from "../assets/images/visa.png";
 import MastercardIcon from "../assets/images/masterCard.png";
 import CardIcon from "../assets/images/card.png";
@@ -18,6 +19,7 @@ import { getCorrectImageUrl } from '../utils/imageUtils';
 export default function OrderDetailsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { safeBack } = useSafeNavigation();
 
   // Récupération des données passées via navigation
   const order = params.order ? JSON.parse(params.order as string) : null;
@@ -43,7 +45,7 @@ export default function OrderDetailsScreen() {
         <View style={styles.headerRow}>
           <TouchableOpacity
             style={styles.backBtn}
-            onPress={() => router.back()}
+            onPress={safeBack}
           >
             <Text style={styles.backText}>←</Text>
           </TouchableOpacity>

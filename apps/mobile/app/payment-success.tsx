@@ -10,12 +10,14 @@ import {
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeNavigation } from "../hooks/useSafeNavigation";
 
 // Remplace ce chemin par le tien si tu ajoutes l'image dans assets/images/
 const illustration = require("../assets/images/payment-success.png");
 
 export default function PaymentSuccessScreen() {
   const router = useRouter();
+  const { safeBack } = useSafeNavigation();
 
   // Mock data (à remplacer par les vraies infos de la commande)
   const transactionId = "#1234567890";
@@ -25,7 +27,7 @@ export default function PaymentSuccessScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.backBtn} onPress={safeBack}>
             <Text style={styles.backText}>←</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Payment Successful</Text>

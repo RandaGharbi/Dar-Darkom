@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: ghcr.io/guerlain/backend:latest
+    image: ghcr.io/nourane/backend:latest
     ports:
       - "5000:5000"
     environment:

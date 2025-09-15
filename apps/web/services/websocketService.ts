@@ -110,30 +110,30 @@ class WebSocketService {
   private getMockTitle(type: Notification['type']): string {
     switch (type) {
       case 'order':
-        return 'Nouvelle commande Guerlain';
+        return 'Nouvelle commande Nourane';
       case 'stock':
         return 'Alerte stock produit';
       case 'user':
-        return 'Nouveau client Guerlain';
+        return 'Nouveau client Nourane';
       case 'system':
         return 'Mise à jour boutique';
       case 'payment':
         return 'Paiement reçu';
       case 'product':
-        return 'Produit Guerlain mis à jour';
+        return 'Produit Nourane mis à jour';
       case 'activity':
         return 'Activité boutique';
       default:
-        return 'Notification Guerlain';
+        return 'Notification Nourane';
     }
   }
 
   private getMockMessage(type: Notification['type']): string {
     switch (type) {
       case 'order':
-        return `Commande #${Math.floor(Math.random() * 90000) + 10000} - Parfum Guerlain`;
+        return `Commande #${Math.floor(Math.random() * 90000) + 10000} - Parfum Nourane`;
       case 'stock':
-        return 'Stock faible : Crème Hydratante Guerlain';
+        return 'Stock faible : Crème Hydratante Nourane';
       case 'user':
         return 'Nouveau client inscrit sur la boutique';
       case 'system':

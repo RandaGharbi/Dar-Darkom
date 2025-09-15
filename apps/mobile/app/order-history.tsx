@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { OrderCard } from '@/components/OrderCard';
 import { useRouter } from 'expo-router';
+import { useSafeNavigation } from '../hooks/useSafeNavigation';
 import goBackIcon from '../assets/images/back.png';
 import panierIcon from '../assets/images/basket.png';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +23,7 @@ const screenWidth = Dimensions.get('window').width;
 const OrdersHistoryScreen = () => {
   const router = useRouter();
   const { user } = useAuth();
+  const { safeBack } = useSafeNavigation();
   const [tab, setTab] = useState<'active' | 'history'>('active');
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -79,7 +81,7 @@ const OrdersHistoryScreen = () => {
       <StatusBar barStyle="dark-content" />
       {/* header avec GoBack, titre centré, panier */}
       <View style={styles.headerRow}>
-        <TouchableOpacity style={styles.goBackButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.goBackButton} onPress={safeBack}>
           <Image source={goBackIcon} style={styles.goBackIcon} />
         </TouchableOpacity>
         <View style={styles.titleWrapper}>

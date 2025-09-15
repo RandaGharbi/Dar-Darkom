@@ -4,16 +4,16 @@ name: CI/CD Pipeline
 # Commit: d265ca5 - Dockerfile corrigé avec yarn install --immutable
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, v2 ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, v2 ]
 
 env:
   NODE_VERSION: '18'
   REGISTRY: ghcr.io
-  IMAGE_NAME: randagharbi/guerlain
+  IMAGE_NAME: randagharbi/nourane
   DOCKER_USERNAME: randagharbi
-  REPOSITORY_NAME: guerlain
+  REPOSITORY_NAME: nourane
 
 jobs:
   # Tests et linting
@@ -71,7 +71,7 @@ jobs:
     - name: Run tests
       run: yarn run test
       env:
-        MONGODB_URI: mongodb://localhost:27017/guerlain-test
+        MONGODB_URI: mongodb://localhost:27017/nourane-test
         JWT_SECRET: test-jwt-secret
         NODE_ENV: test
 
@@ -79,7 +79,7 @@ jobs:
       working-directory: apps/backend
       run: yarn test
       env:
-        MONGODB_URI: mongodb://localhost:27017/guerlain-test
+        MONGODB_URI: mongodb://localhost:27017/nourane-test
         JWT_SECRET: test-jwt-secret
         NODE_ENV: test
 
@@ -92,7 +92,7 @@ jobs:
     name: Build Docker Images
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/v2')
     
     steps:
     - name: Checkout code
@@ -124,7 +124,7 @@ jobs:
         file: ./Dockerfile
         target: backend-production
         push: true
-        tags: ghcr.io/randagharbi/guerlain/backend:${{ github.sha }}
+        tags: ghcr.io/randagharbi/nourane/backend:${{ github.sha }}
         no-cache: true
         build-args: |
           BUILDKIT_INLINE_CACHE=0
