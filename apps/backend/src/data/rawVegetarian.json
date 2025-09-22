@@ -1,7 +1,7 @@
 [
     {
       "id": 1,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Ojja aux œufs brouillés, plat végétarien tunisien aux saveurs relevées et parfumées",
       "Name": "Ojja",
       "Image": "https://fac.img.pmdstatic.net/fit/~1~fac~2022~02~26~2e3f76f3-0921-4668-a1c1-e67b9cfb3030.jpeg/750x562/quality/80/crop-from/center/cr/wqkgSVNUT0NLIC8gRmVtbWUgQWN0dWVsbGU%3D/focus-point/749%2C1284/ojja-tunisienne.jpeg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -15,7 +15,7 @@
     },
     {
       "id": 2,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Chorba frik sans viande, soupe végétarienne tunisienne à l'orge verte aux saveurs authentiques",
       "Name": "Chorba Frik sans viande",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -29,7 +29,7 @@
     },
     {
       "id": 3,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Kafteji végétarien aux légumes frits, mélange traditionnel tunisien aux œufs et saveurs croquantes",
       "Name": "Kafteji végétarien",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -43,7 +43,7 @@
     },
     {
       "id": 4,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Lablabi aux pois chiches, soupe végétarienne tunisienne à l'ail et cumin aux saveurs parfumées",
       "Name": "Lablabi",
       "Image": "https://cuisine.nessma.tv/uploads/11/2019-11/189127a525113fd0dc613fb76b8509af.png",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -57,7 +57,7 @@
     },
     {
       "id": 5,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Salade mechouia aux pois chiches, salade végétarienne tunisienne aux légumes grillés et saveurs fumées",
       "Name": "Salade Mechouia aux pois chiches",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -71,7 +71,7 @@
     },
     {
       "id": 6,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Borghol aux légumes, plat végétarien tunisien aux céréales et légumes aux saveurs authentiques",
       "Name": "Borghol aux légumes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -85,7 +85,7 @@
     },
     {
       "id": 7,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Mloukhiya végétarienne aux feuilles de corète, ragoût vert tunisien aux saveurs authentiques",
       "Name": "Mloukhiya végétarienne",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -99,7 +99,7 @@
     },
     {
       "id": 8,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Couscous aux légumes, plat végétarien tunisien aux saveurs fraîches et colorées",
       "Name": "Couscous aux légumes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -113,7 +113,7 @@
     },
     {
       "id": 9,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Tajine sebnekh bel bettata aux épinards et pommes de terre, plat végétarien tunisien aux saveurs authentiques",
       "Name": "Tajine sebnekh bel bettata",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -127,7 +127,7 @@
     },
     {
       "id": 10,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Soupe aux lentilles, soupe végétarienne tunisienne aux saveurs terreuses et parfumées",
       "Name": "Soupe aux lentilles",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -141,7 +141,7 @@
     },
     {
       "id": 11,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Tajine khodra aux légumes, plat végétarien tunisien aux saveurs variées et colorées",
       "Name": "Tajine khodra",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -155,7 +155,7 @@
     },
     {
       "id": 12,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Pasta bel salsa tomate aux pâtes, plat végétarien tunisien à la sauce tomate aux saveurs méditerranéennes",
       "Name": "Pasta bel salsa tomate",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -169,7 +169,7 @@
     },
     {
       "id": 13,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Chakchouka bel batata aux pommes de terre, plat végétarien tunisien aux œufs et saveurs relevées",
       "Name": "Chakchouka bel batata",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -183,7 +183,7 @@
     },
     {
       "id": 14,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Hrira végétarienne, soupe traditionnelle tunisienne aux saveurs parfumées et authentiques",
       "Name": "Hrira végétarienne",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -197,7 +197,7 @@
     },
     {
       "id": 15,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Ojja aux champignons, plat végétarien tunisien aux œufs et saveurs terreuses",
       "Name": "Ojja aux champignons",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -211,7 +211,7 @@
     },
     {
       "id": 16,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Makrouna bel salsa légumes aux pâtes, plat végétarien tunisien aux légumes et saveurs colorées",
       "Name": "Makrouna bel salsa légumes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -225,7 +225,7 @@
     },
     {
       "id": 17,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Batata bel kamoun aux pommes de terre, plat végétarien tunisien au cumin aux saveurs parfumées",
       "Name": "Batata bel kamoun",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -239,7 +239,7 @@
     },
     {
       "id": 18,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Kousksi bel khodra aux légumes, couscous végétarien tunisien aux saveurs fraîches et colorées",
       "Name": "Kousksi bel khodra",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -253,7 +253,7 @@
     },
     {
       "id": 19,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Mloukhia bel khodra aux légumes, ragoût vert végétarien tunisien aux saveurs authentiques",
       "Name": "Mloukhia bel khodra",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -267,7 +267,7 @@
     },
     {
       "id": 20,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Borghol bel salsa tomate aux céréales, plat végétarien tunisien à la sauce tomate aux saveurs méditerranéennes",
       "Name": "Borghol bel salsa tomate",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -281,7 +281,7 @@
     },
     {
       "id": 21,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Soupe de pois cassés, soupe végétarienne tunisienne aux saveurs douces et crémeuses",
       "Name": "Soupe de pois cassés",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -295,7 +295,7 @@
     },
     {
       "id": 22,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Tajine b lemsamen aux pâtes, plat végétarien tunisien aux saveurs délicates et traditionnelles",
       "Name": "Tajine b lemsamen",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -309,7 +309,7 @@
     },
     {
       "id": 23,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Salade verte tunisienne, salade végétarienne aux légumes frais et saveurs méditerranéennes",
       "Name": "Salade verte tunisienne",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -323,7 +323,7 @@
     },
     {
       "id": 24,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Hlalem bel légumes aux pâtes, plat végétarien tunisien aux saveurs authentiques et délicates",
       "Name": "Hlalem bel légumes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -337,7 +337,7 @@
     },
     {
       "id": 25,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Chorba beida sans viande, soupe végétarienne tunisienne aux saveurs douces et crémeuses",
       "Name": "Chorba beida sans viande",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -351,7 +351,7 @@
     },
     {
       "id": 26,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Rafissa tunisienne végétarienne, plat traditionnel tunisien aux saveurs authentiques et parfumées",
       "Name": "Rafissa tunisienne végétarienne",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -365,7 +365,7 @@
     },
     {
       "id": 27,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Tlitli bel légumes aux pâtes, plat végétarien tunisien aux saveurs variées et colorées",
       "Name": "Tlitli bel légumes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -379,7 +379,7 @@
     },
     {
       "id": 28,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Mlawi farci légumes, spécialité végétarienne tunisienne aux saveurs délicates et traditionnelles",
       "Name": "Mlawi farci légumes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -393,7 +393,7 @@
     },
     {
       "id": 29,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Kaskrout omelette aux œufs, plat végétarien tunisien aux saveurs délicates et parfumées",
       "Name": "Kaskrout omelette",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -407,7 +407,7 @@
     },
     {
       "id": 30,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Brick aux épinards, spécialité végétarienne tunisienne aux saveurs vertes et parfumées",
       "Name": "Brick aux épinards",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -421,7 +421,7 @@
     },
     {
       "id": 31,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Brick bel batata aux pommes de terre, spécialité végétarienne tunisienne aux saveurs douces et crémeuses",
       "Name": "Brick bel batata",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -435,7 +435,7 @@
     },
     {
       "id": 32,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Brick aux fromages, spécialité végétarienne tunisienne aux saveurs crémeuses et délicates",
       "Name": "Brick aux fromages",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -449,7 +449,7 @@
     },
     {
       "id": 33,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Kaftaji aux œufs, plat végétarien tunisien aux légumes frits et saveurs croquantes",
       "Name": "Kaftaji aux œufs",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -463,7 +463,7 @@
     },
     {
       "id": 34,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Ojja aux courgettes, plat végétarien tunisien aux œufs et saveurs fraîches",
       "Name": "Ojja aux courgettes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -477,7 +477,7 @@
     },
     {
       "id": 35,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Tajine bel piment doux, plat végétarien tunisien aux saveurs sucrées et colorées",
       "Name": "Tajine bel piment doux",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -491,7 +491,7 @@
     },
     {
       "id": 36,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Soupe bel karouia aux courgettes, soupe végétarienne tunisienne aux saveurs douces et fraîches",
       "Name": "Soupe bel karouia",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -505,7 +505,7 @@
     },
     {
       "id": 37,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Borghol bel hlib au lait, plat végétarien tunisien aux céréales et saveurs crémeuses",
       "Name": "Borghol bel hlib",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -519,7 +519,7 @@
     },
     {
       "id": 38,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Mhamssa bel khodra aux légumes, plat végétarien tunisien aux saveurs variées et colorées",
       "Name": "Mhamssa bel khodra",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -533,7 +533,7 @@
     },
     {
       "id": 39,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Chorba aux légumes secs, soupe végétarienne tunisienne aux saveurs terreuses et parfumées",
       "Name": "Chorba aux légumes secs",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -547,7 +547,7 @@
     },
     {
       "id": 40,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Hlalem bel khodra aux légumes, plat végétarien tunisien aux pâtes et saveurs authentiques",
       "Name": "Hlalem bel khodra",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -561,7 +561,7 @@
     },
     {
       "id": 41,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Tchich bel légumes aux pois chiches, plat végétarien tunisien aux saveurs terreuses et parfumées",
       "Name": "Tchich bel légumes",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -575,7 +575,7 @@
     },
     {
       "id": 42,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Salade de carottes au cumin, salade végétarienne tunisienne aux saveurs parfumées et colorées",
       "Name": "Salade de carottes au cumin",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -589,7 +589,7 @@
     },
     {
       "id": 43,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Batata bel hrissa aux pommes de terre, plat végétarien tunisien aux saveurs relevées et épicées",
       "Name": "Batata bel hrissa",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -603,7 +603,7 @@
     },
     {
       "id": 44,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Soupe bel tomate séchée, soupe végétarienne tunisienne aux saveurs concentrées et parfumées",
       "Name": "Soupe bel tomate séchée",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -617,7 +617,7 @@
     },
     {
       "id": 45,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Ojja aux aubergines, plat végétarien tunisien aux œufs et saveurs terreuses",
       "Name": "Ojja aux aubergines",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -631,7 +631,7 @@
     },
     {
       "id": 46,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Couscous bel potiron, plat végétarien tunisien aux saveurs douces et sucrées",
       "Name": "Couscous bel potiron",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -645,7 +645,7 @@
     },
     {
       "id": 47,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Tajine aux petits pois, plat végétarien tunisien aux saveurs fraîches et printanières",
       "Name": "Tajine aux petits pois",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -659,7 +659,7 @@
     },
     {
       "id": 48,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Borghol bel poivron aux céréales, plat végétarien tunisien aux saveurs colorées et parfumées",
       "Name": "Borghol bel poivron",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -673,7 +673,7 @@
     },
     {
       "id": 49,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Salade mechouia bel citron aux légumes grillés, salade végétarienne tunisienne aux saveurs fumées et acidulées",
       "Name": "Salade mechouia bel citron",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",
@@ -687,7 +687,7 @@
     },
     {
       "id": 50,
-      "Subtitle": "Végé Tunisien",
+      "Subtitle": "Chorba aux fèves, soupe végétarienne tunisienne aux saveurs terreuses et parfumées",
       "Name": "Chorba aux fèves",
       "Image": "https://example.com/images/vege_tunisien.jpg",
       "product_url": "https://example.com/produit/vege_tunisien",

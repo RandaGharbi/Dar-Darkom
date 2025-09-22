@@ -41,12 +41,38 @@ export default function OrderConfirmationScreen() {
 
   const estimatedDelivery = `${formatDate(deliveryStart)} - ${formatDate(deliveryEnd)}`;
 
+  // Si pas de commande, afficher un message d'erreur
+  if (!order) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.headerRow}>
+            <TouchableOpacity style={styles.backBtn} onPress={safeBack}>
+              <Text style={styles.backText}>←</Text>
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Order Confirmation</Text>
+            <View style={{ width: 32 }} />
+          </View>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorTitle}>Aucune commande trouvée</Text>
+            <Text style={styles.errorMessage}>
+              Il semble qu'aucune commande n'ait été trouvée. Veuillez retourner à l'écran précédent.
+            </Text>
+            <TouchableOpacity style={styles.retryButton} onPress={safeBack}>
+              <Text style={styles.retryButtonText}>Retour</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   // Log pour debug
 
   // Mapping des produits pour OrderSummary
   const products =
-    order.products ||
-    (order.items
+    order?.products ||
+    (order?.items
       ? order.items.map((item: any) => {
           const product = typeof item.productId === 'object' && item.productId !== null ? item.productId : {};
           return {
@@ -75,9 +101,9 @@ export default function OrderConfirmationScreen() {
 
         <OrderSummary
           products={products}
-          subtotal={typeof order.subtotal === 'number' ? order.subtotal : 0}
-          shipping={typeof order.shipping === 'number' ? order.shipping : 0}
-          total={typeof order.total === 'number' ? order.total : 0}
+          subtotal={typeof order?.subtotal === 'number' ? order.subtotal : 0}
+          shipping={typeof order?.shipping === 'number' ? order.shipping : 0}
+          total={typeof order?.total === 'number' ? order.total : 0}
         />
 
         <View style={styles.section}>
@@ -207,5 +233,37 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     letterSpacing: 0.5,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 50,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FF3B30',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  retryButton: {
+    backgroundColor: '#2E86AB',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 }); 

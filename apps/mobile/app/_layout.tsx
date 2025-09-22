@@ -13,6 +13,9 @@ import { AuthProvider } from '../context/AuthContext';
 import { OrderProvider } from "../context/OrderContext";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SelectedCardProvider } from '../context/PaymentContext';
+import { MiniPlayerProvider } from '../context/MiniPlayerContext';
+import { FavoritesProvider } from '../context/FavoritesContext';
+import { GlobalMiniPlayer } from '../components/GlobalMiniPlayer';
 import AnimatedSplashScreen from '../components/AnimatedSplashScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -30,22 +33,36 @@ function AppContent() {
         <CategoriesProvider>
           <OrderProvider>
             <SelectedCardProvider>
-              <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="login" options={{ headerShown: false }} />
-                <Stack.Screen name="signup" options={{ headerShown: false }} />
-                <Stack.Screen name="cart" options={{ headerShown: false }} />
-                <Stack.Screen name="profile" options={{ headerShown: false }} />
-                <Stack.Screen name="order-history" options={{ headerShown: false }} />
-                <Stack.Screen name="order-details/[id]" options={{ headerShown: false }} />
-                <Stack.Screen name="payment-methods" options={{ headerShown: false }} />
-                <Stack.Screen name="personal-info" options={{ headerShown: false }} />
-                <Stack.Screen name="contact-us" options={{ headerShown: false }} />
-                <Stack.Screen name="help-center" options={{ headerShown: false }} />
-              </Stack>
-              <StatusBar style="auto" />
-              </View>
+              <FavoritesProvider>
+                <MiniPlayerProvider>
+                <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+                <Stack 
+                  screenOptions={{ 
+                    headerShown: false,
+                    animation: 'slide_from_right',
+                    gestureEnabled: true,
+                    gestureDirection: 'horizontal'
+                  }}
+                >
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="login" options={{ headerShown: false }} />
+                  <Stack.Screen name="signup" options={{ headerShown: false }} />
+                  <Stack.Screen name="cart" options={{ headerShown: false }} />
+                  <Stack.Screen name="order-confirmation" options={{ headerShown: false }} />
+                  <Stack.Screen name="profile" options={{ headerShown: false }} />
+                  <Stack.Screen name="order-history" options={{ headerShown: false }} />
+                  <Stack.Screen name="order-details/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="payment-methods" options={{ headerShown: false }} />
+                  <Stack.Screen name="personal-info" options={{ headerShown: false }} />
+                  <Stack.Screen name="contact-us" options={{ headerShown: false }} />
+                  <Stack.Screen name="help-center" options={{ headerShown: false }} />
+                  <Stack.Screen name="favorites" options={{ headerShown: false }} />
+                </Stack>
+                <GlobalMiniPlayer />
+                <StatusBar style="auto" />
+                </View>
+                </MiniPlayerProvider>
+              </FavoritesProvider>
             </SelectedCardProvider>
           </OrderProvider>
         </CategoriesProvider>

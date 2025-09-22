@@ -19,7 +19,16 @@ const router = express.Router();
 
 router.post('/signup', signup);
 
-router.post('/login', login);
+router.post('/login', (req, res, next) => {
+  console.log('🛣️ LOGIN ROUTE HIT:', req.body);
+  next();
+}, login);
+
+// Route de test simple
+router.post('/test-login', (req, res) => {
+  console.log('🧪 TEST LOGIN ROUTE HIT:', req.body);
+  res.json({ message: 'Test route works', body: req.body });
+});
 
 router.get('/me', getMe);
 

@@ -30,36 +30,38 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   :root {
-    --primary-color: #F5A623;
-    --primary-hover: #e5941a;
-    --secondary-color: #F5F1EA;
-    --text-primary: #23190C;
-    --text-secondary: #6b4e1e;
-    --text-muted: #bfae99;
-    --border-color: #f0e8dd;
-    --border-hover: #e5d8c3;
-    --background: #FCFAF7;
-    --background-secondary: #F5F1EA;
+    /* Couleurs principales inspirées du mobile */
+    --primary-color: #2E86AB;
+    --primary-hover: #256a8a;
+    --primary-light: #f0f8ff;
+    --secondary-color: #f8f9fa;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --border-color: #f5f5f5;
+    --border-hover: #e5e5e5;
+    --background: #f8f9fa;
+    --background-secondary: #ffffff;
     --success: #10b981;
     --error: #ef4444;
     --warning: #f59e0b;
-    --info: #3b82f6;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.07);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
-    --radius: 0.5rem;
-    --radius-sm: 0.25rem;
-    --radius-lg: 0.75rem;
-    --input-bg: #F5F1EA;
-    --link-color: #B97A1A;
-    --color-black: #171412;
+    --info: #2E86AB;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-lg: 16px;
+    --input-bg: #f0f8ff;
+    --link-color: #2E86AB;
+    --color-black: #333;
     --color-white: #FFFFFF;
-    --color-taupe: #827869;
-    --color-gray-light: #E3E0DE;
-    --color-gray-lighter: #E5E8EB;
-    --color-gray-bg: #F5F2F2;
-    --color-beige: #EDD9BF;
+    --color-gray-light: #f5f5f5;
+    --color-gray-lighter: #f8f9fa;
+    --color-gray-bg: #f8f9fa;
+    --color-blue: #2E86AB;
+    --color-blue-light: #f0f8ff;
   }
 
   [data-theme="dark"] {
@@ -79,27 +81,42 @@ export const GlobalStyles = createGlobalStyle`
     background-color: var(--primary-color);
     color: white;
     font-weight: 600;
-    border-radius: 8px;
-    font-size: 1rem;
+    border-radius: var(--radius);
+    font-size: 16px;
     border: none;
-    transition: background 0.2s;
+    padding: 16px;
+    transition: all 0.2s;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    box-shadow: var(--shadow);
+    cursor: pointer;
   }
   .btn-primary:hover:not(:disabled) {
     background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
   }
 
   .input {
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    border-radius: 8px;
-    font-size: 1rem;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1rem;
-    transition: border 0.2s;
+    border-radius: var(--radius);
+    font-size: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   }
   .input:focus {
-    border: 1.5px solid var(--primary-color);
+    border: 1px solid var(--primary-color);
     outline: none;
+    box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.1);
+  }
+  .input::placeholder {
+    color: var(--text-secondary);
+    opacity: 1;
   }
 `; 

@@ -20,14 +20,16 @@ export interface IOrder extends Document {
   total: number;
   createdAt: Date;
   isOrdered: boolean;
-  status: 'active' | 'completed' | 'cancelled';
+  status: 'active' | 'completed' | 'cancelled' | 'confirmed';
   shippingAddress: {
-    fullName: string;
+    fullName?: string;
     street: string;
     city: string;
     postalCode: string;
     country: string;
   };
+  paymentMethod?: string;
+  paymentIntentId?: string;
 }
 
 // OrderItemSchema definition removed as it's not used
@@ -53,7 +55,7 @@ const OrderSchema = new Schema<IOrder>({
   total: { type: Number },
   createdAt: { type: Date, default: Date.now },
   isOrdered: { type: Boolean, default: false },
-  status: { type: String, enum: ['active', 'completed', 'cancelled'], default: 'active' },
+  status: { type: String, enum: ['active', 'completed', 'cancelled', 'confirmed'], default: 'active' },
   shippingAddress: {
     fullName: { type: String },
     street: { type: String },
@@ -61,6 +63,8 @@ const OrderSchema = new Schema<IOrder>({
     postalCode: { type: String },
     country: { type: String },
   },
+  paymentMethod: { type: String },
+  paymentIntentId: { type: String },
 });
 
 export default mongoose.model<IOrder>('Order', OrderSchema); 

@@ -5,18 +5,18 @@ export const API_BASE_URL = API_CONFIG.BASE_URL;
 
 export interface Product {
   id: number;
-  title: string;
-  product_url: string;
-  image_url: string;
-  price: number;
-  customerRating: number | null;
-  numberOfReviews: number;
-  productCollection: string;
-  typeOfCare: string;
+  name: string;
   subtitle: string;
-  name?: string;
-  category?: string;
-  image?: string;
+  image: string;
+  product_url: string;
+  price: number;
+  arrivals: string;
+  category: string;
+  quantity: number;
+  status: string;
+  productType: string;
+  dailySpecial: boolean;
+  nessma_recipe?: string;
 }
 
 export interface Card {
@@ -42,26 +42,34 @@ export interface ApiResponse<T> {
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
     try {
-      const url = getFullUrl(endpoint);
+      const method = (options?.method || 'GET').toLowerCase() as 'get' | 'post' | 'put' | 'patch' | 'delete';
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache',
+        ...options?.headers,
+      };
       
-      const response = await fetch(url, {
-        method: options?.method || 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
-          ...options?.headers,
-        },
-        ...options,
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Response error:', errorText);
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      let response;
+      if (method === 'get') {
+        response = await httpClient.get(endpoint, { headers });
+      } else if (method === 'post') {
+        response = await httpClient.post(endpoint, options?.body ? JSON.parse(options.body as string) : undefined, { headers });
+      } else if (method === 'put') {
+        response = await httpClient.put(endpoint, options?.body ? JSON.parse(options.body as string) : undefined, { headers });
+      } else if (method === 'patch') {
+        response = await httpClient.patch(endpoint, options?.body ? JSON.parse(options.body as string) : undefined, { headers });
+      } else if (method === 'delete') {
+        response = await httpClient.delete(endpoint, { headers });
+      } else {
+        throw new Error(`Méthode HTTP non supportée: ${method}`);
       }
 
-      const data = await response.json();
+      const data = response.data;
+      // Si la réponse est déjà un tableau, on le retourne dans le format attendu
+      if (Array.isArray(data)) {
+        return { success: true, data };
+      }
       return { success: true, data };
     } catch (error) {
       console.error('API Error:', error);
@@ -80,7 +88,22 @@ class ApiService {
 
   // Produits
   async getProducts(): Promise<ApiResponse<Product[]>> {
-    return this.request<Product[]>(API_CONFIG.ENDPOINTS.PRODUCTS);
+    try {
+      const response = await httpClient.get(API_CONFIG.ENDPOINTS.PRODUCTS);
+      const data = response.data;
+      
+      // Si la réponse est déjà un tableau, on le retourne dans le format attendu
+      if (Array.isArray(data)) {
+        return { success: true, data };
+      }
+      return { success: true, data };
+    } catch (error) {
+      console.error('Erreur lors de la récupération des produits:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erreur inconnue'
+      };
+    }
   }
 
   async getProduct(id: number): Promise<ApiResponse<Product>> {
@@ -118,6 +141,11 @@ class ApiService {
   // Récupérer les produits de salade
   async getSaladProducts(): Promise<ApiResponse<Product[]>> {
     return this.request<Product[]>('/api/products/type/salad');
+  }
+
+  // Récupérer toutes les catégories
+  async getCategories(): Promise<ApiResponse<string[]>> {
+    return this.request<string[]>(API_CONFIG.ENDPOINTS.PRODUCT_CATEGORIES);
   }
 
 

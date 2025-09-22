@@ -4,21 +4,18 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  SafeAreaView,
-  StatusBar,
   TouchableOpacity,
   Image,
-  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
-import { OrderCard } from '@/components/OrderCard';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeNavigation } from '../hooks/useSafeNavigation';
-import goBackIcon from '../assets/images/back.png';
-import panierIcon from '../assets/images/basket.png';
 import { useAuth } from '../context/AuthContext';
 import API_CONFIG from '../config/api';
-
-const screenWidth = Dimensions.get('window').width;
+import SafeAreaWrapper from '../components/SafeAreaWrapper';
+import { OrientalColors } from '../constants/Colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OrdersHistoryScreen = () => {
   const router = useRouter();
@@ -27,189 +24,314 @@ const OrdersHistoryScreen = () => {
   const [tab, setTab] = useState<'active' | 'history'>('active');
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const userId = user?._id; // Utilise l'ID utilisateur réel
+  const userId = user?._id;
 
   useEffect(() => {
-    if (!userId) return;
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        // ✅ Utiliser l'endpoint existant qui fonctionne
-        const endpoint = tab === 'active'
-          ? `${API_CONFIG.BASE_URL}/api/orders/active/${userId}` // ✅ Endpoint existant
-          : `${API_CONFIG.BASE_URL}/api/orders/active/${userId}`; // ✅ Même endpoint pour les deux tabs
-        console.log('🔗 Fetching orders from:', endpoint);
-        const res = await fetch(endpoint);
-        const data = await res.json();
-        console.log('📦 Commandes récupérées:', data.length, 'avec statuts:', data.map((o: any) => o.status));
-        console.log('🔍 Détail des commandes:', data.map((o: any) => ({
-          id: o._id,
-          status: o.status,
-          date: o.createdAt
-        })));
-        setOrders(data);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des commandes:', error);
-        setOrders([]);
-      }
-      setLoading(false);
-    };
-    fetchOrders();
-  }, [tab, userId]);
-
-  // ✅ Filtrage local corrigé pour séparer correctement les commandes
-  const filteredOrders = orders.filter(order => {
-    console.log(`🔍 Commande ${order._id}: status="${order.status}"`);
-    
-    if (tab === 'active') {
-      // Tab "Active" : SEULEMENT les commandes vraiment actives (pas annulées, pas terminées)
-      const isActive = order.status === 'active' || order.status === 'processing' || order.status === 'shipped';
-      console.log(`  → Tab Active: ${isActive ? '✅ AFFICHÉE' : '❌ FILTRÉE'}`);
-      return isActive;
-    } else {
-      // Tab "History" : SEULEMENT les commandes terminées ou annulées
-      const isHistory = order.status === 'completed' || order.status === 'cancelled';
-      console.log(`  → Tab History: ${isHistory ? '✅ AFFICHÉE' : '❌ FILTRÉE'}`);
-      return isHistory;
+    if (userId) {
+      fetchOrders();
     }
+  }, [userId]);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) return;
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/orders/user/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des commandes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredOrders = orders.filter(order => {
+    const isHistory = order.status === 'delivered' || order.status === 'cancelled';
+    return tab === 'history' ? isHistory : !isHistory;
   });
-  
-  console.log(`📊 Tab "${tab}": ${filteredOrders.length} commandes affichées sur ${orders.length} total`);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return OrientalColors.warning;
+      case 'confirmed': return OrientalColors.warning;
+      case 'preparing': return OrientalColors.warning;
+      case 'ready': return OrientalColors.warning;
+      case 'delivered': return OrientalColors.success;
+      case 'cancelled': return OrientalColors.error;
+      default: return OrientalColors.warning;
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'pending': return 'EN ATTENTE';
+      case 'confirmed': return 'CONFIRMÉE';
+      case 'preparing': return 'EN PRÉPARATION';
+      case 'ready': return 'PRÊTE';
+      case 'delivered': return 'LIVRÉE';
+      case 'cancelled': return 'ANNULÉE';
+      default: return 'EN COURS';
+    }
+  };
+
+  const renderOrderItem = ({ item }: { item: any }) => (
+    <TouchableOpacity
+      style={styles.orderItem}
+      onPress={() => router.push({
+        pathname: '/order-details',
+        params: { order: JSON.stringify(item) }
+      })}
+    >
+      <Image
+        source={{ 
+          uri: item.image || item.products?.[0]?.image || 'https://via.placeholder.com/80'
+        }}
+        style={styles.orderImage}
+        resizeMode="cover"
+      />
+      <View style={styles.orderInfo}>
+        <Text style={styles.orderNumber}>
+          Commande #{item.orderNumber || item._id?.slice(-8)}
+        </Text>
+        <Text style={styles.orderDate}>
+          {item.createdAt ? new Date(item.createdAt).toLocaleDateString('fr-FR') : 'Date inconnue'}
+        </Text>
+        <Text style={styles.orderTotal}>
+          Total: {item.total ? `€${item.total.toFixed(2)}` : '€0.00'}
+        </Text>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
+          <Ionicons name="time-outline" size={12} color="#fff" />
+          <Text style={styles.statusText}>{getStatusText(item.status)}</Text>
+        </View>
+      </View>
+      <Ionicons name="chevron-forward" size={20} color="#8E8E93" />
+    </TouchableOpacity>
+  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      {/* header avec GoBack, titre centré, panier */}
-      <View style={styles.headerRow}>
-        <TouchableOpacity style={styles.goBackButton} onPress={safeBack}>
-          <Image source={goBackIcon} style={styles.goBackIcon} />
+    <SafeAreaWrapper backgroundColor="#f5f5f5" edges={['top']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={safeBack}>
+          <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <View style={styles.titleWrapper}>
-          <Text style={styles.title}>Orders & Returns</Text>
-        </View>
-        <TouchableOpacity style={styles.cartButton} onPress={() => alert('Panier cliqué')}>
-          <Image source={panierIcon} style={styles.cartIcon} />
+        <Text style={styles.headerTitle}>Commandes & Retours</Text>
+        <TouchableOpacity style={styles.returnsButton}>
+          <Ionicons name="refresh-outline" size={24} color="#000" />
         </TouchableOpacity>
       </View>
-      <View style={styles.tabsWrapper}>
+
+      {/* Tabs */}
+      <View style={styles.tabsContainer}>
         <View style={styles.tabs}>
-          <TouchableOpacity onPress={() => setTab('active')} style={[styles.tabBtn, tab === 'active' && styles.tabBtnActive]}>
-            <Text style={tab === 'active' ? styles.tabActive : styles.tabInactive}>Active</Text>
+          <TouchableOpacity
+            style={[styles.tab, tab === 'active' && styles.activeTab]}
+            onPress={() => setTab('active')}
+          >
+            <Text style={[styles.tabText, tab === 'active' && styles.activeTabText]}>
+              Actives
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setTab('history')} style={[styles.tabBtn, tab === 'history' && styles.tabBtnActive]}>
-            <Text style={tab === 'history' ? styles.tabActive : styles.tabInactive}>History</Text>
+          <TouchableOpacity
+            style={[styles.tab, tab === 'history' && styles.activeTab]}
+            onPress={() => setTab('history')}
+          >
+            <Text style={[styles.tabText, tab === 'history' && styles.activeTabText]}>
+              Historique
+            </Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.tabsUnderline} />
+        <View style={styles.tabIndicator} />
       </View>
+
+      {/* Content */}
       {loading ? (
-        <Text style={{ textAlign: 'center', marginTop: 30 }}>Chargement...</Text>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={OrientalColors.warning} />
+          <Text style={styles.loadingText}>Chargement des commandes...</Text>
+        </View>
       ) : (
         <FlatList
           data={filteredOrders}
           keyExtractor={(item) => item._id || item.id}
-          renderItem={({ item }) => (
-            <OrderCard
-              image={item.image || { uri: item.products?.[0]?.image || '' }}
-              orderNumber={item.orderNumber || item._id}
-              date={item.createdAt ? new Date(item.createdAt).toLocaleDateString() : item.date}
-              total={item.total ? `€${item.total}` : item.total}
-              status={item.status}
-              onPress={() => router.push({
-                pathname: '/order-details',
-                params: { order: JSON.stringify(item) }
-              })}
-            />
-          )}
+          renderItem={renderOrderItem}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 30 }}>Aucune commande</Text>}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons name="receipt-outline" size={64} color="#8E8E93" />
+              <Text style={styles.emptyTitle}>Aucune commande</Text>
+              <Text style={styles.emptyMessage}>
+                {tab === 'active' 
+                  ? 'Vous n\'avez pas de commandes actives' 
+                  : 'Aucune commande dans l\'historique'
+                }
+              </Text>
+            </View>
+          }
         />
       )}
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
-export default OrdersHistoryScreen;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    backgroundColor: '#FAFAFA',
-    paddingTop: 40,
-  },
-  headerRow: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
     justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#f5f5f5',
   },
-  goBackButton: {
+  backButton: {
     padding: 8,
-    width: 40, // fixe la largeur pour aligner correctement
   },
-  goBackIcon: {
-    width: 24,
-    height: 24,
-    tintColor: 'black',
-    resizeMode: 'contain',
-  },
-  titleWrapper: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 22,
+  headerTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#000',
+    textAlign: 'center',
   },
-  cartButton: {
+  returnsButton: {
     padding: 8,
-    width: 40, // fixe la largeur pour symétrie
   },
-  cartIcon: {
-    width: 24,
-    height: 24,
-    tintColor: 'black',
-    resizeMode: 'contain',
-  },
-  tabsWrapper: {
-    alignItems: 'center',
-    marginBottom: 16,
+  tabsContainer: {
+    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 20,
+    paddingBottom: 8,
   },
   tabs: {
     flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  activeTab: {
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#8E8E93',
+  },
+  activeTabText: {
+    color: '#000',
+    fontWeight: '600',
+  },
+  tabIndicator: {
+    height: 2,
+    backgroundColor: '#E5E5EA',
+    marginTop: 8,
+  },
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 0,
-    gap: 24, // si non supporté, utiliser marginHorizontal sur tabBtn
+    paddingVertical: 60,
   },
-  tabBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginHorizontal: 8,
-    borderRadius: 8,
-  },
-  tabBtnActive: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 2,
-    borderBottomColor: '#222',
-  },
-  tabActive: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: 'black',
-  },
-  tabInactive: {
-    fontSize: 15,
-    color: '#999',
-  },
-  tabsUnderline: {
-    width: screenWidth * 0.8, // 80% de la largeur de l’écran
-    borderBottomWidth: 2,
-    borderBottomColor: '#E5E8EB',
+  loadingText: {
+    fontSize: 16,
+    color: '#8E8E93',
+    marginTop: 16,
   },
   listContent: {
-    paddingBottom: 40,
+    padding: 20,
+  },
+  orderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  orderImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  orderInfo: {
+    flex: 1,
+  },
+  orderNumber: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  orderDate: {
+    fontSize: 14,
+    color: '#8E8E93',
+    marginBottom: 2,
+  },
+  orderTotal: {
+    fontSize: 14,
+    color: '#8E8E93',
+    marginBottom: 8,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#fff',
+    marginLeft: 4,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 80,
+    paddingHorizontal: 40,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: '#8E8E93',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });
+
+export default OrdersHistoryScreen;

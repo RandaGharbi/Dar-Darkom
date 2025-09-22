@@ -55,9 +55,6 @@ export class SchedulerService {
           nextRun: exp.nextRun.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }),
           emailRecipients: exp.emailRecipients
         })));
-      } else {
-        // Afficher tous les exports actifs pour debug
-        await ScheduledExport.find({ status: 'active' });
       }
 
       for (const scheduledExport of scheduledExports) {

@@ -1,406 +1,701 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
+  StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
-  StyleSheet,
-  SafeAreaView,
+  TouchableOpacity,
   Image,
-  Platform,
-} from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useSafeNavigation } from "../hooks/useSafeNavigation";
-import VisaIcon from "../assets/images/visa.png";
-import MastercardIcon from "../assets/images/masterCard.png";
-import CardIcon from "../assets/images/card.png";
-import { getCorrectImageUrl } from '../utils/imageUtils';
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeNavigation } from '../hooks/useSafeNavigation';
+import SafeAreaWrapper from '../components/SafeAreaWrapper';
+import { useAuth } from '../context/AuthContext';
+import { API_CONFIG } from '../config/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLocalSearchParams } from 'expo-router';
+import { OrientalColors } from '../constants/Colors';
+import { getAddressesByUser } from '../services/api';
+import { Address } from './shipping-address';
+import TrackingCard from '../components/TrackingCard';
+
+interface Order {
+  _id: string;
+  userId: string;
+  products: {
+    name: string;
+    qty: number;
+    image: string;
+    price: number;
+  }[];
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  createdAt: string;
+  isOrdered: boolean;
+  status: 'active' | 'completed' | 'cancelled' | 'confirmed';
+  shippingAddress: {
+    fullName?: string;
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+  paymentMethod?: string;
+  paymentIntentId?: string;
+}
 
 export default function OrderDetailsScreen() {
-  const router = useRouter();
-  const params = useLocalSearchParams();
+  const insets = useSafeAreaInsets();
   const { safeBack } = useSafeNavigation();
+  const { user } = useAuth();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [userAddress, setUserAddress] = useState<Address | null>(null);
 
-  // Récupération des données passées via navigation
-  const order = params.order ? JSON.parse(params.order as string) : null;
-  const card = params.card ? JSON.parse(params.card as string) : null;
+  const { orderId } = useLocalSearchParams<{ orderId: string }>();
 
-  const products = order ? order.products : [];
-  const subtotal = order ? order.subtotal : 0;
-  const shipping = order ? order.shipping : 0;
-  const tax = order ? order.tax : 0;
-  const total = order ? order.total : 0;
-  const address = order && order.shippingAddress ? order.shippingAddress : { fullName: '', street: '', city: '', postalCode: '', country: '' };
+  // Fonction pour récupérer les détails de la commande
+  const fetchOrderDetails = useCallback(async () => {
+    if (!user?._id || !orderId) {
+      setLoading(false);
+      return;
+    }
 
-  const getCardLogo = (number: string) => {
-    if (!number) return CardIcon;
-    if (number.startsWith('4')) return VisaIcon;
-    if (number.startsWith('5')) return MastercardIcon;
-    return CardIcon;
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Token d\'authentification manquant');
+      }
+      
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/orders/${orderId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('📦 Données de la commande récupérées:', JSON.stringify(data, null, 2));
+      console.log('💳 Informations de paiement:', {
+        paymentMethod: data.paymentMethod,
+        paymentIntentId: data.paymentIntentId,
+        isOrdered: data.isOrdered
+      });
+      setOrder(data);
+    } catch (err) {
+      console.error('❌ Erreur lors de la récupération des détails de la commande:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?._id, orderId]);
+
+  // Fonction pour récupérer l'adresse de l'utilisateur
+  const fetchUserAddress = useCallback(async () => {
+    if (!user?._id) return;
+
+    try {
+      // D'abord, essayer de récupérer les adresses depuis la table Address
+      const addresses = await getAddressesByUser(user._id);
+      console.log('🏠 Adresses de l\'utilisateur récupérées:', addresses);
+      
+      // Prendre l'adresse par défaut ou la première disponible
+      const defaultAddress = addresses.find((addr: Address) => addr.isDefault) || addresses[0];
+      
+      if (defaultAddress) {
+        setUserAddress(defaultAddress);
+        console.log('🏠 Adresse sélectionnée depuis la table Address:', defaultAddress);
+      } else if (user.address) {
+        // Si pas d'adresse dans la table Address, utiliser l'adresse du profil utilisateur
+        console.log('🏠 Utilisation de l\'adresse du profil utilisateur:', user.address);
+        
+        // Parser l'adresse du profil pour créer un objet Address
+        // Format attendu: "123 Rue de la Paix, 75001 Paris, France"
+        const addressParts = user.address.split(', ');
+        let streetAddress = addressParts[0] || user.address;
+        let city = 'Ville inconnue';
+        let postalCode = '00000';
+        let country = 'Pays inconnu';
+        
+        if (addressParts.length >= 2) {
+          // Extraire le code postal et la ville de "75001 Paris"
+          const cityPart = addressParts[1].trim();
+          const cityMatch = cityPart.match(/^(\d+)\s+(.+)$/);
+          if (cityMatch) {
+            postalCode = cityMatch[1];
+            city = cityMatch[2];
+          } else {
+            city = cityPart;
+          }
+        }
+        
+        if (addressParts.length >= 3) {
+          country = addressParts[2].trim();
+        }
+        
+        const userAddressFromProfile: Address = {
+          _id: 'profile-address',
+          userId: user._id,
+          fullName: user.name || 'Utilisateur',
+          streetAddress: streetAddress,
+          city: city,
+          state: '', // Pas d'état dans ce format
+          postalCode: postalCode,
+          country: country,
+          isDefault: true
+        };
+        
+        setUserAddress(userAddressFromProfile);
+        console.log('🏠 Adresse du profil formatée:', userAddressFromProfile);
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération de l\'adresse:', error);
+      
+      // En cas d'erreur, utiliser l'adresse du profil utilisateur
+      if (user.address) {
+        console.log('🏠 Fallback: utilisation de l\'adresse du profil utilisateur:', user.address);
+        
+        // Parser l'adresse du profil pour créer un objet Address
+        const addressParts = user.address.split(', ');
+        let streetAddress = addressParts[0] || user.address;
+        let city = 'Ville inconnue';
+        let postalCode = '00000';
+        let country = 'Pays inconnu';
+        
+        if (addressParts.length >= 2) {
+          const cityPart = addressParts[1].trim();
+          const cityMatch = cityPart.match(/^(\d+)\s+(.+)$/);
+          if (cityMatch) {
+            postalCode = cityMatch[1];
+            city = cityMatch[2];
+          } else {
+            city = cityPart;
+          }
+        }
+        
+        if (addressParts.length >= 3) {
+          country = addressParts[2].trim();
+        }
+        
+        const userAddressFromProfile: Address = {
+          _id: 'profile-address',
+          userId: user._id,
+          fullName: user.name || 'Utilisateur',
+          streetAddress: streetAddress,
+          city: city,
+          state: '', // Pas d'état dans ce format
+          postalCode: postalCode,
+          country: country,
+          isDefault: true
+        };
+        setUserAddress(userAddressFromProfile);
+      }
+    }
+  }, [user?._id, user?.address, user?.name]);
+
+  useEffect(() => {
+    fetchOrderDetails();
+    fetchUserAddress();
+  }, [orderId, fetchOrderDetails, fetchUserAddress]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return OrientalColors.success;
+      case 'active':
+      case 'confirmed':
+        return OrientalColors.warning;
+      case 'cancelled':
+        return OrientalColors.error;
+      default:
+        return OrientalColors.textSecondary;
+    }
   };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={safeBack}
-          >
-            <Text style={styles.backText}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Order Details</Text>
-          <View style={{ width: 32 }} />
+  const getStatusDisplayText = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'Livré';
+      case 'active':
+        return 'En cours';
+      case 'confirmed':
+        return 'Confirmé';
+      case 'cancelled':
+        return 'Annulé';
+      default:
+        return status;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const handleCancelOrder = () => {
+    Alert.alert(
+      'Annuler la commande',
+      'Êtes-vous sûr de vouloir annuler cette commande ?',
+      [
+        { text: 'Non', style: 'cancel' },
+        { text: 'Oui', style: 'destructive', onPress: () => {
+          console.log('Annulation de la commande:', orderId);
+        }}
+      ]
+    );
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaWrapper backgroundColor={OrientalColors.background} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={OrientalColors.primary} />
+          <Text style={styles.loadingText}>Chargement des détails...</Text>
         </View>
-        <Text style={styles.orderId}>Order #{order && order._id ? order._id : ''}</Text>
+      </SafeAreaWrapper>
+    );
+  }
 
-        {/* Produits */}
-        {/* ✅ Optimisation : Rendu conditionnel et limité pour éviter les problèmes de performance */}
-        {products && products.length > 0 ? (
-          products.slice(0, 10).map((item: any, idx: number) => (
-            <View key={`product-${idx}-${item.name || idx}`} style={styles.productBlock}>
-              {item.image ? (
-                <Image source={{ uri: getCorrectImageUrl(item.image) || item.image }} style={styles.productImg} />
-              ) : null}
-              <View style={{ flex: 1 }}>
-                <Text style={styles.productName}>{item.name}</Text>
-                {item.desc ? (
-                  <Text style={styles.productDesc}>{item.desc}</Text>
-                ) : null}
-                <Text style={styles.productQty}>x{item.qty}</Text>
+  if (!orderId) {
+    return (
+      <SafeAreaWrapper backgroundColor={OrientalColors.background} edges={['top']}>
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={48} color={OrientalColors.error} />
+          <Text style={styles.errorTitle}>Erreur</Text>
+          <Text style={styles.errorMessage}>ID de commande manquant</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={safeBack}>
+            <Text style={styles.retryButtonText}>Retour</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaWrapper>
+    );
+  }
+
+  if (error || !order) {
+  return (
+      <SafeAreaWrapper backgroundColor={OrientalColors.background} edges={['top']}>
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={48} color={OrientalColors.error} />
+          <Text style={styles.errorTitle}>Erreur de chargement</Text>
+          <Text style={styles.errorMessage}>{error || 'Commande introuvable'}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchOrderDetails}>
+            <Text style={styles.retryButtonText}>Réessayer</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaWrapper>
+    );
+  }
+
+  return (
+    <SafeAreaWrapper backgroundColor="#f5f5f5" edges={['top']}>
+      {/* Header */}
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <TouchableOpacity style={styles.backButton} onPress={safeBack}>
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Détails de la commande</Text>
+        <View style={styles.placeholder} />
               </View>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.noProducts}>Aucun produit disponible</Text>
-        )}
 
-        {/* Paiement */}
-        <Text style={styles.sectionTitle}>Payment</Text>
-        <View style={styles.paymentBlock}>
-          {card && card.cardNumber ? (
-            <>
-              <Image
-                source={getCardLogo(card.cardNumber)}
-                style={{ width: 32, height: 32, marginRight: 8 }}
-              />
-              <Text style={styles.paymentText}>
-                {card.cardNumber ? `•••• ${card.cardNumber.slice(-4)}` : 'Credit Card'}
+      <ScrollView 
+        style={styles.container} 
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Order Info Card */}
+        <View style={styles.card}>
+          <View style={styles.orderHeader}>
+            <Text style={styles.orderNumber}>Commande #{order._id.slice(-8).toUpperCase()}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) }]}>
+              <Text style={[styles.statusText, { color: '#fff' }]}>
+                {getStatusDisplayText(order.status)}
               </Text>
-            </>
+            </View>
+          </View>
+          <Text style={styles.orderDate}>Commandé le {formatDate(order.createdAt)}</Text>
+        </View>
+
+        {/* Products List */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Produits commandés</Text>
+          {order.products && order.products.length > 0 ? (
+            order.products.map((product, index) => (
+              <View key={index} style={styles.productItem}>
+                <Image
+                  source={{ uri: product.image }}
+                  style={styles.productImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.productDetails}>
+                  <Text style={styles.productName}>{product.name}</Text>
+                  <Text style={styles.productQuantity}>Quantité: {product.qty}</Text>
+                  <Text style={styles.productPrice}>
+                    {(product.price * product.qty).toFixed(2)} €
+                  </Text>
+                </View>
+              </View>
+            ))
           ) : (
-            <Text style={styles.paymentText}>Credit Card</Text>
+            <Text style={styles.noProductsText}>Aucun produit trouvé</Text>
           )}
         </View>
 
-        {/* Adresse livraison */}
-        <Text style={styles.sectionTitle}>Shipping Address</Text>
-        <View style={styles.addressBlock}>
-          <Text style={styles.addressName}>{address.fullName}</Text>
-          <Text style={styles.addressText}>{address.street}</Text>
-          <Text style={styles.addressText}>
-            {address.postalCode ? address.postalCode + ', ' : ''}
-            {address.city}
+        {/* Order Summary */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Résumé de la commande</Text>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Sous-total</Text>
+            <Text style={styles.summaryValue}>{order.subtotal.toFixed(2)} €</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Livraison</Text>
+            <Text style={styles.summaryValue}>{order.shipping.toFixed(2)} €</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>TVA (5%)</Text>
+            <Text style={styles.summaryValue}>{order.tax.toFixed(2)} €</Text>
+          </View>
+          <View style={styles.summarySeparator} />
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalValue}>{order.total.toFixed(2)} €</Text>
+          </View>
+        </View>
+
+        {/* Payment Info */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Informations de paiement</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Méthode de paiement</Text>
+            <Text style={styles.infoValue}>
+              {order.paymentMethod === 'apple_pay' ? 'Apple Pay' : 
+               order.paymentMethod === 'card' ? 'Carte bancaire' :
+               order.paymentMethod === 'cash' ? 'Espèces' :
+               order.paymentIntentId ? 'Apple Pay' : // Si paymentIntentId existe, c'est probablement Apple Pay
+               order.paymentMethod || 'Apple Pay'} {/* Par défaut Apple Pay pour les commandes payées */}
           </Text>
-          <Text style={styles.addressText}>{address.country}</Text>
-        </View>
-
-        {/* Adresse facturation */}
-        <Text style={styles.sectionTitle}>Billing Address</Text>
-        <View style={styles.addressBlock}>
-          <Text style={styles.addressName}>{address.fullName}</Text>
-          <Text style={styles.addressText}>{address.street}</Text>
-          <Text style={styles.addressText}>
-            {address.postalCode ? address.postalCode + ', ' : ''}
-            {address.city}
-          </Text>
-          <Text style={styles.addressText}>{address.country}</Text>
-        </View>
-
-        {/* Résumé */}
-        <Text style={styles.sectionTitle}>Order Summary</Text>
-        <View style={styles.summaryBlock}>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>€{subtotal.toFixed(2)}</Text>
           </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Shipping</Text>
-            <Text style={styles.summaryValue}>€{shipping.toFixed(2)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Tax</Text>
-            <Text style={styles.summaryValue}>€{tax.toFixed(2)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Total</Text>
-            <Text style={styles.summaryTotal}>€{total.toFixed(2)}</Text>
+          {order.paymentIntentId && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>ID de transaction</Text>
+              <Text style={styles.infoValue}>{order.paymentIntentId.slice(-8)}</Text>
+            </View>
+          )}
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Statut du paiement</Text>
+            <Text style={[styles.infoValue, { color: '#228B22' }]}>Payé</Text>
           </View>
         </View>
 
-        {/* Statut */}
-        <Text style={styles.sectionTitle}>Order Status</Text>
-        <View style={styles.statusBlock}>
-          <Text style={styles.statusDate}>
-            {/* Date de livraison estimée */}
-            {(() => {
-              const today = new Date();
-              const deliveryStart = new Date(today);
-              deliveryStart.setDate(today.getDate() + 2);
-              const deliveryEnd = new Date(today);
-              deliveryEnd.setDate(today.getDate() + 5);
-              const formatDate = (date: Date) =>
-                date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-              return `${formatDate(deliveryStart)} - ${formatDate(deliveryEnd)}`;
-            })()}
-          </Text>
+        {/* Shipping Address */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Adresse de livraison</Text>
+          <View style={styles.addressContainer}>
+            <Ionicons name="location-outline" size={20} color="#666" />
+            <View style={styles.addressText}>
+              {userAddress ? (
+                <>
+                  <Text style={styles.addressLine}>{userAddress.streetAddress}</Text>
+                  <Text style={styles.addressLine}>
+                    {userAddress.postalCode} {userAddress.city}
+                  </Text>
+                  <Text style={styles.addressLine}>
+                    {userAddress.state ? `${userAddress.state}, ` : ''}{userAddress.country}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  {order.shippingAddress.fullName && (
+                    <Text style={styles.addressLine}>{order.shippingAddress.fullName}</Text>
+                  )}
+                  <Text style={styles.addressLine}>
+                    {order.shippingAddress.street || 'Adresse non spécifiée'}
+                  </Text>
+                  <Text style={styles.addressLine}>
+                    {order.shippingAddress.postalCode || 'Code postal non spécifié'} {order.shippingAddress.city || 'Ville non spécifiée'}
+                  </Text>
+                  <Text style={styles.addressLine}>
+                    {order.shippingAddress.country || 'Pays non spécifié'}
+                  </Text>
+                </>
+              )}
+            </View>
+          </View>
         </View>
 
-        {/* Tracking */}
-        <Text style={styles.sectionTitle}>Tracking Information</Text>
-        <View style={styles.trackingBlock}>
-          <Text style={styles.trackingText}>Tracking Number: 9876543210</Text>
-          <TouchableOpacity
-            onPress={() => router.push({
-              pathname: '/order-tracking',
-              params: {
-                orderId: order?._id,
-                trackingNumber: order?.trackingNumber || '9876543210',
-                products: JSON.stringify(order?.products || []),
-                address: JSON.stringify(order?.shippingAddress || order?.address || order?.deliveryAddress || {}),
-                steps: JSON.stringify(order?.trackingSteps || []),
-                orderDate: order?.createdAt || order?.orderDate || new Date().toISOString(),
-                orderStatus: order?.status || 'active', // ✅ Ajouter le statut de la commande
-              }
-            })}
-          >
-            <Text style={styles.trackingArrow}>→</Text>
+        {/* Tracking Section */}
+        {order.status === 'active' && (
+          <TrackingCard 
+            orderId={order._id}
+          />
+        )}
+
+        {/* Action Buttons */}
+        {order.status === 'active' && (
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
+              <Ionicons name="close-circle-outline" size={20} color="#FF3B30" />
+              <Text style={styles.cancelButtonText}>Annuler la commande</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Boutons */}
-        <View style={styles.btnRow}>
-          <TouchableOpacity
-            style={styles.reorderBtn}
-            onPress={() => router.push("/shop")}
-          >
-            <Text style={styles.reorderBtnText}>Reorder</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.supportBtn}
-            onPress={() => router.push("/contact-us")}
-          >
-            <Text style={styles.supportBtnText}>Contact Support</Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   container: {
-    padding: 24,
-    paddingBottom: 40,
-    backgroundColor: "#fff",
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: Platform.OS === "android" ? 32 : 0,
-    marginBottom: 12,
-    paddingHorizontal: 0,
-  },
-  backBtn: {
-    width: 32,
-    height: 32,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  backText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#222",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
     flex: 1,
-    marginTop: 8,
+    backgroundColor: '#f5f5f5',
   },
-  orderId: {
-    fontWeight: "bold",
-    fontSize: 15,
-    color: "#222",
-    marginBottom: 18,
-    marginLeft: 2,
+  scrollContent: {
+    paddingBottom: 100, // Espace pour la tabBar
   },
-  productBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5,
-    padding: 10,
-  },
-  productImg: {
-    width: 54,
-    height: 54,
-    borderRadius: 10,
-    marginRight: 14,
-    backgroundColor: "#fff",
-  },
-  productName: {
-    fontSize: 14,
-    color: "#222",
-    fontWeight: "bold",
-    marginBottom: 2,
-  },
-  productDesc: {
-    fontSize: 12,
-    color: "#8A7861",
-    marginBottom: 2,
-  },
-  productQty: {
-    fontSize: 13,
-    color: "#8A7861",
-    fontWeight: "400",
-    marginRight: 12,
-    marginTop: 2,
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: "#222",
-    marginTop: 18,
-    marginBottom: 8,
-  },
-  paymentBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  paymentIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    backgroundColor: "#F6F3F2",
-    marginRight: 10,
-  },
-  paymentText: {
-    fontSize: 14,
-    color: "#222",
-  },
-  addressBlock: {
-    marginBottom: 10,
-    marginLeft: 2,
-  },
-  addressName: {
-    fontSize: 14,
-    color: "#222",
-    marginBottom: 2,
-    fontWeight: "500",
-  },
-  addressText: {
-    color: "#827869",
-    fontSize: 13,
-    marginBottom: 0,
-  },
-  summaryBlock: {
-    marginBottom: 0,
-    marginLeft: 2,
-  },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 14,
-  },
-  summaryLabel: {
-    fontSize: 13,
-    color: "#8A7861",
-  },
-  summaryValue: {
-    fontSize: 13,
-    color: "#222",
-  },
-  summaryTotal: {
-    fontSize: 13,
-    color: "#000",
-    fontWeight: "bold",
-  },
-  statusBlock: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    backgroundColor: '#f5f5f5',
   },
-  statusDate: {
-    fontSize: 13,
-    color: '#8A7861',
-    textAlign: 'right',
-    minWidth: 90,
+  backButton: {
+    padding: 8,
   },
-  trackingBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 18,
-    marginTop: 2,
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
   },
-  trackingText: {
-    fontSize: 13,
-    color: "#222",
+  placeholder: {
+    width: 40,
+  },
+  card: {
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  orderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  orderNumber: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  orderDate: {
+    fontSize: 12,
+    color: '#666',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    opacity: 0.8,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+  },
+  productItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  productImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 16,
+  },
+  productDetails: {
     flex: 1,
   },
-  trackingArrow: {
-    fontSize: 18,
-    color: "#8A7861",
-    marginLeft: 8,
-    fontWeight: "bold",
+  productName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
   },
-  btnRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 18,
-    marginBottom: 18,
-  },
-  reorderBtn: {
-    backgroundColor: "#EDD9BF",
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 22,
-    alignItems: "center",
-    minWidth: 100,
-    marginRight: 8,
-    alignSelf: "flex-start",
-  },
-  reorderBtnText: {
-    color: "#222",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-  supportBtn: {
-    backgroundColor: "#F6F3F2",
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 22,
-    alignItems: "center",
-    minWidth: 140,
-    marginLeft: 8,
-    alignSelf: "flex-end",
-  },
-  supportBtnText: {
-    color: "#222",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-  noProducts: {
+  productQuantity: {
     fontSize: 14,
-    color: "#8A7861",
-    textAlign: "center",
-    marginTop: 20,
-    fontStyle: "italic",
+    color: '#666',
+    marginBottom: 4,
+  },
+  productPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2E86AB',
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  summaryLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
+  summaryValue: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+  },
+  summarySeparator: {
+    height: 1,
+    backgroundColor: '#E5E5E5',
+    marginVertical: 12,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  totalValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2E86AB',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
+  infoValue: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  addressText: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  addressLine: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
+  },
+  actionButtons: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  cancelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FF3B30',
+    marginLeft: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FF3B30',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#2E86AB',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  noProductsText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginVertical: 20,
   },
 });

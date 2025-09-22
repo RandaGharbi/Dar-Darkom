@@ -4,20 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SafeAreaWrapper from '../../components/SafeAreaWrapper';
-import { apiService } from '../../services/api';
+import { apiService, Product } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCartStore } from '../../context/CartStore';
-
-interface Product {
-  id: number;
-  name: string;
-  subtitle: string;
-  image: string;
-  price: number;
-  category: string;
-  status: string;
-  dailySpecial?: boolean;
-}
 
 export default function MenuScreen() {
   const router = useRouter();
@@ -45,7 +34,12 @@ export default function MenuScreen() {
     try {
       setLoading(true);
       const response = await apiService.getProducts();
-      if (response.success && response.data) {
+      console.log('API Response:', response);
+      
+      // L'API retourne maintenant directement les produits
+      if (Array.isArray(response)) {
+        setProducts(response);
+      } else if (response.success && response.data) {
         setProducts(response.data);
       }
     } catch (error) {
@@ -60,7 +54,40 @@ export default function MenuScreen() {
 
     // Filtrer par catégorie
     if (selectedCategory !== 'Tous') {
-      filtered = filtered.filter(product => product.category === selectedCategory);
+      // Mapping des catégories de l'interface vers la base de données
+      const categoryMapping: { [key: string]: string } = {
+        'Plats chauds': 'Viandes',  // Les plats chauds incluent "Viandes" et "Poissons"
+        'Viandes': 'Viandes',
+        'Entrées & Salades': 'Entrées & Salades',
+        'Pâtisserie': 'Pâtisserie',
+        'Poissons': 'Poissons',
+        'Végé': 'Végé'
+      };
+      
+      const dbCategory = categoryMapping[selectedCategory] || selectedCategory;
+      console.log('Filtrage par catégorie:', selectedCategory, '->', dbCategory);
+      
+      // Pour "Plats chauds", inclure à la fois "Viandes" et "Poissons" et les mélanger
+      if (selectedCategory === 'Plats chauds') {
+        const viandes = filtered.filter(product => 
+          product.category === 'Viandes' && product.status === "Active"
+        );
+        const poissons = filtered.filter(product => 
+          product.category === 'Poissons' && product.status === "Active"
+        );
+        
+        // Mélanger les plats de façon alternée : viande, poisson, viande, poisson...
+        filtered = [];
+        const maxLength = Math.max(viandes.length, poissons.length);
+        
+        for (let i = 0; i < maxLength; i++) {
+          if (i < viandes.length) filtered.push(viandes[i]);
+          if (i < poissons.length) filtered.push(poissons[i]);
+        }
+      } else {
+        // Pour les autres catégories, filtrage normal
+        filtered = filtered.filter(product => product.category === dbCategory);
+      }
     }
 
     // Filtrer par recherche
@@ -166,7 +193,7 @@ export default function MenuScreen() {
         <View style={styles.productsContainer}>
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#FF6B35" />
+              <ActivityIndicator size="large" color="#2E86AB" />
               <Text style={styles.loadingText}>Chargement du menu...</Text>
             </View>
           ) : filteredProducts.length > 0 ? (
@@ -192,7 +219,7 @@ export default function MenuScreen() {
                   </View>
                   <Text style={styles.productDescription}>{product.subtitle}</Text>
                   <View style={styles.productFooter}>
-                    <Text style={styles.productPrice}>{product.price.toFixed(2)} €</Text>
+                    <Text style={styles.productPrice}>{product.price.toFixed(2)} DT</Text>
                     <Text style={styles.productCategory}>{product.category}</Text>
                   </View>
                 </View>
@@ -296,7 +323,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   categoryFilterActive: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#2E86AB',
   },
   categoryFilterText: {
     fontSize: 14,
@@ -348,7 +375,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   specialBadge: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#2E86AB',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 12,
@@ -373,7 +400,7 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FF6B35',
+    color: '#2E86AB',
   },
   productCategory: {
     fontSize: 12,
@@ -389,7 +416,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   addToCartButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#2E86AB',
     width: 36,
     height: 36,
     borderRadius: 18,

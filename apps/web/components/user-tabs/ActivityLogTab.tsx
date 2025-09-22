@@ -19,11 +19,24 @@ interface ActivityLogTabProps {
 }
 
 const TabContainer = styled.div`
-  padding: 24px;
-  background: ${({ theme }) => theme.colors.card.background};
-  border-radius: 16px;
-  box-shadow: ${({ theme }) => theme.colors.card.shadow};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border-radius: 24px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
 `;
 
 const TabHeader = styled.div`
@@ -31,39 +44,60 @@ const TabHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  position: relative;
+  z-index: 1;
 `;
 
 const TabTitle = styled.h3`
-  font-size: 20px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
 `;
 
 const RefreshButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 16px;
+  color: white;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.border};
-    border-color: ${({ theme }) => theme.colors.text.muted};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
   }
 
   .animate-spin {
@@ -82,7 +116,9 @@ const LoadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 80px 20px;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const ErrorContainer = styled.div`
@@ -92,23 +128,31 @@ const ErrorContainer = styled.div`
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const RetryButton = styled.button`
   margin-top: 20px;
   padding: 12px 24px;
-  background: ${({ theme }) => theme.colors.primary};
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   &:hover {
-    background: ${({ theme }) => theme.colors.secondary};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -119,22 +163,26 @@ const EmptyContainer = styled.div`
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const ActivityList = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  z-index: 1;
   
   &::before {
     content: '';
     position: absolute;
-    left: 24px;
-    top: 48px;
-    bottom: 48px;
-    width: 2px;
-    background: ${({ theme }) => theme.colors.border};
+    left: 32px;
+    top: 56px;
+    bottom: 56px;
+    width: 3px;
+    background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+    border-radius: 2px;
     z-index: 1;
   }
 `;
@@ -142,8 +190,8 @@ const ActivityList = styled.div`
 const ActivityItem = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 20px;
-  padding: 16px 0;
+  gap: 24px;
+  padding: 20px 0;
   position: relative;
   z-index: 2;
 `;
@@ -152,42 +200,62 @@ const ActivityIcon = styled.div<{ type: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: ${({ theme }) => theme.colors.surface};
-  color: ${({ theme }) => theme.colors.text.primary};
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
   flex-shrink: 0;
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+  }
 `;
 
 const ActivityContent = styled.div`
   flex: 1;
   min-width: 0;
-  padding-top: 4px;
+  padding-top: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 const ActivityTitle = styled.h4`
-  font-size: 14px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
-  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
   line-height: 1.4;
 `;
 
 const ActivityDescription = styled.p`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  margin: 0 0 6px 0;
-  line-height: 1.4;
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+  font-weight: 500;
 `;
 
 const ActivityTime = styled.span`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.text.muted};
+  font-size: 13px;
+  color: #64748b;
   display: block;
-  font-weight: 400;
+  font-weight: 600;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 export const ActivityLogTab: React.FC<ActivityLogTabProps> = ({ userId }) => {

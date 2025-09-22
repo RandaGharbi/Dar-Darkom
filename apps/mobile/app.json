@@ -12,13 +12,21 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.rindaa.Nourane",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Cette application a besoin d'accéder à votre localisation pour afficher la position du livreur sur la carte.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Cette application a besoin d'accéder à votre localisation pour afficher la position du livreur sur la carte."
       },
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
         "googleSignIn": {
           "reservedClientId": "374983345955-i49tvob0g5q3c167ljvic8vbtfdj07i1.apps.googleusercontent.com"
+        },
+        "googleMapsApiKey": "AIzaSyBvOkBw3cUyVbVl8Zx9qWrT2sEfGhI3jKl"
+      },
+      "entitlements": {
+        "com.apple.developer.apple-pay": {
+          "merchants": ["merchant.com.dar-darkom"]
         }
       }
     },
@@ -34,7 +42,16 @@
         "resizeMode": "contain",
         "backgroundColor": "#ffffff"
       },
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBvOkBw3cUyVbVl8Zx9qWrT2sEfGhI3jKl"
+        }
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -50,6 +67,12 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "imageWidth": 200
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Cette application a besoin d'accéder à votre localisation pour afficher la position du livreur sur la carte."
         }
       ]
     ],

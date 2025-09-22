@@ -88,7 +88,11 @@ const getAdaptiveColor = (color: string, theme: DefaultTheme) => {
 };
 
 const ActivityCard = styled.div`
-  padding: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f5f5f5;
   position: relative;
 `;
 
@@ -96,31 +100,33 @@ const HeaderContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 `;
 
 const ActivityTitle = styled.h2`
-  font-size: 1.3rem;
+  font-size: 18px;
   font-weight: bold;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
+  color: #333;
   margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 `;
 
 const RefreshButton = styled.button<{ $isRefreshing: boolean }>`
-  background: none;
-  border: none;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  background: #f8f9fa;
+  border: 1px solid #e5e5e5;
+  color: #666;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
+  padding: 8px;
+  border-radius: 8px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.surface};
-    color: ${({ theme }) => theme.colors.text.primary};
+    background: #2E86AB;
+    color: #ffffff;
+    border-color: #2E86AB;
   }
 
   svg {
@@ -130,14 +136,14 @@ const RefreshButton = styled.button<{ $isRefreshing: boolean }>`
 
 const TimelineContainer = styled.div`
   position: relative;
-  padding-left: 2rem;
+  padding-left: 24px;
 `;
 
 const ActivityItem = styled.div<{ $isNew?: boolean }>`
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
-  padding: 1rem 0;
+  gap: 16px;
+  padding: 16px 0;
   position: relative;
   animation: ${({ $isNew }) => $isNew ? css`${slideInFromTop} 0.5s ease-out` : 'none'};
   transition: all 0.3s ease;
@@ -149,11 +155,11 @@ const ActivityItem = styled.div<{ $isNew?: boolean }>`
   &:not(:last-child)::after {
     content: "";
     position: absolute;
-    left: 1.5rem;
+    left: 20px;
     bottom: 0;
     width: 2px;
-    height: 1rem;
-    background: #827869;
+    height: 16px;
+    background: #2E86AB;
   }
 `;
 
@@ -161,99 +167,71 @@ const ActivityIcon = styled.div<{ $type: string; $isNew?: boolean }>`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: ${({ $type }) => {
-    switch ($type) {
-      case 'order': return '#EDD9BF';
-      case 'user': return '#E8DECF';
-      case 'product': return '#F5F5F5';
-      case 'alert': return '#FEF3C7';
-      case 'trending': return '#DBEAFE';
-      case 'revenue': return '#D1FAE5';
-      case 'new': return '#FEF3C7';
-      default: return '#EDD9BF';
-    }
-  }};
+  background: #f0f8ff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $type, theme }) => {
-    switch ($type) {
-      case 'order': return getAdaptiveColor('#171412', theme);
-      case 'user': return getAdaptiveColor('#171412', theme);
-      case 'product': return getAdaptiveColor('#171412', theme);
-      case 'alert': return '#D97706';
-      case 'trending': return '#2563EB';
-      case 'revenue': return '#059669';
-      case 'new': return '#D97706';
-      default: return getAdaptiveColor('#171412', theme);
-    }
-  }};
-  border: 3px solid ${({ $type }) => {
-    switch ($type) {
-      case 'order': return '#E8DECF';
-      case 'user': return '#F5F5F5';
-      case 'product': return '#EDD9BF';
-      case 'alert': return '#FDE68A';
-      case 'trending': return '#BFDBFE';
-      case 'revenue': return '#A7F3D0';
-      case 'new': return '#FDE68A';
-      default: return '#E8DECF';
-    }
-  }};
+  color: #2E86AB;
+  border: 2px solid #e5e5e5;
   z-index: 1;
   position: relative;
   transition: all 0.3s ease;
 
   ${({ $isNew }) => $isNew && css`
     animation: ${pulse} 2s infinite;
-    box-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
+    box-shadow: 0 0 10px rgba(46, 134, 171, 0.3);
   `}
 `;
 
 const ActivityContent = styled.div`
   flex: 1;
-  padding-top: 0.5rem;
+  padding-top: 4px;
 `;
 
 const ActivityTime = styled.div`
-  font-size: 0.85rem;
-  color: #827869;
+  font-size: 12px;
+  color: #666;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 `;
 
 const ActivityItemTitle = styled.div`
   font-weight: 600;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
-  margin-bottom: 0.2rem;
-  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 `;
 
 const ActivityDescription = styled.div`
-  font-size: 0.85rem;
-  color: #827869;
-  margin-top: 0.2rem;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 `;
 
 const LiveIndicator = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  color: #059669;
-  margin-bottom: 1rem;
+  gap: 8px;
+  font-size: 12px;
+  color: #10b981;
+  margin-bottom: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 `;
 
 const LiveDot = styled.div`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #059669;
+  background: #10b981;
   animation: ${css`${pulse} 2s infinite`};
 `;
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: 2rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  padding: 32px;
+  color: #666;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 `;
 
 interface ActivityItemType {

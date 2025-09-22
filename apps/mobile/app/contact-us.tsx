@@ -428,16 +428,20 @@ const ContactUsPage: React.FC = () => {
           }
         }}
       >
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {item.userName.charAt(0).toUpperCase()}
+        <View style={[styles.avatar, item.messages.length === 0 && styles.newConversationAvatar]}>
+          <Text style={[styles.avatarText, item.messages.length === 0 && styles.newConversationAvatarText]}>
+            {item.messages.length === 0 ? '+' : 'D'}
           </Text>
         </View>
         <View style={styles.conversationInfo}>
-          <Text style={styles.userName}>{item.userName}</Text>
-          <Text style={styles.userEmail}>{item.userEmail}</Text>
+          <Text style={styles.userName}>
+            {item.messages.length === 0 ? 'Commencer une discussion' : 'Contact DarDarkom'}
+          </Text>
+          <Text style={styles.userEmail}>
+            {item.messages.length === 0 ? 'Tapez pour commencer' : item.userEmail}
+          </Text>
           <Text style={styles.lastMessage} numberOfLines={1}>
-            {lastMessage ? lastMessage.content : 'Aucun message'}
+            {lastMessage ? lastMessage.content : 'Nouvelle conversation'}
           </Text>
           {lastMessageTime && (
             <Text style={styles.lastMessageTime}>{lastMessageTime}</Text>
@@ -481,8 +485,8 @@ const ContactUsPage: React.FC = () => {
     if (item.isFromUser) {
       senderName = 'Moi';
     } else {
-      // Pour les messages admin, afficher "Support Nourane"
-      senderName = 'Support Nourane';
+      // Pour les messages admin, afficher "Support Dar Darkom"
+      senderName = 'Support Dar Darkom';
     }
 
     return (
@@ -537,11 +541,11 @@ const ContactUsPage: React.FC = () => {
         return null;
       })()}
       {!selectedConversation ? (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
           <View style={styles.inner}>
             <ContactInfo />
             
-            {isAuthenticated && (
+            {isAuthenticated ? (
               <View style={styles.messagingSection}>
                 <Text style={styles.sectionTitle}>Messagerie</Text>
                 {loading ? (
@@ -617,9 +621,11 @@ const ContactUsPage: React.FC = () => {
                                   console.log('✅ États mis à jour');
                                 } else {
                                   console.error('❌ Erreur API:', userResponse.status);
+                                  Alert.alert('Erreur', 'Problème d\'authentification. Veuillez vous reconnecter.');
                                 }
                               } else {
                                 console.error('❌ Pas de token');
+                                Alert.alert('Authentification requise', 'Veuillez vous connecter pour utiliser la messagerie.');
                               }
                             } catch (error) {
                               console.error('❌ Erreur lors de la création de la conversation:', error);
@@ -642,15 +648,26 @@ const ContactUsPage: React.FC = () => {
                   />
                 )}
               </View>
+            ) : (
+              <View style={styles.messagingSection}>
+                <Text style={styles.sectionTitle}>Messagerie</Text>
+                <View style={styles.emptyState}>
+                  <View style={styles.emptyStateIcon}>
+                    <Text style={styles.emptyStateIconText}>🔐</Text>
+                  </View>
+                  <Text style={styles.emptyStateTitle}>Authentification requise</Text>
+                  <Text style={styles.emptyStateText}>Veuillez vous connecter pour utiliser la messagerie</Text>
+                </View>
+              </View>
             )}
           </View>
-        </ScrollView>
+        </View>
       ) : (
         <View style={styles.chatContainer}>
           <View style={styles.chatHeader}>
             <View style={styles.chatUserInfo}>
-              <Text style={styles.chatUserName}>{selectedConversation.userName}</Text>
-              <Text style={styles.chatUserEmail}>{selectedConversation.userEmail}</Text>
+              <Text style={styles.chatUserName}>Contact DarDarkom</Text>
+              <Text style={styles.chatUserEmail}>support@dardarkom.com</Text>
             </View>
           </View>
 
@@ -677,7 +694,14 @@ const ContactUsPage: React.FC = () => {
             />
             <TouchableOpacity
               style={[styles.sendButton, (!newMessage.trim() || sendingMessage || !selectedConversation?.userId) && styles.sendButtonDisabled]}
-              onPress={sendMessage}
+              onPress={() => {
+                console.log('🖱️ Tentative d\'envoi de message');
+                console.log('📝 Message:', newMessage.trim());
+                console.log('👤 Conversation:', selectedConversation);
+                console.log('🆔 UserId:', selectedConversation?.userId);
+                console.log('⏳ Envoi en cours:', sendingMessage);
+                sendMessage();
+              }}
               disabled={!newMessage.trim() || sendingMessage || !selectedConversation?.userId}
             >
               {sendingMessage ? (
@@ -704,15 +728,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 60,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     backgroundColor: '#fff',
     justifyContent: 'space-between',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#E5E5EA',
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
     flex: 1,
+    color: '#000',
   },
   goBackButton: {
     padding: 8,
@@ -722,28 +749,28 @@ const styles = StyleSheet.create({
   goBackIcon: {
     width: 24,
     height: 24,
-    tintColor: 'black',
+    tintColor: '#000',
     resizeMode: 'contain',
   },
   container: {
-    flexGrow: 1,
+    flex: 1,
     paddingHorizontal: 20,
     paddingBottom: 40,
+    backgroundColor: '#fff',
   },
   inner: {
-    paddingTop: 30,
+    paddingTop: 20,
   },
   messagingSection: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
+    marginTop: 30,
+    padding: 0,
+    backgroundColor: 'transparent',
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+    marginBottom: 15,
+    color: '#000',
   },
   conversationsList: {
     minHeight: 250,
@@ -753,46 +780,55 @@ const styles = StyleSheet.create({
   conversationItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 8,
-    marginBottom: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    marginBottom: 0,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#b47b48',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#B47B48',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   avatarText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+  },
+  newConversationAvatar: {
+    backgroundColor: '#E5E5EA',
+  },
+  newConversationAvatarText: {
+    color: '#8E8E93',
+    fontSize: 24,
   },
   conversationInfo: {
     flex: 1,
   },
   userName: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#000',
+    marginBottom: 2,
   },
   userEmail: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 14,
+    color: '#8E8E93',
+    marginBottom: 2,
   },
   lastMessage: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 14,
+    color: '#8E8E93',
     marginTop: 2,
   },
   lastMessageTime: {
@@ -918,27 +954,27 @@ const styles = StyleSheet.create({
     minHeight: 200,
   },
   emptyStateIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#f0f0f0',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#F5F5F5',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
   },
   emptyStateIconText: {
-    fontSize: 24,
+    fontSize: 20,
   },
   emptyStateTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#000',
     marginBottom: 8,
     textAlign: 'center',
   },
   emptyStateText: {
     fontSize: 14,
-    color: '#666',
+    color: '#8E8E93',
     textAlign: 'center',
     marginBottom: 20,
     lineHeight: 20,
@@ -950,11 +986,16 @@ const styles = StyleSheet.create({
   },
   newConversationButton: {
     backgroundColor: '#B47B48',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginTop: 15,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginTop: 20,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   newConversationButtonText: {
     color: 'white',

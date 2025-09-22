@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useProducts } from '../hooks/useProducts';
 
 interface CategoryItem {
   id: string;
@@ -12,52 +13,81 @@ interface CategoryItem {
 
 export default function CategoriesGrid() {
   const router = useRouter();
+  const { data: products, isLoading } = useProducts();
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
 
-  // Images représentatives de chaque catégorie depuis la base de données
-  const categories: CategoryItem[] = [
-    {
-      id: '1',
-      name: 'Plats Chauds',
-      imageUrl: 'https://www.bennasafi.com/media/medium/1578061341_couscous.bel.alouch.png',
-      backgroundColor: '#2C5F41',
-      route: '/hot-dishes'
-    },
-    {
-      id: '2',
-      name: 'Viandes',
-      imageUrl: 'https://www.bennasafi.com/media/medium/1578061341_couscous.bel.alouch.png',
-      backgroundColor: '#8B0000',
-      route: '/meat'
-    },
-    {
-      id: '3',
-      name: 'Entrées & Salades',
-      imageUrl: 'https://fac.img.pmdstatic.net/fit/~1~fac~2022~02~26~2e3f76f3-0921-4668-a1c1-e67b9cfb3030.jpeg/750x562/quality/80/crop-from/center/cr/wqkgSVNUT0NLIC8gRmVtbWUgQWN0dWVsbGU%3D/focus-point/749%2C1284/ojja-tunisienne.jpeg',
-      backgroundColor: '#4A4A4A',
-      route: '/salads'
-    },
-    {
-      id: '4',
-      name: 'Pâtisserie',
-      imageUrl: 'https://cuisine.nessma.tv/uploads/11/2019-11/189127a525113fd0dc613fb76b8509af.png',
-      backgroundColor: '#8B4513',
-      route: '/pastries'
-    },
-    {
-      id: '5',
-      name: 'Poissons',
-      imageUrl: 'https://cuisine.nessma.tv/uploads/7/2022-01/daurade-grillee-citron.jpg',
-      backgroundColor: '#2E8B57',
-      route: '/fish'
-    },
-    {
-      id: '6',
-      name: 'Végé',
-      imageUrl: 'https://fac.img.pmdstatic.net/fit/~1~fac~2022~02~26~2e3f76f3-0921-4668-a1c1-e67b9cfb3030.jpeg/750x562/quality/80/crop-from/center/cr/wqkgSVNUT0NLIC8gRmVtbWUgQWN0dWVsbGU%3D/focus-point/749%2C1284/ojja-tunisienne.jpeg',
-      backgroundColor: '#228B22',
-      route: '/vegetarian'
+  // Mapping des catégories vers les noms dans la base de données
+  const categoryMapping = {
+    'Plats Chauds': 'Plats chauds',
+    'Viandes': 'Viandes', 
+    'Entrées & Salades': 'Entrées & Salades',
+    'Pâtisserie': 'Pâtisserie',
+    'Poissons': 'Poissons',
+    'Végé': 'Végé'
+  };
+
+  // Récupérer les images depuis la base de données
+  useEffect(() => {
+    if (products && products.length > 0) {
+      const categoryData: CategoryItem[] = [
+        {
+          id: '1',
+          name: 'Plats Chauds',
+          imageUrl: getCategoryImage(products, 'Plats chauds'),
+          backgroundColor: '#2C5F41',
+          route: '/hot-dishes'
+        },
+        {
+          id: '2',
+          name: 'Viandes',
+          imageUrl: getCategoryImage(products, 'Viandes'),
+          backgroundColor: '#8B0000',
+          route: '/meat'
+        },
+        {
+          id: '3',
+          name: 'Entrées & Salades',
+          imageUrl: getCategoryImage(products, 'Entrées & Salades'),
+          backgroundColor: '#4A4A4A',
+          route: '/salads'
+        },
+        {
+          id: '4',
+          name: 'Pâtisserie',
+          imageUrl: getCategoryImage(products, 'Pâtisserie'),
+          backgroundColor: '#8B4513',
+          route: '/pastries'
+        },
+        {
+          id: '5',
+          name: 'Poissons',
+          imageUrl: getCategoryImage(products, 'Poissons'),
+          backgroundColor: '#2E8B57',
+          route: '/fish'
+        },
+        {
+          id: '6',
+          name: 'Végé',
+          imageUrl: getCategoryImage(products, 'Végé'),
+          backgroundColor: '#228B22',
+          route: '/vegetarian'
+        }
+      ];
+      setCategories(categoryData);
     }
-  ];
+  }, [products]);
+
+  // Fonction pour récupérer l'image d'une catégorie
+  const getCategoryImage = (products: any[], categoryName: string): string => {
+    const categoryProducts = products.filter(product => product.category === categoryName);
+    if (categoryProducts.length > 0) {
+      // Prendre la première image disponible de la catégorie
+      const product = categoryProducts[0];
+      return product.Image || product.image || 'https://www.bennasafi.com/media/medium/1578061341_couscous.bel.alouch.png';
+    }
+    // Image par défaut si aucune trouvée
+    return 'https://www.bennasafi.com/media/medium/1578061341_couscous.bel.alouch.png';
+  };
 
   const handleCategoryPress = (route: string) => {
     // Navigation vers la page de détails de catégorie avec le nom de la catégorie
@@ -74,9 +104,19 @@ export default function CategoriesGrid() {
       };
       
       const dbCategoryName = categoryMapping[category.name] || category.name;
-      router.push(`/category-details?category=${dbCategoryName}`);
+      console.log('Navigation vers catégorie:', dbCategoryName);
+      router.push(`/category-details?category=${encodeURIComponent(dbCategoryName)}`);
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Categories</Text>
+        <Text style={styles.loadingText}>Chargement des catégories...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -145,5 +185,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });

@@ -1,110 +1,166 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect, useCallback } from 'react';
+import { Notification } from '../types/notifications';
+import notificationService from '../services/notificationService';
+import notificationWebSocket from '../services/notificationWebSocket';
 
-export interface Notification {
-  id: string;
-  text: string;
-  time: string;
-  read: boolean;
-  type: 'order' | 'stock' | 'user' | 'system';
+interface UseNotificationsProps {
+  userId?: string;
+  autoRefresh?: boolean;
+  refreshInterval?: number;
 }
 
-// Fonction pour récupérer les notifications depuis l'API
-async function fetchNotifications(): Promise<Notification[]> {
-  const response = await fetch('http://localhost:5000/api/notifications', {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
-  
-  if (!response.ok) {
-    throw new Error('Erreur lors de la récupération des notifications');
-  }
-  
-  return response.json();
-}
+export const useNotifications = ({ 
+  userId, 
+  autoRefresh = true, 
+  refreshInterval = 30000 
+}: UseNotificationsProps) => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-// Notifications par défaut avec vraies données
-function getDefaultNotifications(): Notification[] {
-  return [
-    {
-      id: "1",
-      text: "Nouvelle commande reçue #12345",
-      time: "Il y a 5 minutes",
-      read: false,
-      type: 'order'
-    },
-    {
-      id: "2", 
-      text: "Stock faible pour le produit \"Crème Hydratante\"",
-      time: "Il y a 1 heure",
-      read: false,
-      type: 'stock'
-    },
-    {
-      id: "3",
-      text: "Nouveau client inscrit",
-      time: "Il y a 2 heures",
-      read: true,
-      type: 'user'
-    },
-    {
-      id: "4",
-      text: "Mise à jour du système terminée",
-      time: "Il y a 3 heures",
-      read: false,
-      type: 'system'
-    },
-    {
-      id: "5",
-      text: "Commande #12344 expédiée",
-      time: "Il y a 4 heures",
-      read: true,
-      type: 'order'
+  // Charger les notifications
+  const loadNotifications = useCallback(async () => {
+    if (!userId) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
     }
-  ];
-}
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await notificationService.getUserNotifications(userId, 1, 20, false);
+      console.log('🔔 Notifications chargées:', response);
+      setNotifications(response.notifications || []);
+      setUnreadCount(response.unreadCount || 0);
+    } catch (err) {
+      console.error('Erreur lors du chargement des notifications:', err);
+      setError('Erreur lors du chargement des notifications');
+      // En cas d'erreur, ne pas afficher de notifications
+      setNotifications([]);
+      setUnreadCount(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId]);
 
-// Hook pour utiliser les notifications
-export function useNotifications() {
-  const token = localStorage.getItem('token');
-  
-  return useQuery<Notification[]>({
-    queryKey: ["notifications"],
-    queryFn: fetchNotifications,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchInterval: false, // Désactiver le refetch automatique
-    refetchOnWindowFocus: false, // Désactiver le refetch au focus
-    enabled: !!token, // Ne pas exécuter si pas de token
-    initialData: token ? undefined : getDefaultNotifications(), // Utiliser les données par défaut si pas de token
-  });
-}
+  // Marquer une notification comme lue
+  const markAsRead = useCallback(async (notificationId: string) => {
+    try {
+      await notificationService.markAsRead(notificationId);
+      setNotifications(prev => 
+        prev.map(notif => 
+          notif._id === notificationId ? { ...notif, isRead: true } : notif
+        )
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error('Erreur lors du marquage de la notification:', err);
+    }
+  }, []);
 
-// Fonction pour marquer une notification comme lue
-export async function markNotificationAsRead(notificationId: string): Promise<void> {
-  try {
-    await fetch(`http://localhost:5000/api/notifications/${notificationId}/read`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        'Content-Type': 'application/json',
-      },
+  // Marquer toutes les notifications comme lues
+  const markAllAsRead = useCallback(async () => {
+    try {
+      await notificationService.markAllAsRead();
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch (err) {
+      console.error('Erreur lors du marquage des notifications:', err);
+    }
+  }, []);
+
+  // Supprimer une notification
+  const deleteNotification = useCallback(async (notificationId: string) => {
+    try {
+      await notificationService.deleteNotification(notificationId);
+      setNotifications(prev => prev.filter(n => n._id !== notificationId));
+      // Décrémenter le compteur si c'était une notification non lue
+      const notification = notifications.find(n => n._id === notificationId);
+      if (notification && !notification.isRead) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (err) {
+      console.error('Erreur lors de la suppression de la notification:', err);
+    }
+  }, [notifications]);
+
+  // Ajouter une nouvelle notification (pour WebSocket)
+  const addNotification = useCallback((notification: Notification) => {
+    setNotifications(prev => [notification, ...prev]);
+    if (!notification.isRead) {
+      setUnreadCount(prev => prev + 1);
+    }
+  }, []);
+
+  // Charger les notifications au montage
+  useEffect(() => {
+    if (userId && userId.trim() !== '') {
+      loadNotifications();
+    } else {
+      // Si pas d'userId valide, réinitialiser les notifications
+      setNotifications([]);
+      setUnreadCount(0);
+    }
+  }, [userId, loadNotifications]);
+
+  // Rafraîchissement automatique
+  useEffect(() => {
+    if (!autoRefresh || !userId || userId.trim() === '') return;
+
+    const interval = setInterval(() => {
+      loadNotifications();
+    }, refreshInterval);
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, userId, refreshInterval, loadNotifications]);
+
+  // WebSocket pour les notifications en temps réel
+  useEffect(() => {
+    if (!userId || userId.trim() === '') return;
+
+    // Obtenir le token d'authentification
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.warn('Token d\'authentification manquant pour WebSocket');
+      return;
+    }
+
+    // Se connecter au WebSocket
+    notificationWebSocket.connect(userId, token);
+
+    // S'abonner aux nouvelles notifications
+    const unsubscribeNotification = notificationWebSocket.onNotification((notification) => {
+      console.log('Nouvelle notification reçue via WebSocket:', notification);
+      addNotification(notification);
     });
-  } catch (error) {
-    // Gérer l'erreur silencieusement
-  }
-}
 
-// Fonction pour marquer toutes les notifications comme lues
-export async function markAllNotificationsAsRead(): Promise<void> {
-  try {
-    await fetch('http://localhost:5000/api/notifications/read-all', {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        'Content-Type': 'application/json',
-      },
+    // S'abonner aux changements de connexion
+    const unsubscribeConnection = notificationWebSocket.onConnectionChange((connected) => {
+      console.log('État de connexion WebSocket:', connected ? 'Connecté' : 'Déconnecté');
     });
-  } catch (error) {
-    console.error('Erreur markAllNotificationsAsRead:', error);
-  }
-} 
+
+    return () => {
+      // Nettoyer les abonnements
+      unsubscribeNotification();
+      unsubscribeConnection();
+      
+      // Se déconnecter du WebSocket
+      notificationWebSocket.disconnect();
+    };
+  }, [userId, addNotification]);
+
+  return {
+    notifications,
+    unreadCount,
+    isLoading,
+    error,
+    loadNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    addNotification,
+  };
+};

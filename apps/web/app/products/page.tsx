@@ -10,11 +10,37 @@ import { useTranslation } from "../../hooks/useTranslation";
 import Modal from "../../components/ui/Modal";
 import { useModal } from "../../hooks/useModal";
 import { CreateProductData, UpdateProductData, EditingProduct, NewProduct } from "../../types/product.types";
+import Image from "next/image";
+import { ModernModal, ModernModalFooter } from "../../components/ui/ModernModal";
+import { 
+  ModernFormGroup, 
+  ModernLabel, 
+  ModernInput, 
+  ModernTextArea, 
+  ModernSelect, 
+  ModernButton 
+} from "../../components/ui/ModernForm";
 
 const PageContainer = styled.div`
-  background: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   min-height: 100vh;
   padding: 40px 0 0 0;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
   
   @media (max-width: 1120px) {
     padding: 20px 0 0 0;
@@ -26,53 +52,80 @@ const PageContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin: 0 0 8px 0;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 12px 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
   
   @media (max-width: 1120px) {
-    font-size: 1.8rem;
+    font-size: 2.4rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.text.muted};
-  font-size: 1.1rem;
-  margin-bottom: 32px;
+  color: #64748b;
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  font-weight: 500;
+  line-height: 1.6;
   
   @media (max-width: 1120px) {
-    font-size: 1rem;
-    margin-bottom: 24px;
+    font-size: 1.1rem;
+    margin-bottom: 32px;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.9rem;
-    margin-bottom: 20px;
+    font-size: 1rem;
+    margin-bottom: 24px;
   }
 `;
 
 const SearchBar = styled.div`
   display: flex;
   align-items: center;
-  background: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
   width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+  
+  &:focus-within {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+  }
   
   @media (max-width: 1120px) {
-    padding: 10px 14px;
-    margin-bottom: 18px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
   }
   
   @media (max-width: 480px) {
-    padding: 8px 12px;
+    padding: 12px 16px;
     margin-bottom: 16px;
   }
 `;
@@ -80,24 +133,26 @@ const SearchBar = styled.div`
 const SearchInput = styled.input`
   border: none;
   background: transparent;
-  font-size: 0.95rem;
+  font-size: 1rem;
   flex: 1;
-  margin-left: 12px;
+  margin-left: 16px;
   outline: none;
-  color: ${({ theme }) => theme.colors.text.primary};
+  color: #1e293b;
+  font-weight: 500;
   
   &::placeholder {
-    color: ${({ theme }) => theme.colors.text.muted};
+    color: #64748b;
+    font-weight: 400;
   }
   
   @media (max-width: 1120px) {
-    font-size: 0.9rem;
-    margin-left: 10px;
+    font-size: 0.95rem;
+    margin-left: 14px;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.85rem;
-    margin-left: 8px;
+    font-size: 0.9rem;
+    margin-left: 12px;
   }
 `;
 
@@ -119,26 +174,38 @@ const FiltersRow = styled.div`
 `;
 
 const FilterSelect = styled.select`
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #1e293b;
   font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
   
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
   
   @media (max-width: 1120px) {
-    padding: 8px 14px;
+    padding: 10px 16px;
     font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 0.85rem;
   }
 `;
@@ -152,21 +219,24 @@ const TrashIcon = styled(Trash2)`
 const AddProductButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: ${({ theme }) => theme.colors.primary};
+  gap: 12px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  border-radius: 16px;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+  position: relative;
+  z-index: 1;
   
   &:hover {
-    background: ${({ theme }) => theme.colors.primary};
-    transform: translateY(-1px);
-    opacity: 0.9;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
   }
   
   &:active {
@@ -174,14 +244,14 @@ const AddProductButton = styled.button`
   }
   
   @media (max-width: 1120px) {
-    padding: 10px 16px;
-    font-size: 0.9rem;
+    padding: 14px 20px;
+    font-size: 0.95rem;
   }
   
   @media (max-width: 480px) {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    gap: 6px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    gap: 8px;
   }
 `;
 
@@ -199,155 +269,18 @@ const EditIcon = styled(Edit)`
   }
 `;
 
-const AddProductModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-`;
-
-const AddProductModalContent = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border-radius: 12px;
-  padding: 32px;
-  max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  @media (max-width: 768px) {
-    padding: 24px;
-    margin: 10px;
-  }
-`;
-
-const AddProductModalTitle = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 24px 0;
-  color: ${({ theme }) => theme.colors.text.primary};
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 20px;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 0.95rem;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text.primary};
-  
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text.primary};
-  resize: vertical;
-  min-height: 100px;
-  
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const Select = styled.select`
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text.primary};
-  cursor: pointer;
-  
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const AddProductModalFooter = styled.div`
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 32px;
-`;
-
-const AddProductCancelBtn = styled.button`
-  padding: 12px 24px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background: ${({ theme }) => theme.colors.border};
-  }
-`;
-
-const AddProductConfirmBtn = styled.button`
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
 
 const TableWrapper = styled.div`
-  background: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   overflow-x: auto;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
   
   @media (max-width: 480px) {
-    border-radius: 8px;
+    border-radius: 16px;
   }
 `;
 
@@ -363,37 +296,52 @@ const Table = styled.table`
 
 const Th = styled.th`
   text-align: left;
-  padding: 16px 20px 12px 20px;
-  color: ${({ theme }) => theme.colors.text.muted};
-  font-weight: 400;
+  padding: 20px 24px 16px 24px;
+  color: #64748b;
+  font-weight: 600;
   font-size: 0.95rem;
-  background: transparent;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &:first-child {
+    border-radius: 20px 0 0 0;
+  }
+  
+  &:last-child {
+    border-radius: 0 20px 0 0;
+  }
   
   @media (max-width: 1120px) {
-    padding: 14px 16px 10px 16px;
+    padding: 18px 20px 14px 20px;
     font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 12px 14px 8px 14px;
+    padding: 16px 18px 12px 18px;
     font-size: 0.85rem;
   }
 `;
 
 const Td = styled.td`
-  padding: 16px 20px;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 20px 24px;
+  border-top: 1px solid rgba(226, 232, 240, 0.5);
   font-size: 0.95rem;
-  color: ${({ theme }) => theme.colors.text.primary};
-  background: ${({ theme }) => theme.colors.table.row};
+  color: #1e293b;
+  background: transparent;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(59, 130, 246, 0.02);
+  }
   
   @media (max-width: 1120px) {
-    padding: 14px 16px;
+    padding: 18px 20px;
     font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 12px 14px;
+    padding: 16px 18px;
     font-size: 0.85rem;
   }
 `;
@@ -413,42 +361,63 @@ const ProductCell = styled.div`
 `;
 
 const ProductImg = styled.img`
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   object-fit: cover;
-  border-radius: 50%;
-  background: #f5f5f5;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
 `;
 
 const ProductName = styled.span`
-  font-weight: 600;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1e293b;
   
   @media (max-width: 1120px) {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   @media (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 `;
 
 const StatusBadge = styled.span<{ $active: boolean }>`
   display: inline-block;
-  padding: 0.3em 1em;
-  border-radius: 12px;
-  font-size: 0.95em;
-  font-weight: 500;
-  background: transparent;
-  color: ${({ $active }) => ($active ? '#22c55e' : '#ef4444')};
+  padding: 0.4em 1.2em;
+  border-radius: 16px;
+  font-size: 0.9em;
+  font-weight: 600;
+  background: ${({ $active }) => 
+    $active 
+      ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1))' 
+      : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))'
+  };
+  color: ${({ $active }) => ($active ? '#059669' : '#dc2626')};
+  border: 1px solid ${({ $active }) => 
+    $active 
+      ? 'rgba(34, 197, 94, 0.2)' 
+      : 'rgba(239, 68, 68, 0.2)'
+  };
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
   
   @media (max-width: 1120px) {
-    padding: 0.25em 0.8em;
+    padding: 0.3em 1em;
     font-size: 0.85em;
   }
   
   @media (max-width: 480px) {
-    padding: 0.2em 0.6em;
+    padding: 0.25em 0.8em;
     font-size: 0.8em;
   }
 `;
@@ -616,6 +585,119 @@ const HeaderRight = styled.div`
   align-items: center;
 `;
 
+const HeroSection = styled.div`
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border-radius: 24px;
+  padding: 40px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+`;
+
+const HeroContent = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+`;
+
+const HeroText = styled.div`
+  h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1e293b, #475569);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  
+  @media (max-width: 768px) {
+    h3 {
+      font-size: 1.6rem;
+    }
+    
+    p {
+      font-size: 1rem;
+    }
+  }
+`;
+
+const HeroImages = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  height: 300px;
+  
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+  
+  &:nth-child(1) {
+    grid-row: 1 / 3;
+  }
+  
+  &:nth-child(2) {
+    grid-row: 1 / 2;
+  }
+  
+  &:nth-child(3) {
+    grid-row: 2 / 3;
+  }
+`;
+
+const ImageOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+  padding: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+`;
+
 // Fonction utilitaire pour Capitalize chaque mot même si tout est en majuscules
 function capitalizeWords(str: string) {
   return str
@@ -758,8 +840,8 @@ export default function ProductsPage() {
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <HeaderContainer>
             <HeaderLeft>
-              <Title>{mounted ? t("products.title") : ""}</Title>
-              <Subtitle>{mounted ? t("products.subtitle") : ""}</Subtitle>
+              <Title>PRODUITS</Title>
+              <Subtitle>Gérez les produits de votre boutique avec style tunisien</Subtitle>
             </HeaderLeft>
             <HeaderRight>
               <AddProductButton onClick={() => setShowAddProductModal(true)}>
@@ -768,6 +850,48 @@ export default function ProductsPage() {
               </AddProductButton>
             </HeaderRight>
           </HeaderContainer>
+
+          <HeroSection>
+            <HeroContent>
+              <HeroText>
+                <h3>Produits Inspirés de la Tunisie</h3>
+                <p>
+                  Découvrez notre collection de produits authentiques qui reflètent 
+                  la richesse culturelle de la Tunisie. De la pâtisserie traditionnelle 
+                  aux créations modernes, chaque produit raconte une histoire.
+                </p>
+              </HeroText>
+              <HeroImages>
+                <ImageContainer>
+                  <Image
+                    src="https://i.pinimg.com/736x/a1/8a/fd/a18afdc025ad7ca20518f8edcdcd3bd5.jpg"
+                    alt="Pâtisserie tunisienne"
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <ImageOverlay>Pâtisserie Tunisienne</ImageOverlay>
+                </ImageContainer>
+                <ImageContainer>
+                  <Image
+                    src="https://www.leaders.com.tn/uploads/content/thumbnails/167327162678_content.jpg"
+                    alt="Café tunisien"
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <ImageOverlay>Café Tunisien</ImageOverlay>
+                </ImageContainer>
+                <ImageContainer>
+                  <Image
+                    src="https://lapresse.tn/wp-content/uploads/2019/06/artisanat-1-850x491.jpg"
+                    alt="Artisanat tunisien"
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <ImageOverlay>Artisanat Tunisien</ImageOverlay>
+                </ImageContainer>
+              </HeroImages>
+            </HeroContent>
+          </HeroSection>
           <SearchBar>
             <Search size={20} color="#bdbdbd" />
             <SearchInput
@@ -953,226 +1077,256 @@ export default function ProductsPage() {
             <PageBtn onClick={() => setPage(page + 1)} disabled={page === totalPages} aria-label="Page suivante">{'>'}</PageBtn>
           </Pagination>
           
-          {/* Modal d'ajout de produit */}
-          {showAddProductModal && (
-            <AddProductModalOverlay onClick={() => setShowAddProductModal(false)}>
-              <AddProductModalContent onClick={(e) => e.stopPropagation()}>
-                <AddProductModalTitle>Ajouter un nouveau produit</AddProductModalTitle>
-                
-                <FormGroup>
-                  <Label>Nom du produit *</Label>
-                  <Input
-                    type="text"
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                    placeholder="Nom du produit"
-                  />
-                </FormGroup>
-                
-                <FormGroup>
-                  <Label>Titre</Label>
-                  <Input
-                    type="text"
-                    value={newProduct.title}
-                    onChange={(e) => setNewProduct({...newProduct, title: e.target.value})}
-                    placeholder="Titre du produit"
-                  />
-                </FormGroup>
-                
-                <FormGroup>
-                  <Label>Description</Label>
-                  <TextArea
-                    value={newProduct.description}
-                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-                    placeholder="Description du produit"
-                  />
-                </FormGroup>
-                
-                <FormGroup>
-                  <Label>Prix *</Label>
-                  <Input
-                    type="number"
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                    placeholder="0"
-                    min="0"
-                    step="0.01"
-                  />
-                </FormGroup>
-                
-                <FormGroup>
-                  <Label>Catégorie *</Label>
-                  <Select
-                    value={newProduct.category}
-                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                  >
-                    <option value="">Sélectionner une catégorie</option>
-                    <option value="Face">Face</option>
-                    <option value="Body">Body</option>
-                    <option value="Hair">Hair</option>
-                  </Select>
-                </FormGroup>
-                
-                <FormGroup>
-                  <Label>Statut</Label>
-                  <Select
-                    value={newProduct.status}
-                    onChange={(e) => setNewProduct({...newProduct, status: e.target.value})}
-                  >
-                    <option value="Active">Actif</option>
-                    <option value="Inactive">Inactif</option>
-                  </Select>
-                </FormGroup>
-                
-                <FormGroup>
-                  <Label>URL de l&apos;image</Label>
-                  <Input
-                    type="url"
-                    value={newProduct.image_url}
-                    onChange={(e) => setNewProduct({...newProduct, image_url: e.target.value})}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </FormGroup>
-                
-                <FormGroup>
-                  <Label>URL du produit</Label>
-                  <Input
-                    type="url"
-                    value={newProduct.product_url}
-                    onChange={(e) => setNewProduct({...newProduct, product_url: e.target.value})}
-                    placeholder="https://example.com/product"
-                  />
-                </FormGroup>
-                
-                <AddProductModalFooter>
-                  <AddProductCancelBtn onClick={() => setShowAddProductModal(false)}>
-                    Annuler
-                  </AddProductCancelBtn>
-                  <AddProductConfirmBtn
-                    onClick={() => {
-                      if (!newProduct.name || !newProduct.price || !newProduct.category) {
-                        showError('Veuillez remplir tous les champs obligatoires');
-                        return;
-                      }
-                      createProductMutation.mutate({
-                        ...newProduct,
-                        price: parseFloat(newProduct.price)
-                      });
-                    }}
-                    disabled={createProductMutation.isPending}
-                  >
-                    {createProductMutation.isPending ? 'Création...' : 'Créer le produit'}
-                  </AddProductConfirmBtn>
-                </AddProductModalFooter>
-              </AddProductModalContent>
-            </AddProductModalOverlay>
-          )}
+          {/* Modal d'ajout de produit moderne */}
+          <ModernModal
+            isOpen={showAddProductModal}
+            onClose={() => setShowAddProductModal(false)}
+            title="Ajouter un nouveau produit"
+            size="lg"
+          >
+            <ModernFormGroup>
+              <ModernLabel required>Nom du produit</ModernLabel>
+              <ModernInput
+                type="text"
+                value={newProduct.name}
+                onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                placeholder="Nom du produit"
+                error={!newProduct.name && createProductMutation.isError}
+              />
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel>Titre</ModernLabel>
+              <ModernInput
+                type="text"
+                value={newProduct.title}
+                onChange={(e) => setNewProduct({...newProduct, title: e.target.value})}
+                placeholder="Titre du produit"
+              />
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel>Description</ModernLabel>
+              <ModernTextArea
+                value={newProduct.description}
+                onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                placeholder="Description du produit"
+                rows={4}
+              />
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel required>Prix</ModernLabel>
+              <ModernInput
+                type="number"
+                value={newProduct.price}
+                onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                error={!newProduct.price && createProductMutation.isError}
+              />
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel>Quantité</ModernLabel>
+              <ModernInput
+                type="number"
+                value={newProduct.quantity || 0}
+                onChange={(e) => setNewProduct({...newProduct, quantity: parseInt(e.target.value) || 0})}
+                placeholder="0"
+                min="0"
+              />
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel required>Catégorie</ModernLabel>
+              <ModernSelect
+                value={newProduct.category}
+                onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                error={!newProduct.category && createProductMutation.isError}
+              >
+                <option value="">Sélectionner une catégorie</option>
+                <option value="Face">Face</option>
+                <option value="Body">Body</option>
+                <option value="Hair">Hair</option>
+              </ModernSelect>
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel>Statut</ModernLabel>
+              <ModernSelect
+                value={newProduct.status}
+                onChange={(e) => setNewProduct({...newProduct, status: e.target.value})}
+              >
+                <option value="Active">Actif</option>
+                <option value="Inactive">Inactif</option>
+              </ModernSelect>
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel>URL de l&apos;image</ModernLabel>
+              <ModernInput
+                type="url"
+                value={newProduct.image_url}
+                onChange={(e) => setNewProduct({...newProduct, image_url: e.target.value})}
+                placeholder="https://example.com/image.jpg"
+              />
+            </ModernFormGroup>
+            
+            <ModernFormGroup>
+              <ModernLabel>URL du produit</ModernLabel>
+              <ModernInput
+                type="url"
+                value={newProduct.product_url}
+                onChange={(e) => setNewProduct({...newProduct, product_url: e.target.value})}
+                placeholder="https://example.com/product"
+              />
+            </ModernFormGroup>
+            
+            <ModernModalFooter>
+              <ModernButton
+                variant="secondary"
+                onClick={() => setShowAddProductModal(false)}
+              >
+                Annuler
+              </ModernButton>
+              <ModernButton
+                variant="primary"
+                onClick={() => {
+                  if (!newProduct.name || !newProduct.price || !newProduct.category) {
+                    showError('Veuillez remplir tous les champs obligatoires');
+                    return;
+                  }
+                  createProductMutation.mutate({
+                    ...newProduct,
+                    price: parseFloat(newProduct.price)
+                  });
+                }}
+                loading={createProductMutation.isPending}
+                disabled={createProductMutation.isPending}
+              >
+                {createProductMutation.isPending ? 'Création...' : 'Créer le produit'}
+              </ModernButton>
+            </ModernModalFooter>
+          </ModernModal>
 
-          {/* Modal de modification de produit */}
-          {showEditProductModal && editingProduct && (
-            <AddProductModalOverlay onClick={() => setShowEditProductModal(false)}>
-              <AddProductModalContent onClick={(e) => e.stopPropagation()}>
-                <AddProductModalTitle>Modifier le produit</AddProductModalTitle>
-                
-                <FormGroup>
-                  <Label>Nom *</Label>
-                  <Input
+          {/* Modal de modification de produit moderne */}
+          <ModernModal
+            isOpen={showEditProductModal}
+            onClose={() => setShowEditProductModal(false)}
+            title="Modifier le produit"
+            size="lg"
+          >
+            {editingProduct && (
+              <>
+                <ModernFormGroup>
+                  <ModernLabel required>Nom</ModernLabel>
+                  <ModernInput
                     value={editingProduct.name}
                     onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
                     placeholder="Nom du produit"
+                    error={!editingProduct.name && updateProductMutation.isError}
                   />
-                </FormGroup>
+                </ModernFormGroup>
                 
-                <FormGroup>
-                  <Label>Titre</Label>
-                  <Input
+                <ModernFormGroup>
+                  <ModernLabel>Titre</ModernLabel>
+                  <ModernInput
                     value={editingProduct.title || ''}
                     onChange={(e) => setEditingProduct({...editingProduct, title: e.target.value})}
                     placeholder="Titre du produit"
                   />
-                </FormGroup>
+                </ModernFormGroup>
                 
-                <FormGroup>
-                  <Label>Description</Label>
-                  <TextArea
+                <ModernFormGroup>
+                  <ModernLabel>Description</ModernLabel>
+                  <ModernTextArea
                     value={editingProduct.description || ''}
                     onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
                     placeholder="Description du produit"
+                    rows={4}
                   />
-                </FormGroup>
+                </ModernFormGroup>
                 
-                <FormGroup>
-                  <Label>Prix *</Label>
-                  <Input
+                <ModernFormGroup>
+                  <ModernLabel required>Prix</ModernLabel>
+                  <ModernInput
                     type="number"
                     value={editingProduct.price}
                     onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})}
-                    placeholder="0"
+                    placeholder="0.00"
                     min="0"
                     step="0.01"
+                    error={!editingProduct.price && updateProductMutation.isError}
                   />
-                </FormGroup>
+                </ModernFormGroup>
 
-                <FormGroup>
-                  <Label>Quantité</Label>
-                  <Input
+                <ModernFormGroup>
+                  <ModernLabel>Quantité</ModernLabel>
+                  <ModernInput
                     type="number"
                     value={editingProduct.quantity || 0}
                     onChange={(e) => setEditingProduct({...editingProduct, quantity: parseInt(e.target.value) || 0})}
                     placeholder="0"
                     min="0"
                   />
-                </FormGroup>
+                </ModernFormGroup>
                 
-                <FormGroup>
-                  <Label>Catégorie *</Label>
-                  <Select
+                <ModernFormGroup>
+                  <ModernLabel required>Catégorie</ModernLabel>
+                  <ModernSelect
                     value={editingProduct.category}
                     onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
+                    error={!editingProduct.category && updateProductMutation.isError}
                   >
                     <option value="">Sélectionner une catégorie</option>
                     <option value="Face">Face</option>
                     <option value="Body">Body</option>
                     <option value="Hair">Hair</option>
-                  </Select>
-                </FormGroup>
+                  </ModernSelect>
+                </ModernFormGroup>
                 
-                <FormGroup>
-                  <Label>Statut</Label>
-                  <Select
+                <ModernFormGroup>
+                  <ModernLabel>Statut</ModernLabel>
+                  <ModernSelect
                     value={editingProduct.status}
                     onChange={(e) => setEditingProduct({...editingProduct, status: e.target.value})}
                   >
                     <option value="Active">Actif</option>
                     <option value="Inactive">Inactif</option>
-                  </Select>
-                </FormGroup>
+                  </ModernSelect>
+                </ModernFormGroup>
                 
-                <FormGroup>
-                  <Label>URL de l&apos;image</Label>
-                  <Input
+                <ModernFormGroup>
+                  <ModernLabel>URL de l&apos;image</ModernLabel>
+                  <ModernInput
                     type="url"
                     value={editingProduct.image_url || ''}
                     onChange={(e) => setEditingProduct({...editingProduct, image_url: e.target.value})}
                     placeholder="https://example.com/image.jpg"
                   />
-                </FormGroup>
+                </ModernFormGroup>
                 
-                <FormGroup>
-                  <Label>URL du produit</Label>
-                  <Input
+                <ModernFormGroup>
+                  <ModernLabel>URL du produit</ModernLabel>
+                  <ModernInput
                     type="url"
                     value={editingProduct.product_url || ''}
                     onChange={(e) => setEditingProduct({...editingProduct, product_url: e.target.value})}
                     placeholder="https://example.com/product"
                   />
-                </FormGroup>
+                </ModernFormGroup>
                 
-                <AddProductModalFooter>
-                  <AddProductCancelBtn onClick={() => setShowEditProductModal(false)}>
+                <ModernModalFooter>
+                  <ModernButton
+                    variant="secondary"
+                    onClick={() => setShowEditProductModal(false)}
+                  >
                     Annuler
-                  </AddProductCancelBtn>
-                  <AddProductConfirmBtn
+                  </ModernButton>
+                  <ModernButton
+                    variant="primary"
                     onClick={() => {
                       if (!editingProduct.name || !editingProduct.price || !editingProduct.category) {
                         showError('Veuillez remplir tous les champs obligatoires');
@@ -1194,14 +1348,15 @@ export default function ProductsPage() {
                         }
                       });
                     }}
+                    loading={updateProductMutation.isPending}
                     disabled={updateProductMutation.isPending}
                   >
                     {updateProductMutation.isPending ? 'Modification...' : 'Modifier le produit'}
-                  </AddProductConfirmBtn>
-                </AddProductModalFooter>
-              </AddProductModalContent>
-            </AddProductModalOverlay>
-          )}
+                  </ModernButton>
+                </ModernModalFooter>
+              </>
+            )}
+          </ModernModal>
 
           {/* Modal pour les notifications */}
           <Modal

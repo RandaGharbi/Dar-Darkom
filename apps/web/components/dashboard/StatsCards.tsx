@@ -37,71 +37,122 @@ const CardsGrid = styled.div`
 `;
 
 const Card = styled.div`
-  background: #f5efe7;
-  border-radius: 16px;
-  padding: 2.2rem 2rem 1.7rem 2rem;
-  box-shadow: 0 2px 8px 0 #e9e9e9;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 150px;
+  min-height: 160px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 20px 20px 0 0;
+  }
+  
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
   
   @media (max-width: 1120px) {
-    padding: 1.5rem 1.5rem 1.2rem 1.5rem;
-    min-height: 130px;
+    padding: 24px;
+    min-height: 140px;
   }
   
   @media (max-width: 480px) {
-    padding: 1rem 1rem 0.8rem 1rem;
-    min-height: 120px;
+    padding: 20px;
+    min-height: 130px;
   }
 `;
 
 const CardTitle = styled.div`
-  color: #827869;
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 1.2rem;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 1px;
+  }
   
   @media (max-width: 1120px) {
-    font-size: 1rem;
-    margin-bottom: 1rem;
+    font-size: 13px;
+    margin-bottom: 14px;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.9rem;
-    margin-bottom: 0.8rem;
+    font-size: 12px;
+    margin-bottom: 12px;
   }
 `;
 
 const CardValue = styled.div`
-  font-size: 2.2rem;
-  font-weight: bold;
-  color: #171412;
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  margin-bottom: 8px;
   
   @media (max-width: 1120px) {
-    font-size: 1.8rem;
+    font-size: 28px;
   }
   
   @media (max-width: 480px) {
-    font-size: 1.5rem;
+    font-size: 24px;
   }
 `;
 
 const CardChange = styled.div`
-  color: #1ca672;
-  font-size: 1rem;
-  font-weight: 500;
-  margin-top: 0.5rem;
+  color: #059669;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  &::before {
+    content: '↗';
+    font-size: 12px;
+    font-weight: bold;
+  }
   
   @media (max-width: 1120px) {
-    font-size: 0.9rem;
-    margin-top: 0.4rem;
+    font-size: 13px;
+    margin-top: 6px;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.8rem;
-    margin-top: 0.3rem;
+    font-size: 12px;
+    margin-top: 4px;
   }
 `;
 

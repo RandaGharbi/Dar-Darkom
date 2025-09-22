@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingTop: 140, // Espace pour le header fixe + safe area
-    paddingBottom: 20,
+    paddingBottom: 100, // Espace pour la tabbar + marge de sécurité
   },
   errorContainer: {
     flex: 1,

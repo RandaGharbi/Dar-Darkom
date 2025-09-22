@@ -3,40 +3,40 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
-// Définition des thèmes
+// Définition des thèmes - Inspiré de la charte graphique mobile
 export const lightTheme = {
   colors: {
-    primary: '#b47b48',
-    secondary: '#827869',
-    background: '#ffffff',
-    surface: '#f5efe7',
+    primary: '#2E86AB',
+    secondary: '#f8f9fa',
+    background: '#f8f9fa',
+    surface: '#ffffff',
     text: {
-      primary: '#171412',
-      secondary: '#827869',
-      muted: '#666666',
+      primary: '#333',
+      secondary: '#666',
+      muted: '#999',
     },
-    border: '#e0e0e0',
-    success: '#388e3c',
-    error: '#d84315',
-    warning: '#f5a623',
-    info: '#2196f3',
+    border: '#f5f5f5',
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#2E86AB',
     card: {
       background: '#ffffff',
-      shadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+      shadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
     },
     button: {
-      primary: '#b47b48',
-      secondary: '#f5efe7',
+      primary: '#2E86AB',
+      secondary: '#f8f9fa',
       text: '#ffffff',
     },
     sidebar: {
       background: '#ffffff',
-      border: '#e0e0e0',
+      border: '#f5f5f5',
     },
     table: {
-      header: '#faf9f6',
+      header: '#f8f9fa',
       row: '#ffffff',
-      hover: '#f8f8f8',
+      hover: '#f0f8ff',
     },
   },
   spacing: {
@@ -48,23 +48,23 @@ export const lightTheme = {
     xxl: '3rem',
   },
   borderRadius: {
-    sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
+    sm: '8px',
+    md: '12px',
+    lg: '16px',
+    xl: '20px',
     full: '50%',
   },
   shadows: {
     sm: '0 1px 2px rgba(0, 0, 0, 0.05)',
-    md: '0 2px 8px rgba(0, 0, 0, 0.04)',
-    lg: '0 4px 16px rgba(0, 0, 0, 0.1)',
+    md: '0 2px 8px rgba(0, 0, 0, 0.1)',
+    lg: '0 4px 16px rgba(0, 0, 0, 0.15)',
   },
 };
 
 export const darkTheme = {
   colors: {
-    primary: '#d4a574',
-    secondary: '#a89b8a',
+    primary: '#4A9FD1',
+    secondary: '#2d2d2d',
     background: '#1a1a1a',
     surface: '#2d2d2d',
     text: {
@@ -76,13 +76,13 @@ export const darkTheme = {
     success: '#4caf50',
     error: '#f44336',
     warning: '#ff9800',
-    info: '#2196f3',
+    info: '#4A9FD1',
     card: {
       background: '#2d2d2d',
       shadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
     },
     button: {
-      primary: '#d4a574',
+      primary: '#4A9FD1',
       secondary: '#404040',
       text: '#ffffff',
     },
@@ -105,10 +105,10 @@ export const darkTheme = {
     xxl: '3rem',
   },
   borderRadius: {
-    sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
+    sm: '8px',
+    md: '12px',
+    lg: '16px',
+    xl: '20px',
     full: '50%',
   },
   shadows: {

@@ -1,66 +1,86 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import SafeAreaWrapper from '../components/SafeAreaWrapper';
 import { useSafeNavigation } from '../hooks/useSafeNavigation';
-import { getFullUrl } from '../config/api';
-
-interface Dish {
-  id: number;
-  name: string;
-  subtitle: string;
-  image: string;
-  price: number;
-  category: string;
-  status: string;
-}
+import { apiService, Product } from '../services/api';
 
 export default function CategoryDetailsScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
-  const router = useRouter();
   const { safeBack } = useSafeNavigation();
-  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [dishes, setDishes] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (category) {
-      fetchCategoryDishes();
-    }
-  }, [category]);
-
-  const fetchCategoryDishes = async () => {
+  const fetchCategoryDishes = useCallback(async () => {
     try {
       setLoading(true);
       console.log('Catégorie demandée:', category);
-      // Utiliser directement l'URL qui fonctionne
-      const url = `http://192.168.1.74:5000/api/products/category/${encodeURIComponent(category)}`;
-      console.log('URL de la requête:', url);
       
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      });
+      // Mapping des catégories de l'interface vers la base de données
+      const categoryMapping: { [key: string]: string } = {
+        'Plats Chauds': 'Viandes',  // Les plats chauds sont classés dans "Viandes" en BD
+        'Plats chauds': 'Viandes',  // Les plats chauds sont classés dans "Viandes" en BD
+        'Viandes': 'Viandes',
+        'Entrées & Salades': 'Entrées & Salades',
+        'Pâtisserie': 'Pâtisserie',
+        'Poissons': 'Poissons',
+        'Végé': 'Végé'
+      };
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const dbCategory = categoryMapping[category || ''] || category;
+      console.log('Catégorie mappée:', dbCategory);
+      
+      // Utiliser l'API service au lieu de fetch direct
+      const response = await apiService.getProducts();
+      console.log('Réponse API complète:', response);
+      
+      if (response.success && response.data) {
+        let filteredDishes: Product[];
+        
+        // Pour "Plats chauds", inclure à la fois "Viandes" et "Poissons" et les mélanger
+        if (dbCategory === 'Viandes' && (category === 'Plats chauds' || category === 'Plats Chauds')) {
+          const viandes = response.data.filter((dish: Product) => 
+            dish.category === 'Viandes' && dish.status === "Active"
+          );
+          const poissons = response.data.filter((dish: Product) => 
+            dish.category === 'Poissons' && dish.status === "Active"
+          );
+          
+          // Mélanger les plats de façon alternée : viande, poisson, viande, poisson...
+          filteredDishes = [];
+          const maxLength = Math.max(viandes.length, poissons.length);
+          
+          for (let i = 0; i < maxLength; i++) {
+            if (i < viandes.length) filteredDishes.push(viandes[i]);
+            if (i < poissons.length) filteredDishes.push(poissons[i]);
+          }
+        } else {
+          // Pour les autres catégories, filtrage normal
+          filteredDishes = response.data.filter((dish: Product) => 
+            dish.category === dbCategory && dish.status === "Active"
+          );
+        }
+        
+        console.log('Plats filtrés pour la catégorie', dbCategory, ':', filteredDishes.length);
+        setDishes(filteredDishes);
+      } else {
+        console.error('Erreur dans la réponse API:', response.error);
+        setDishes([]);
       }
-      
-      const data = await response.json();
-      console.log('Données reçues:', data);
-      // Filtrer seulement les plats actifs
-      const activeDishes = data.filter((dish: Dish) => dish.status === "Active");
-      setDishes(activeDishes);
     } catch (error) {
       console.error('Erreur lors du chargement des plats:', error);
       setDishes([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [category]);
+
+  useEffect(() => {
+    if (category) {
+      fetchCategoryDishes();
+    }
+  }, [category, fetchCategoryDishes]);
 
   const handleBack = () => {
     safeBack();
@@ -110,7 +130,7 @@ export default function CategoryDetailsScreen() {
         <View style={styles.dishesList}>
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#FF6B35" />
+              <ActivityIndicator size="large" color="#2E86AB" />
               <Text style={styles.loadingText}>Chargement des plats...</Text>
             </View>
           ) : dishes.length > 0 ? (
@@ -128,7 +148,7 @@ export default function CategoryDetailsScreen() {
                 <View style={styles.dishInfo}>
                   <Text style={styles.dishName}>{dish.name}</Text>
                   <Text style={styles.dishDescription}>{dish.subtitle}</Text>
-                  <Text style={styles.dishPrice}>{dish.price.toFixed(2)} €</Text>
+                  <Text style={styles.dishPrice}>{dish.price.toFixed(2)} DT</Text>
                 </View>
               </TouchableOpacity>
             ))
@@ -223,7 +243,7 @@ const styles = StyleSheet.create({
   dishPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FF6B35',
+    color: '#2E86AB',
   },
   loadingContainer: {
     flex: 1,

@@ -19,7 +19,8 @@ export const API_CONFIG = {
     
     // Products
     PRODUCTS: '/api/products',
-    PRODUCT_BY_ID: (id: number) => `/api/products/${id}`,
+    PRODUCT_CATEGORIES: '/api/products/categories',
+    PRODUCT_BY_ID: (id: string) => `/api/products/${id}`,
     PRODUCTS_BY_COLLECTION: (collection: string) => `/api/products/collection/${encodeURIComponent(collection)}`,
     PRODUCTS_BY_TYPE: (type: string) => `/api/products/type/${encodeURIComponent(type)}`,
     PRODUCTS_SEARCH: '/api/products/search',

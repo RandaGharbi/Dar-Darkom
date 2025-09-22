@@ -1,9 +1,9 @@
 [
   {
     "id": 1,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Daurade grillée au citron et thym, une spécialité méditerranéenne savoureuse",
     "Name": "Dorade Grillée",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/daurade-grillee-citron.jpg",
+    "Image": "https://img.cuisineaz.com/1024x768/2013/12/20/i24732-daurade-grille-herbes.jpeg",
     "product_url": "https://example.com/produits/dorade_grillée",
     "price": 25,
     "Arrivals": "NOUVEAU",
@@ -19,9 +19,9 @@
   },
   {
     "id": 2,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Loup de mer cuit au four avec pommes de terre et herbes aromatiques",
     "Name": "Loup de Mer au Four",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/loup-de-mer-au-four.jpg",
+    "Image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ6P59dKoq7xC-tWBmvymIyXhpQyOTh06YTA&s",
     "product_url": "https://example.com/produits/loup_de_mer_au_four",
     "price": 28,
     "Arrivals": "Non",
@@ -37,9 +37,9 @@
   },
   {
     "id": 3,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Couscous traditionnel tunisien au mérou, le plat roi de la cuisine méditerranéenne",
     "Name": "Couscous au Mérou",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/couscous-tunisien-loup-mer.jpg",
+    "Image": "https://cuisinezavecdjouza.fr/wp-content/uploads/2016/08/Couscous-tunisien-a-la-daurade-photo-3.jpg",
     "product_url": "https://example.com/produits/couscous_au_mérou",
     "price": 30,
     "Arrivals": "Non",
@@ -55,9 +55,9 @@
   },
   {
     "id": 4,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Brik croustillant au thon, spécialité tunisienne aux saveurs authentiques",
     "Name": "Brik au Thon",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/brik-au-thon.jpg",
+    "Image": "https://gateauetcuisinerachida.com/wp-content/uploads/2025/03/Brick-tunisienne-au-thon-et-a-l-oeuf-recette-facile.jpg",
     "product_url": "https://example.com/produits/brik_au_thon",
     "price": 12,
     "Arrivals": "NOUVEAU",
@@ -73,9 +73,9 @@
   },
   {
     "id": 5,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Ragoût de poulpe à la kerkenienne, une explosion de saveurs traditionnelles",
     "Name": "Ragoût de Poulpe",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/kamounia-poulpe.jpg",
+    "Image": "https://www.cuisinetunisienne.tn/wp-content/uploads/2020/10/Recette-Kamounia-au-poulpe.jpg",
     "product_url": "https://example.com/produits/ragoût_de_poulpe",
     "price": 26,
     "Arrivals": "Non",
@@ -91,7 +91,7 @@
   },
   {
     "id": 6,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Calamars farcis aux herbes, délicatesse de la cuisine tunisienne",
     "Name": "Calamars Farcis",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/calamars-farcis-tunisienne.jpg",
     "product_url": "https://example.com/produits/calamars_farcis",
@@ -109,9 +109,9 @@
   },
   {
     "id": 7,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Crevettes sautées à l'ail et au persil, fraîcheur méditerranéenne",
     "Name": "Crevettes Sautées à l'Ail",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/crevettes-sautees-ail.jpg",
+    "Image": "https://www.mangeonsbien.com/wp-content/uploads/2018/12/Calamars-farcis-a%CC%80-la-tunisienne.jpg",
     "product_url": "https://example.com/produits/crevettes_sautées_à_l'ail",
     "price": 27,
     "Arrivals": "NOUVEAU",
@@ -127,9 +127,9 @@
   },
   {
     "id": 8,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Sépia mijotée à la sauce tomate, tendre et parfumée",
     "Name": "Sépia à la Sauce Tomate",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/sepia-sauce-tomate.jpg",
+    "Image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzZ6v5ABjz5ttXDgpQKtMW-Zovo-rx6UBaC2sDincq7VezCtuR3SDEF-6sCa1BoJztFxjMr4tseWZ3Mr82t1vftEvGFw9mL_xAsEAuNprYWLCQWh7DTmstKMLitHLvhZSlG7yCJPmSnD6j0_ZMS0LsfyBm4CEB5FZU3srILZS0tKGnAKW0vqlVPLu0Z_hw/s4216/calamars%20sauce%20tomates%20(%20s%C3%A9pia%20)-7.jpg",
     "product_url": "https://example.com/produits/sépia_à_la_sauce_tomate",
     "price": 22,
     "Arrivals": "Non",
@@ -145,9 +145,9 @@
   },
   {
     "id": 9,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Bouillabaisse tunisienne aux poissons de Méditerranée, soupe traditionnelle",
     "Name": "Bouillabaisse Tunisienne",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/bouillabaisse-tunisienne.jpg",
+    "Image": "https://www.recetteaz.net/wp-content/uploads/2020/02/Recette-Bouillabaisse-1200x715.jpg",
     "product_url": "https://example.com/produits/bouillabaisse_tunisienne",
     "price": 32,
     "Arrivals": "Non",
@@ -163,9 +163,9 @@
   },
   {
     "id": 10,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Rouget frit doré, poisson méditerranéen aux saveurs délicates",
     "Name": "Rouget Frit",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/rouget-frit.jpg",
+    "Image": "https://img-global.cpcdn.com/recipes/b0731815f8b6ff68/1200x630cq80/photo.jpg",
     "product_url": "https://example.com/produits/rouget_frit",
     "price": 20,
     "Arrivals": "NOUVEAU",
@@ -181,9 +181,9 @@
   },
   {
     "id": 11,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Sardines grillées aux herbes, simplicité et authenticité méditerranéenne",
     "Name": "Sardines Grillées",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/sardines-grillees.jpg",
+    "Image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7CgHSPvZOkPqPPyS3QyPEeOFXEpFVaephQ&s",
     "product_url": "https://example.com/produits/sardines_grillées",
     "price": 15,
     "Arrivals": "Non",
@@ -199,9 +199,9 @@
   },
   {
     "id": 12,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Paella tunisienne aux fruits de mer, riz safrané aux saveurs d'Orient",
     "Name": "Paella à la Tunisienne",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/paella-tunisienne.jpg",
+    "Image": "https://tunisie.co/uploads/images/content/paella-110517-1.jpg",
     "product_url": "https://example.com/produits/paella_à_la_tunisienne",
     "price": 29,
     "Arrivals": "NOUVEAU",
@@ -217,7 +217,7 @@
   },
   {
     "id": 13,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Tajine de poisson aux légumes, mijoté aux épices orientales",
     "Name": "Tagine de Poisson",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/tagine-poisson-tunisien.jpg",
     "product_url": "https://example.com/produits/tagine_de_poisson",
@@ -234,28 +234,10 @@
     }
   },
   {
-    "id": 14,
-    "Subtitle": "Poissons & Fruits de Mer",
-    "Name": "Mloukhia aux Crevettes",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/mloukhia-crevettes.jpg",
-    "product_url": "https://example.com/produits/mloukhia_aux_crevettes",
-    "price": 25,
-    "Arrivals": "Non",
-    "category": "Poissons",
-    "quantity": 36,
-    "status": "Active",
-    "productType": "product",
-    "dailySpecial": false,
-    "nessma_recipe": {
-      "status": "recherche_requise",
-      "note": "Recette à rechercher sur cuisine.nessma.tv"
-    }
-  },
-  {
     "id": 15,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Soupe de poisson méditerranéenne, bouillon parfumé aux herbes",
     "Name": "Soupe de Poisson",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/soupe-poisson-mediterraneenne.jpg",
+    "Image": "https://www.latunisienne.fr/wp-content/uploads/2013/05/chorba-frik-au-poisson-600x469-1-480x270.jpg",
     "product_url": "https://example.com/produits/soupe_de_poisson",
     "price": 18,
     "Arrivals": "NOUVEAU",
@@ -271,9 +253,9 @@
   },
   {
     "id": 16,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Salade de poulpe méditerranéenne, fraîcheur et légèreté",
     "Name": "Salade de Poulpe",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/salade-poulpe-mediterraneenne.jpg",
+    "Image": "https://www.la-cuisine-marocaine.com/photos-recettes/salade-poulpe-tunisienne.jpg",
     "product_url": "https://example.com/produits/salade_de_poulpe",
     "price": 21,
     "Arrivals": "Non",
@@ -289,9 +271,9 @@
   },
   {
     "id": 17,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Filet de thon grillé méditerranéen, tendre et parfumé",
     "Name": "Filet de Thon Grillé",
-    "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/thon-grille-mediterraneen.jpg",
+    "Image": "https://epicier.ca/wp-content/uploads/2020/10/Recettes-steak-thon-rouge-grille-e1687877478128.jpg",
     "product_url": "https://example.com/produits/filet_de_thon_grillé",
     "price": 26,
     "Arrivals": "Non",
@@ -307,7 +289,7 @@
   },
   {
     "id": 18,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Espadon à la plancha aux herbes, poisson noble aux saveurs subtiles",
     "Name": "Espadon à la Plancha",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/espadon-plancha-herbes.jpg",
     "product_url": "https://example.com/produits/espadon_à_la_plancha",
@@ -325,7 +307,7 @@
   },
   {
     "id": 19,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Merlan frit aux épices, accompagné de sauce tomate à l'ail",
     "Name": "Merlan Frit",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/merlan_frit.jpg",
     "product_url": "https://example.com/produits/merlan_frit",
@@ -343,7 +325,7 @@
   },
   {
     "id": 20,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Couscous aux crevettes méditerranéen, mariage parfait terre et mer",
     "Name": "Couscous aux Crevettes",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/couscous-crevettes-mediterraneen.jpg",
     "product_url": "https://example.com/produits/couscous_aux_crevettes",
@@ -361,7 +343,7 @@
   },
   {
     "id": 21,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Poisson en papillote aux herbes, cuisson vapeur délicate",
     "Name": "Poisson en Papillote",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/poisson-papillote-herbes.jpg",
     "product_url": "https://example.com/produits/poisson_en_papillote",
@@ -379,7 +361,7 @@
   },
   {
     "id": 22,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Calamars grillés aux épices, tendreté et saveurs grillées",
     "Name": "Calamars Grillés",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/calamars_grillés.jpg",
     "product_url": "https://example.com/produits/calamars_grillés",
@@ -397,7 +379,7 @@
   },
   {
     "id": 23,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Riz au poulpe aux légumes, riz parfumé aux saveurs de la mer",
     "Name": "Riz au Poulpe",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/riz_au_poulpe.jpg",
     "product_url": "https://example.com/produits/riz_au_poulpe",
@@ -415,7 +397,7 @@
   },
   {
     "id": 24,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Soupe de crevettes aux légumes, bouillon parfumé et délicat",
     "Name": "Soupe de Crevettes",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/soupe_de_crevettes.jpg",
     "product_url": "https://example.com/produits/soupe_de_crevettes",
@@ -433,7 +415,7 @@
   },
   {
     "id": 25,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Omble chevalier grillé aux herbes, poisson des lacs aux saveurs délicates",
     "Name": "Omble Chevalier Grillé",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/omble-chevalier-grille-herbes.jpg",
     "product_url": "https://example.com/produits/omble_chevalier_grillé",
@@ -451,7 +433,7 @@
   },
   {
     "id": 27,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Marmite du pêcheur, bouillabaisse traditionnelle aux poissons frais",
     "Name": "Marmite du Pêcheur",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/marmite-pecheur-bouillabaisse.jpg",
     "product_url": "https://example.com/produits/marmite_du_pêcheur",
@@ -469,7 +451,7 @@
   },
   {
     "id": 28,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Poulpe à la plancha à l'ail et persil, tendreté et parfums méditerranéens",
     "Name": "Poulpe à la Plancha",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/poulpe-plancha-ail-persil.jpg",
     "product_url": "https://example.com/produits/poulpe_à_la_plancha",
@@ -487,7 +469,7 @@
   },
   {
     "id": 29,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Thon à la sauce rouge tomate, mijoté aux épices orientales",
     "Name": "Thon à la Sauce Rouge",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/thon-sauce-rouge-tomate.jpg",
     "product_url": "https://example.com/produits/thon_à_la_sauce_rouge",
@@ -505,7 +487,7 @@
   },
   {
     "id": 30,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Poisson au citron confit aux herbes, saveurs acidulées et parfumées",
     "Name": "Poisson au Citron Confit",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/poisson-citron-confit-herbes.jpg",
     "product_url": "https://example.com/produits/poisson_au_citron_confit",
@@ -523,7 +505,7 @@
   },
   {
     "id": 31,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Crevettes au curry et lait de coco, saveurs exotiques et crémeuses",
     "Name": "Crevettes au Curry",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/crevettes-curry-coco.jpg",
     "product_url": "https://example.com/produits/crevettes_au_curry",
@@ -541,7 +523,7 @@
   },
   {
     "id": 32,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Salade méditerranéenne aux fruits de mer, fraîcheur et couleurs",
     "Name": "Salade Méditerranéenne de la Mer",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/salade-mediterraneenne-fruits-mer.jpg",
     "product_url": "https://example.com/produits/salade_méditerranéenne_de_la_mer",
@@ -559,7 +541,7 @@
   },
   {
     "id": 33,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Lasagnes au saumon et épinards, gratin crémeux aux saveurs marines",
     "Name": "Lasagnes au Poisson",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/lasagnes-saumon-epinards.jpg",
     "product_url": "https://example.com/produits/lasagnes_au_poisson",
@@ -577,7 +559,7 @@
   },
   {
     "id": 34,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Poisson farci aux herbes aromatiques, farce parfumée et savoureuse",
     "Name": "Poisson Farci aux Herbes",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/poisson-farci-herbes-aromatiques.jpg",
     "product_url": "https://example.com/produits/poisson_farci_aux_herbes",
@@ -595,7 +577,7 @@
   },
   {
     "id": 35,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Gratin de fruits de mer à la béchamel, gratin crémeux et généreux",
     "Name": "Gratin de Fruits de Mer",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/gratin-fruits-mer-bechamel.jpg",
     "product_url": "https://example.com/produits/gratin_de_fruits_de_mer",
@@ -613,7 +595,7 @@
   },
   {
     "id": 36,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Boulettes de poisson à la sauce tomate, spécialité tunisienne traditionnelle",
     "Name": "Boulettes de Poisson",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/boulettes-poisson-sauce-tomate.jpg",
     "product_url": "https://example.com/produits/boulettes_de_poisson",
@@ -631,7 +613,7 @@
   },
   {
     "id": 37,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Ragoût de crevettes à l'ail et persil, mijoté aux saveurs méditerranéennes",
     "Name": "Ragoût de Crevettes",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/ragout-crevettes-ail-persil.jpg",
     "product_url": "https://example.com/produits/ragoût_de_crevettes",
@@ -649,7 +631,7 @@
   },
   {
     "id": 38,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Pizza aux fruits de mer et mozzarella, croûte fine aux saveurs marines",
     "Name": "Pizza aux Fruits de Mer",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/pizza-fruits-mer-mozzarella.jpg",
     "product_url": "https://example.com/produits/pizza_aux_fruits_de_mer",
@@ -667,7 +649,7 @@
   },
   {
     "id": 39,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Quiche au thon et courgettes, tarte salée aux saveurs méditerranéennes",
     "Name": "Quiche au Thon",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/quiche-thon-courgettes.jpg",
     "product_url": "https://example.com/produits/quiche_au_thon",
@@ -685,7 +667,7 @@
   },
   {
     "id": 40,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Soupe de sépia aux légumes, bouillon parfumé et réconfortant",
     "Name": "Soupe de Sépia",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/soupe-sepia-legumes.jpg",
     "product_url": "https://example.com/produits/soupe_de_sépia",
@@ -703,7 +685,7 @@
   },
   {
     "id": 41,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Couscous à la sépia aux légumes, tradition tunisienne aux saveurs marines",
     "Name": "Couscous à la Sépia",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/couscous-sepia-legumes.jpg",
     "product_url": "https://example.com/produits/couscous_à_la_sépia",
@@ -721,7 +703,7 @@
   },
   {
     "id": 42,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Dorade au citron et herbes, poisson méditerranéen aux saveurs fraîches",
     "Name": "Dorade au Citron",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/dorade-citron-herbes.jpg",
     "product_url": "https://example.com/produits/dorade_au_citron",
@@ -739,7 +721,7 @@
   },
   {
     "id": 43,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Lotte à la sauce safran aux légumes, poisson noble aux épices précieuses",
     "Name": "Lotte à la Sauce Safran",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/lotte-sauce-safran-legumes.jpg",
     "product_url": "https://example.com/produits/lotte_à_la_sauce_safran",
@@ -757,7 +739,7 @@
   },
   {
     "id": 44,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Pavé de saumon méditerranéen aux herbes, poisson noble aux saveurs délicates",
     "Name": "Pavé de Saumon Méditerranéen",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/saumon-mediterraneen-herbes.jpg",
     "product_url": "https://example.com/produits/pavé_de_saumon_méditerranéen",
@@ -775,7 +757,7 @@
   },
   {
     "id": 45,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Tajine aux fruits de mer aux épices, mijoté oriental aux saveurs exotiques",
     "Name": "Tajine aux Fruits de Mer",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/tajine-fruits-mer-epices.jpg",
     "product_url": "https://example.com/produits/tajine_aux_fruits_de_mer",
@@ -793,7 +775,7 @@
   },
   {
     "id": 46,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Spaghetti aux calamars à l'ail et persil, pâtes italiennes aux saveurs marines",
     "Name": "Spaghetti aux Calamars",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/spaghetti-calamars-ail-persil.jpg",
     "product_url": "https://example.com/produits/spaghetti_aux_calamars",
@@ -811,7 +793,7 @@
   },
   {
     "id": 47,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Riz aux crevettes et poivrons au safran, riz parfumé aux couleurs vives",
     "Name": "Riz aux Crevettes et Poivrons",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/riz-crevettes-poivrons-safran.jpg",
     "product_url": "https://example.com/produits/riz_aux_crevettes_et_poivrons",
@@ -829,7 +811,7 @@
   },
   {
     "id": 48,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Poisson pané maison au citron, croûte dorée et tendre à l'intérieur",
     "Name": "Poisson Pané Maison",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/poisson-pane-maison-citron.jpg",
     "product_url": "https://example.com/produits/poisson_pané_maison",
@@ -847,7 +829,7 @@
   },
   {
     "id": 49,
-    "Subtitle": "Poissons & Fruits de Mer",
+    "Subtitle": "Salade de crevettes à l'avocat, fraîcheur et légèreté méditerranéenne",
     "Name": "Salade de Crevettes",
     "Image": "https://cuisine.nessma.tv/uploads/7/2022-01/salade-crevettes-avocat.jpg",
     "product_url": "https://example.com/produits/salade_de_crevettes",

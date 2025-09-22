@@ -12,9 +12,25 @@ import { useTranslation } from "../../hooks/useTranslation";
 
 const Container = styled.div`
   padding: 2rem;
-  background: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
   
   @media (max-width: 1120px) {
     padding: 1.5rem;
@@ -38,31 +54,48 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.text.primary};
-  margin: 0 0 0.5rem 0;
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 12px 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
   
   @media (max-width: 1120px) {
-    font-size: 1.7rem;
+    font-size: 2.4rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 1.4rem;
+    font-size: 2rem;
   }
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 1rem;
+  color: #64748b;
+  font-size: 1.2rem;
   margin: 0;
+  font-weight: 500;
+  line-height: 1.6;
   
   @media (max-width: 1120px) {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.85rem;
+    font-size: 1rem;
   }
 `;
 
@@ -81,43 +114,55 @@ const SearchContainer = styled.div`
 
 const SearchInput = styled.input`
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background-color: transparent;
-  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 16px 20px 16px 56px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #1e293b;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors.warning};
-    box-shadow: 0 0 0 3px rgb(245 166 35 / 0.08);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+  
+  &::placeholder {
+    color: #64748b;
+    font-weight: 400;
   }
   
   @media (max-width: 1120px) {
-    padding: 0.6rem 0.8rem 0.6rem 2.2rem;
-    font-size: 0.9rem;
+    padding: 14px 18px 14px 52px;
+    font-size: 0.95rem;
   }
   
   @media (max-width: 480px) {
-    padding: 0.5rem 0.7rem 0.5rem 2rem;
-    font-size: 0.85rem;
+    padding: 12px 16px 12px 48px;
+    font-size: 0.9rem;
   }
 `;
 
 const SearchIcon = styled.div`
   position: absolute;
-  left: 0.75rem;
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  z-index: 2;
   
   @media (max-width: 1120px) {
-    left: 0.6rem;
+    left: 18px;
   }
   
   @media (max-width: 480px) {
-    left: 0.5rem;
+    left: 16px;
   }
 `;
 
@@ -139,39 +184,55 @@ const Tabs = styled.div`
 `;
 
 const Tab = styled.button<{ active?: boolean }>`
-  background: none;
-  border: none;
+  background: ${({ active }) => 
+    active 
+      ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))' 
+      : 'transparent'
+  };
+  border: 1px solid ${({ active }) => 
+    active 
+      ? 'rgba(59, 130, 246, 0.2)' 
+      : 'transparent'
+  };
+  border-radius: 12px;
   font-size: 1rem;
-  font-weight: 500;
-  color: ${({ active, theme }) => active ? theme.colors.text.primary : theme.colors.text.muted};
-  padding: 0.75rem 0;
+  font-weight: 600;
+  color: ${({ active }) => active ? '#1e293b' : '#64748b'};
+  padding: 12px 24px;
   cursor: pointer;
-  border-bottom: 2px solid ${({ active, theme }) => active ? theme.colors.warning : 'transparent'};
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.text.primary};
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    border-color: rgba(59, 130, 246, 0.2);
+    color: #1e293b;
+    transform: translateY(-2px);
   }
   
   @media (max-width: 1120px) {
-    font-size: 0.9rem;
-    padding: 0.6rem 0;
+    font-size: 0.95rem;
+    padding: 10px 20px;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.85rem;
-    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    padding: 8px 16px;
   }
 `;
 
 const TableContainer = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border-radius: 12px;
-  box-shadow: ${({ theme }) => theme.shadows.md};
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
+  z-index: 1;
   
   @media (max-width: 1120px) {
-    border-radius: 8px;
+    border-radius: 16px;
     overflow-x: auto;
   }
 `;
@@ -190,52 +251,57 @@ const Table = styled.table`
 
 const Th = styled.th`
   text-align: left;
-  padding: 1rem;
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text.muted};
-  font-weight: 200;
-  font-size: 0.9rem;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  
-  &:last-child {
-    border-right: none;
-  }
-  
-  @media (max-width: 1120px) {
-    padding: 0.8rem;
-    font-size: 0.85rem;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0.6rem;
-    font-size: 0.8rem;
-  }
-`;
-
-const Td = styled.td`
-  padding: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 20px 24px 16px 24px;
+  color: #64748b;
+  font-weight: 600;
   font-size: 0.95rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.table.hover};
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &:first-child {
+    border-radius: 20px 0 0 0;
   }
   
   &:last-child {
-    border-right: none;
+    border-radius: 0 20px 0 0;
   }
   
   @media (max-width: 1120px) {
-    padding: 0.8rem;
+    padding: 18px 20px 14px 20px;
     font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 0.6rem;
+    padding: 16px 18px 12px 18px;
+    font-size: 0.85rem;
+  }
+`;
+
+const Td = styled.td`
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+  color: #1e293b;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.02);
+  }
+  
+  &:last-child {
+    border-right: none;
+  }
+  
+  @media (max-width: 1120px) {
+    padding: 18px 20px;
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 16px 18px;
     font-size: 0.85rem;
   }
 `;
@@ -251,32 +317,60 @@ const TableRow = styled.tr`
 
 const StatusBadge = styled.span<{ status: string }>`
   display: inline-block;
-  padding: 0.3em 1em;
-  border-radius: 12px;
-  font-size: 0.85em;
-  font-weight: 500;
-  background: transparent;
+  padding: 0.4em 1.2em;
+  border-radius: 16px;
+  font-size: 0.9em;
+  font-weight: 600;
+  background: ${({ status }) => {
+    switch (status) {
+      case 'active':
+        return 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1))';
+      case 'completed':
+        return 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))';
+      case 'cancelled':
+        return 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))';
+      default:
+        return 'linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.1))';
+    }
+  }};
   color: ${({ status }) => {
     switch (status) {
       case 'active':
-        return '#22c55e';
+        return '#059669';
       case 'completed':
-        return '#3b82f6';
+        return '#2563eb';
       case 'cancelled':
-        return '#ef4444';
+        return '#dc2626';
       default:
         return '#6b7280';
     }
   }};
+  border: 1px solid ${({ status }) => {
+    switch (status) {
+      case 'active':
+        return 'rgba(34, 197, 94, 0.2)';
+      case 'completed':
+        return 'rgba(59, 130, 246, 0.2)';
+      case 'cancelled':
+        return 'rgba(239, 68, 68, 0.2)';
+      default:
+        return 'rgba(107, 114, 128, 0.2)';
+    }
+  }};
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
   
   @media (max-width: 1120px) {
-    padding: 0.25em 0.8em;
-    font-size: 0.8em;
+    padding: 0.3em 1em;
+    font-size: 0.85em;
   }
   
   @media (max-width: 480px) {
-    padding: 0.2em 0.6em;
-    font-size: 0.75em;
+    padding: 0.25em 0.8em;
+    font-size: 0.8em;
   }
 `;
 
@@ -299,34 +393,62 @@ const Pagination = styled.div`
 `;
 
 const PageButton = styled.button<{ active?: boolean }>`
-  background: ${({ active, theme }) => active ? theme.colors.primary : 'none'};
-  border: none;
-  color: ${({ active, theme }) => active ? '#fff' : theme.colors.text.primary};
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+  background: ${({ active }) => 
+    active 
+      ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' 
+      : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  border: 1px solid ${({ active }) => 
+    active 
+      ? 'rgba(59, 130, 246, 0.3)' 
+      : 'rgba(226, 232, 240, 0.8)'
+  };
+  color: ${({ active }) => active ? '#fff' : '#1e293b'};
+  padding: 12px 20px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: ${({ active }) => active ? '600' : '400'};
-  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${({ active }) => 
+    active 
+      ? '0 4px 20px rgba(59, 130, 246, 0.3)' 
+      : '0 2px 8px rgba(0, 0, 0, 0.06)'
+  };
+  position: relative;
+  z-index: 1;
 
   &:hover:not(:disabled) {
-    background: ${({ active, theme }) => active ? theme.colors.primary : theme.colors.surface};
+    background: ${({ active }) => 
+      active 
+        ? 'linear-gradient(135deg, #2563eb, #7c3aed)' 
+        : 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))'
+    };
+    transform: translateY(-2px);
+    box-shadow: ${({ active }) => 
+      active 
+        ? '0 8px 32px rgba(59, 130, 246, 0.4)' 
+        : '0 4px 16px rgba(0, 0, 0, 0.1)'
+    };
   }
 
   &:disabled {
-    color: #ccc;
+    color: #94a3b8;
     cursor: default;
+    opacity: 0.5;
   }
   
   @media (max-width: 1120px) {
-    padding: 0.4rem 0.6rem;
+    padding: 10px 16px;
     font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 0.3rem 0.5rem;
+    padding: 8px 12px;
     font-size: 0.85rem;
   }
 `;
+
 
 const formatStatus = (status: string) => {
   return status.charAt(0).toUpperCase() + status.slice(1);
@@ -373,9 +495,10 @@ export default function OrdersPage() {
       <DashboardLayout hideSidebar>
         <Container>
           <Header>
-            <Title>{mounted ? t('orders.title') : ""}</Title>
-            <Subtitle>{mounted ? t('orders.subtitle') : ""}</Subtitle>
+            <Title>COMMANDES</Title>
+            <Subtitle>Gérez les commandes de vos clients avec style tunisien</Subtitle>
           </Header>
+
 
           <SearchContainer>
             <SearchIcon>

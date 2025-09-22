@@ -116,25 +116,46 @@ export const signup = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
+  console.log('🚀 LOGIN FUNCTION CALLED');
   const { email, password } = req.body;
 
+  console.log('🔐 LOGIN ATTEMPT:', { email, password: '***', timestamp: new Date().toISOString() });
+
   if (!email || !password) {
+    console.log('❌ Missing fields:', { email: !!email, password: !!password });
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
+    console.log('🔍 Searching for user with email:', email);
     const user = await User.findOne({ email });
+    console.log('👤 User found:', !!user);
+    
     if (!user) {
+      console.log('❌ User not found for email:', email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    console.log('👤 User details:', {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      hasPassword: !!user.password,
+      status: user.status
+    });
+
     // Vérifier si l'utilisateur a un mot de passe (pas d'authentification sociale)
     if (!user.password) {
+      console.log('❌ User has no password (social login only)');
       return res.status(401).json({ message: 'Please use social login for this account' });
     }
 
+    console.log('🔐 Comparing password...');
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log('🔐 Password match result:', isMatch);
+    
     if (!isMatch) {
+      console.log('❌ Password does not match');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 

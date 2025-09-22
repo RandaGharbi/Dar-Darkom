@@ -18,7 +18,7 @@ export const productApi = {
 
   // Récupérer un produit par ID
   getProductById: async (productId: string): Promise<Product> => {
-    const response = await httpClient.get(getEndpoint('PRODUCT_BY_ID', parseInt(productId)));
+    const response = await httpClient.get(getEndpoint('PRODUCT_BY_ID', productId));
     return response.data;
   },
 

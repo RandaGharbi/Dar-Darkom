@@ -1,18 +1,57 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import SafeAreaWrapper from '../components/SafeAreaWrapper';
 import { useSafeNavigation } from '../hooks/useSafeNavigation';
 import { useAuth } from '../context/AuthContext';
 import { useCartStore } from '../context/CartStore';
+import { useFavorites } from '../context/FavoritesContext';
+import { productApi } from '../services/productApi';
+import { Product } from '../constants/types';
 
 export default function ProductDetailScreen() {
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { isAuthenticated, user } = useAuth();
   const { addToCart } = useCartStore();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { safeBack } = useSafeNavigation();
   const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Récupérer les données du produit
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!id) {
+        setError('ID du produit manquant');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const productData = await productApi.getProductById(id);
+        console.log('=== DEBUG PRODUIT ===');
+        console.log('Produit chargé:', productData);
+        console.log('Image URL:', productData.image);
+        console.log('Type de l\'image:', typeof productData.image);
+        console.log('Image existe:', !!productData.image);
+        console.log('===================');
+        setProduct(productData);
+      } catch (err: any) {
+        console.error('Erreur lors du chargement du produit:', err);
+        const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement du produit';
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
 
   const handleBack = () => {
     safeBack();
@@ -23,18 +62,49 @@ export default function ProductDetailScreen() {
     console.log('Partage...');
   };
 
+  const handleToggleFavorite = async () => {
+    if (!isAuthenticated) {
+      Alert.alert('Connexion requise', 'Veuillez vous connecter pour ajouter des produits aux favoris');
+      router.push('/login');
+      return;
+    }
+    
+    if (!product) return;
+
+    const favoriteProduct = {
+      _id: product.id.toString(),
+      name: product.name,
+      price: product.price,
+      image: product.image || 'https://via.placeholder.com/150',
+      description: product.subtitle || product.description,
+      category: product.category
+    };
+
+    if (isFavorite(product.id.toString())) {
+      await removeFromFavorites(product.id.toString());
+      Alert.alert('Favoris', `${product.name} supprimé des favoris !`);
+    } else {
+      await addToFavorites(favoriteProduct);
+      Alert.alert('Favoris', `${product.name} ajouté aux favoris !`);
+    }
+  };
+
   const handleAddToCart = async () => {
     if (!isAuthenticated || !user?._id) {
       Alert.alert('Connexion requise', 'Veuillez vous connecter pour ajouter des produits au panier');
       router.push('/login');
       return;
     }
+
+    if (!product || !id) {
+      Alert.alert('Erreur', 'Produit non trouvé');
+      return;
+    }
     
     try {
-      // Pour cette page statique, on utilise un ID fictif
-      const result = await addToCart(user._id, '1');
+      const result = await addToCart(user._id, id, quantity);
       if (result) {
-        Alert.alert('Succès', 'Produit ajouté au panier !');
+        Alert.alert('Succès', `${product.name} ajouté au panier !`);
       } else {
         Alert.alert('Erreur', 'Impossible d\'ajouter le produit au panier');
       }
@@ -51,23 +121,65 @@ export default function ProductDetailScreen() {
     }
   };
 
+  // Écran de chargement
+  if (loading) {
+    return (
+      <SafeAreaWrapper backgroundColor="#fff" edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2E86AB" />
+          <Text style={styles.loadingText}>Chargement du produit...</Text>
+        </View>
+      </SafeAreaWrapper>
+    );
+  }
+
+  // Écran d'erreur
+  if (error || !product) {
+    return (
+      <SafeAreaWrapper backgroundColor="#fff" edges={['top']}>
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={64} color="#2E86AB" />
+          <Text style={styles.errorText}>{error || 'Produit non trouvé'}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleBack}>
+            <Text style={styles.retryButtonText}>Retour</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaWrapper>
+    );
+  }
+
   return (
     <SafeAreaWrapper backgroundColor="#000" edges={['top']}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Image Section */}
         <View style={styles.imageSection}>
           <ImageBackground
-            source={{ uri: 'https://www.bennasafi.com/media/medium/1578061341_couscous.bel.alouch.png' }}
+            source={{ 
+              uri: product.image || 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop'
+            }}
             style={styles.productImage}
             resizeMode="cover"
+            onError={(error) => {
+              console.log('Erreur de chargement de l\'image du produit:', error);
+              console.log('URL de l\'image:', product.image);
+            }}
           >
             <View style={styles.imageOverlay}>
               <TouchableOpacity style={styles.backButton} onPress={handleBack}>
                 <Ionicons name="arrow-back" size={24} color="#fff" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-                <Ionicons name="share-outline" size={24} color="#fff" />
-              </TouchableOpacity>
+              <View style={styles.headerActions}>
+                <TouchableOpacity style={styles.favoriteButton} onPress={handleToggleFavorite}>
+                  <Ionicons 
+                    name={product && isFavorite(product.id.toString()) ? "heart" : "heart-outline"} 
+                    size={24} 
+                    color="#fff" 
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+                  <Ionicons name="share-outline" size={24} color="#fff" />
+                </TouchableOpacity>
+              </View>
             </View>
           </ImageBackground>
         </View>
@@ -76,36 +188,45 @@ export default function ProductDetailScreen() {
         <View style={styles.contentSection}>
           {/* Title and Price */}
           <View style={styles.titleRow}>
-            <Text style={styles.productTitle}>Homemade Couscous</Text>
-            <Text style={styles.productPrice}>$15.99</Text>
+            <Text style={styles.productTitle}>{product.name}</Text>
+            <Text style={styles.productPrice}>{product.price.toFixed(2)} €</Text>
           </View>
+
+          {/* Category */}
+          {product.category && (
+            <View style={styles.categoryContainer}>
+              <Text style={styles.categoryText}>{product.category}</Text>
+            </View>
+          )}
 
           {/* Description */}
           <Text style={styles.description}>
-            A classic North African dish, our couscous is made with semolina grains, tender meat, and a medley of fresh vegetables, simmered in a rich, aromatic broth. A hearty and flavorful meal that brings the taste of home to your table.
+            {product.subtitle || product.description || 'Un classique de la cuisine tunisienne traditionnelle avec viande et légumes.'}
           </Text>
 
-          {/* Ingredients */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Ingredients</Text>
-            <Text style={styles.ingredients}>
-              Semolina, lamb or chicken, carrots, potatoes, zucchini, chickpeas, onions, tomatoes, spices (turmeric, cumin, coriander, paprika), olive oil, vegetable broth.
-            </Text>
-          </View>
+          {/* Daily Special Badge */}
+          {product.dailySpecial && (
+            <View style={styles.specialBadge}>
+              <Ionicons name="star" size={16} color="#FFD700" />
+              <Text style={styles.specialBadgeText}>Plat du jour</Text>
+            </View>
+          )}
 
-          {/* About the Chef */}
+          {/* Chef Section */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About the Chef</Text>
+            <Text style={styles.sectionTitle}>À propos du chef</Text>
             <View style={styles.chefCard}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face' }}
+              <Image 
+                source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' }}
                 style={styles.chefImage}
+                resizeMode="cover"
               />
               <View style={styles.chefInfo}>
-                <Text style={styles.chefName}>Fatima Ben Ali</Text>
-                <Text style={styles.chefKitchen}>Fatima's Kitchen</Text>
+                <Text style={styles.chefName}>Chef Mohamed</Text>
+                <Text style={styles.chefKitchen}>Cuisine Traditionnelle Tunisienne</Text>
                 <Text style={styles.chefDescription}>
-                  Fatima Ben Ali brings over 20 years of experience in traditional North African cuisine, specializing in authentic couscous and tagine dishes.
+                  Chef expérimenté avec plus de 15 ans d'expérience dans la cuisine traditionnelle tunisienne. 
+                  Spécialisé dans les plats authentiques et les recettes transmises de génération en génération.
                 </Text>
               </View>
             </View>
@@ -113,20 +234,20 @@ export default function ProductDetailScreen() {
 
           {/* Quantity Selector */}
           <View style={styles.quantitySection}>
-            <Text style={styles.quantityLabel}>Quantity</Text>
+            <Text style={styles.quantityLabel}>Quantité</Text>
             <View style={styles.quantitySelector}>
               <TouchableOpacity 
                 style={styles.quantityButton} 
                 onPress={() => handleQuantityChange(-1)}
               >
-                <Ionicons name="remove" size={20} color="#FF6B35" />
+                <Ionicons name="remove" size={20} color="#2E86AB" />
               </TouchableOpacity>
               <Text style={styles.quantityText}>{quantity}</Text>
               <TouchableOpacity 
                 style={styles.quantityButton} 
                 onPress={() => handleQuantityChange(1)}
               >
-                <Ionicons name="add" size={20} color="#FF6B35" />
+                <Ionicons name="add" size={20} color="#2E86AB" />
               </TouchableOpacity>
             </View>
           </View>
@@ -136,7 +257,7 @@ export default function ProductDetailScreen() {
       {/* Add to Cart Button */}
       <View style={styles.bottomButtonContainer}>
         <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
-          <Text style={styles.addToCartText}>Add to Cart</Text>
+          <Text style={styles.addToCartText}>Ajouter au panier - {(product.price * quantity).toFixed(2)} €</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaWrapper>
@@ -163,6 +284,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  favoriteButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -197,7 +331,7 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FF6B35',
+    color: '#2E86AB',
   },
   description: {
     fontSize: 16,
@@ -273,7 +407,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#FF6B35',
+    borderColor: '#2E86AB',
   },
   quantityText: {
     fontSize: 18,
@@ -288,7 +422,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#f0f0f0',
   },
   addToCartButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#2E86AB',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -297,5 +431,91 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  errorText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#2E86AB',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  categoryContainer: {
+    marginBottom: 16,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: '#2E86AB',
+    fontWeight: '600',
+    backgroundColor: '#FFF5F0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+  },
+  specialBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF8DC',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  specialBadgeText: {
+    fontSize: 14,
+    color: '#B8860B',
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  imagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f8f9fa',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  imagePlaceholderText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2E86AB',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  imagePlaceholderSubtext: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 8,
+    textAlign: 'center',
   },
 });

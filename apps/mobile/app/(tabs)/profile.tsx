@@ -158,17 +158,11 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleOrderHistory = () => {
-    router.push('/order-history');
-  };
 
   const handlePaymentMethods = () => {
     router.push('/payment-methods');
   };
 
-  const handleDeliveryAddresses = () => {
-    router.push('/personal-info');
-  };
 
   const handleScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
@@ -405,11 +399,11 @@ export default function ProfileScreen() {
               </View>
               <Text style={styles.quickActionText}>Modifier le profil</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction} onPress={handleOrderHistory}>
+            <TouchableOpacity style={styles.quickAction} onPress={() => router.push('/notifications')}>
               <View style={styles.quickActionIcon}>
-                <Ionicons name="time-outline" size={24} color="#2E86AB" />
+                <Ionicons name="notifications-outline" size={24} color="#2E86AB" />
               </View>
-              <Text style={styles.quickActionText}>Historique</Text>
+              <Text style={styles.quickActionText}>Notifications</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.quickAction} onPress={handlePaymentMethods}>
               <View style={styles.quickActionIcon}>
@@ -431,13 +425,6 @@ export default function ProfileScreen() {
               </View>
               <Ionicons name="chevron-forward" size={20} color="#666" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={handleDeliveryAddresses}>
-              <View style={styles.menuItemLeft}>
-                <Ionicons name="location-outline" size={22} color="#666" />
-                <Text style={styles.menuItemText}>Adresses de livraison</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#666" />
-            </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={handlePaymentMethods}>
               <View style={styles.menuItemLeft}>
                 <Ionicons name="card-outline" size={22} color="#666" />
@@ -452,28 +439,21 @@ export default function ProfileScreen() {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>PLUS</Text>
           <View style={styles.section}>
-            <TouchableOpacity style={styles.menuItem} onPress={handleOrderHistory}>
-              <View style={styles.menuItemLeft}>
-                <Ionicons name="receipt-outline" size={22} color="#666" />
-                <Text style={styles.menuItemText}>Historique des commandes</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#666" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/notification-settings')}>
               <View style={styles.menuItemLeft}>
                 <Ionicons name="notifications-outline" size={22} color="#666" />
                 <Text style={styles.menuItemText}>Paramètres de notification</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#666" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')}>
               <View style={styles.menuItemLeft}>
                 <Ionicons name="heart-outline" size={22} color="#666" />
                 <Text style={styles.menuItemText}>Plats favoris</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#666" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/help-center')}>
               <View style={styles.menuItemLeft}>
                 <Ionicons name="help-circle-outline" size={22} color="#666" />
                 <Text style={styles.menuItemText}>Aide & Support</Text>

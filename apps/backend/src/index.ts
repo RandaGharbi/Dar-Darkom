@@ -16,7 +16,10 @@ import addressRoutes from './routes/address';
 import cartRoutes from './routes/cart';
 import ordersRoutes from './routes/orders';
 import notificationRoutes from './routes/notifications';
+import adminNotificationRoutes from './routes/admin-notifications';
 import audioRoutes from './routes/audioRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import trackingRoutes from './routes/tracking';
 import { connectDB } from './database/connectToDB';
 import { schedulerService } from './services/schedulerService';
 
@@ -47,8 +50,6 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Connecter à la base de données
 connectDB().then(() => {
-  console.log('✅ Connexion à MongoDB établie');
-  
   // Initialiser le service de planification après la connexion à la DB
   console.log('🕐 Initialisation du service de planification...');
   void schedulerService; // Initialiser le service
@@ -66,7 +67,10 @@ app.use('/api/addresses', addressRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin/notifications', adminNotificationRoutes);
 app.use('/api/audio', audioRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/tracking', trackingRoutes);
 
 // WebSocket pour les notifications
 io.on('connection', (socket: Socket) => {
@@ -104,6 +108,28 @@ io.on('connection', (socket: Socket) => {
     io.to(`notifications-${userId}`).emit('new-notification', notification);
     console.log(`📧 Notification envoyée à ${userId}:`, notification.title);
   });
+
+  // Rejoindre le tracking d'une commande
+  socket.on('join-tracking', (data: { orderId: string; userId: string }) => {
+    socket.join(`tracking-${data.orderId}`);
+    console.log(`📍 Utilisateur ${data.userId} suit la commande ${data.orderId}`);
+  });
+
+  // Quitter le tracking d'une commande
+  socket.on('leave-tracking', (data: { orderId: string }) => {
+    socket.leave(`tracking-${data.orderId}`);
+    console.log(`📍 Client quitte le tracking de la commande ${data.orderId}`);
+  });
+
+  // Mise à jour de position du driver
+  socket.on('update-driver-location', (data: { orderId: string; location: { latitude: number; longitude: number; address?: string } }) => {
+    io.to(`tracking-${data.orderId}`).emit('driver-location-update', {
+      orderId: data.orderId,
+      location: data.location,
+      timestamp: new Date()
+    });
+    console.log(`📍 Position du driver mise à jour pour la commande ${data.orderId}`);
+  });
   
   socket.on('disconnect', () => {
     console.log('🔌 Client WebSocket déconnecté:', socket.id);
@@ -115,7 +141,18 @@ export const sendNotification = (userId: string, notification: { title: string }
   io.to(`notifications-${userId}`).emit('new-notification', notification);
 };
 
+// Fonction pour envoyer une mise à jour de tracking
+export const sendTrackingUpdate = (orderId: string, trackingData: any) => {
+  io.to(`tracking-${orderId}`).emit('tracking-update', {
+    orderId,
+    tracking: trackingData,
+    timestamp: new Date()
+  });
+  console.log(`📍 Mise à jour de tracking envoyée pour la commande ${orderId}`);
+};
+
 const PORT = Number(process.env.PORT) || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📁 Using compiled version from dist/`);
 });

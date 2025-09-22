@@ -28,6 +28,22 @@ export const getAllProducts = async (req: Request, res: Response): Promise<void>
   }
 };
 
+// Récupérer toutes les catégories uniques
+export const getAllCategories = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const categories = await Product.distinct('category');
+    // Filtrer les catégories vides ou null
+    const validCategories = categories.filter(category => category && category.trim() !== '');
+    res.status(200).json(validCategories);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des catégories:', error);
+    res.status(500).json({
+      message: "Erreur lors de la récupération des catégories",
+      error: error instanceof Error ? error.message : 'Erreur inconnue'
+    });
+  }
+};
+
 // Récupérer les produits par type
 export const getProductsByType = async (req: Request, res: Response): Promise<void> => {
   try {

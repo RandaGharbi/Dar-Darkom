@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert, Share } from 'react-native';
+import { Link } from 'expo-router';
 import { useSafeNavigation } from '../../hooks/useSafeNavigation';
 import { useProducts } from '../../hooks/useProducts';
 import { useAuth } from '../../context/AuthContext';
@@ -52,6 +53,23 @@ export default function ProductDetailsScreen() {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const shareUrl = `https://votre-app.com/product-details/${id}`;
+      await Share.share({
+        message: `Découvrez ${title} - ${brand}\n${description}\n${shareUrl}`,
+        url: shareUrl,
+        title: title,
+      });
+    } catch (error) {
+      console.error('Erreur lors du partage:', error);
+    }
+  };
+
+  const handleAddToFavorites = () => {
+    Alert.alert('Favoris', `${title} ajouté aux favoris !`);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* Header */}
@@ -59,6 +77,27 @@ export default function ProductDetailsScreen() {
         <TouchableOpacity style={styles.iconBtn} onPress={safeBack}>
           <Text style={styles.icon}>←</Text>
         </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <Link href={`/product-details/${id}`}>
+            <Link.Trigger>
+              <TouchableOpacity style={styles.shareBtn}>
+                <Text style={styles.shareIcon}>📤</Text>
+              </TouchableOpacity>
+            </Link.Trigger>
+            <Link.Menu>
+              <Link.MenuAction 
+                title="Partager" 
+                icon="square.and.arrow.up" 
+                onPress={handleShare} 
+              />
+              <Link.MenuAction 
+                title="Favoris" 
+                icon="heart" 
+                onPress={handleAddToFavorites} 
+              />
+            </Link.Menu>
+          </Link>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -96,11 +135,21 @@ export default function ProductDetailsScreen() {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 48,
     paddingHorizontal: 20,
     backgroundColor: '#fff',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  shareBtn: {
+    padding: 8,
+  },
+  shareIcon: {
+    fontSize: 20,
   },
   iconBtn: {
     padding: 8,

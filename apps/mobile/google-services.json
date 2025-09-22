@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "374983345955",
+    "project_id": "dar-darkom",
+    "storage_bucket": "dar-darkom.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374983345955:android:your_android_app_id",
+        "android_client_info": {
+          "package_name": "com.rindaa.Nourane"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "374983345955-your_android_client_id.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rindaa.Nourane",
+            "certificate_hash": "your_certificate_hash"
+          }
+        },
+        {
+          "client_id": "374983345955-your_web_client_id.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvOkBw3cUyVbVl8Zx9qWrT2sEfGhI3jKl"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "374983345955-i49tvob0g5q3c167ljvic8vbtfdj07i1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

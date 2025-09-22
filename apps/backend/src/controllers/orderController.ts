@@ -109,12 +109,12 @@ export const createOrder = async (req: Request, res: Response) => {
 
 export const getActiveOrders = async (req: Request, res: Response) => {
   const userId = req.params.userId;
-  console.log('[BACK] getActiveOrders - Récupération de TOUTES les commandes pour:', { userId });
+  console.log('[BACK] getActiveOrders - Récupération des commandes ACTIVES pour:', { userId });
   if (!userId) return res.status(400).json({ message: 'userId requis' });
   try {
-    // ✅ Récupérer TOUTES les commandes de l'utilisateur (actives, annulées, terminées)
-    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
-    console.log('[BACK] Toutes les commandes trouvées:', orders.length, 'avec statuts:', orders.map(o => o.status));
+    // ✅ Récupérer SEULEMENT les commandes actives de l'utilisateur
+    const orders = await Order.find({ userId, status: 'active' }).sort({ createdAt: -1 });
+    console.log('[BACK] Commandes actives trouvées:', orders.length);
     res.json(orders);
   } catch (err) {
     console.error('[BACK] Erreur getActiveOrders:', err);

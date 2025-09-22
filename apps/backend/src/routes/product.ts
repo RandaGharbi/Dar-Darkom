@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     getAllProducts,
+    getAllCategories,
     getProductsByCategory,
     getProductById,
     searchProducts,
@@ -34,6 +35,9 @@ router.get('/daily-special', getDailySpecialProducts);
 
 // Route GET pour récupérer tous les produits
 router.get('/', getAllProducts);
+
+// Route GET pour récupérer toutes les catégories
+router.get('/categories', getAllCategories);
 
 // Route GET pour récupérer les produits par type
 router.get('/type/:productType', getProductsByType);

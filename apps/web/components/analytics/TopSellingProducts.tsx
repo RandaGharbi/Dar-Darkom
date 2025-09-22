@@ -9,10 +9,30 @@ import { ordersAPI } from '../../lib/api';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const Section = styled.div`
-  background: #f5efe7;
-  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
   padding: 2.2rem 2rem 1.7rem 2rem;
-  box-shadow: 0 2px 8px 0 #e9e9e9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 20px 20px 0 0;
+  }
   
   @media (max-width: 768px) {
     padding: 1.5rem 1.5rem 1.2rem 1.5rem;
@@ -39,38 +59,45 @@ const SectionHeader = styled.div`
 `;
 
 const SectionIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5efe7;
-  color: #bfa77a;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  color: #3b82f6;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+  }
   
   @media (max-width: 768px) {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
   
   @media (max-width: 480px) {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #827869;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0;
   
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 `;
 
@@ -95,32 +122,43 @@ const MetricValue = styled.div`
 `;
 
 const Value = styled.span`
-  font-size: 2.2rem;
-  font-weight: bold;
-  color: #171412;
+  font-size: 2.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   
   @media (max-width: 768px) {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
   }
 `;
 
 // Nouveau StyledChange
 const StyledChange = styled.span<{ $positive: boolean }>`
   font-size: 1rem;
-  color: #1ca672;
-  font-weight: 500;
+  color: #059669;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1));
+  border-radius: 12px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  
   @media (max-width: 768px) {
     font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
   }
+  
   @media (max-width: 480px) {
     font-size: 0.8rem;
+    padding: 0.15rem 0.5rem;
   }
 `;
 
@@ -146,26 +184,45 @@ const PeriodTabs = styled.div`
 
 // Nouveau StyledTab
 const StyledTab = styled.button<{ $active: boolean }>`
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  background: ${props => props.$active ? '#1a1a1a' : '#f3f4f6'};
-  color: ${props => props.$active ? 'white' : '#666'};
+  padding: 0.75rem 1.25rem;
+  border: 1px solid ${props => props.$active ? 'rgba(59, 130, 246, 0.3)' : 'rgba(226, 232, 240, 0.8)'};
+  border-radius: 12px;
+  background: ${props => props.$active 
+    ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' 
+    : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  color: ${props => props.$active ? 'white' : '#1e293b'};
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+  font-weight: 600;
   text-align: left;
   width: 100%;
+  box-shadow: ${props => props.$active 
+    ? '0 4px 20px rgba(59, 130, 246, 0.3)' 
+    : '0 2px 8px rgba(0, 0, 0, 0.06)'
+  };
+
   &:hover {
-    background: ${props => props.$active ? '#1a1a1a' : '#e5e7eb'};
+    background: ${props => props.$active 
+      ? 'linear-gradient(135deg, #2563eb, #7c3aed)' 
+      : 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))'
+    };
+    transform: translateY(-1px);
+    box-shadow: ${props => props.$active 
+      ? '0 6px 24px rgba(59, 130, 246, 0.4)' 
+      : '0 4px 16px rgba(0, 0, 0, 0.1)'
+    };
   }
+  
   @media (max-width: 768px) {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
   }
+  
   @media (max-width: 480px) {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.75rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
   }
 `;
 
@@ -177,6 +234,10 @@ const Tab = ({ active, ...rest }: TabProps) => (
 const ChartContainer = styled.div`
   height: 300px;
   margin-top: 1rem;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid rgba(226, 232, 240, 0.5);
   
   @media (max-width: 768px) {
     height: 250px;
@@ -309,33 +370,95 @@ export function TopSellingProducts() {
             alignItems: 'end', 
             gap: '2rem', 
             height: '100%', 
-            padding: '1rem',
-            background: '#f8f9fa',
-            borderRadius: '8px'
+            padding: '1.5rem',
+            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            borderRadius: '16px',
+            border: '1px solid rgba(226, 232, 240, 0.5)',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
+            {/* Grille de fond */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: `
+                linear-gradient(to right, rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(139, 92, 246, 0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '20px 20px',
+              opacity: 0.3
+            }} />
+            
             {productData.map((item, index) => (
             <div key={index} style={{ 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center',
               flex: 1,
-              position: 'relative'
+              position: 'relative',
+              zIndex: 1
             }}>
               <div style={{
                 width: '100%',
                 height: `${productData.length > 0 ? (item.sales / Math.max(...productData.map(d => d.sales))) * 200 : 0}px`,
-                background: 'linear-gradient(to top, #bfa77a, #e5d3b3)',
-                borderRadius: '4px 4px 0 0',
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%)',
+                borderRadius: '8px 8px 0 0',
                 position: 'relative',
-                minHeight: '20px'
+                minHeight: '20px',
+                boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(139, 92, 246, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.3)';
               }}>
+                {/* Effet de brillance */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '50%',
+                  background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent)',
+                  borderRadius: '8px 8px 0 0'
+                }} />
+                
+                {/* Valeur sur la barre */}
+                <div style={{
+                  position: 'absolute',
+                  top: '-30px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'rgba(30, 41, 59, 0.9)',
+                  color: 'white',
+                  padding: '0.25rem 0.5rem',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                }}>
+                  €{item.sales.toLocaleString()}
+                </div>
               </div>
               <div style={{
-                marginTop: '12px',
-                fontSize: '0.75rem',
-                color: '#666',
+                marginTop: '16px',
+                fontSize: '0.7rem',
+                color: '#475569',
                 textAlign: 'center',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                fontWeight: '600',
+                maxWidth: '120px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}>
                 {item.product}
               </div>

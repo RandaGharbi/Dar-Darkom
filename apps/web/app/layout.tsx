@@ -9,8 +9,8 @@ import { I18nProvider } from "../components/I18nProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nourane Admin Dashboard",
-  description: "Administration dashboard for Nourane e-commerce",
+  title: "DarDarkom Admin Dashboard",
+  description: "Administration dashboard for DarDarkom e-commerce",
 };
 
 export default function RootLayout({

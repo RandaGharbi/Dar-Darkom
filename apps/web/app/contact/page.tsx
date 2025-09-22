@@ -8,63 +8,158 @@ import {
   Send,
   MessageCircle,
   RefreshCw,
+  Smile,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import webSocketService from "../../lib/socket";
 
 
 const Container = styled.div`
-  padding: 1.5rem;
-  background: ${({ theme }) => theme.colors.background};
-  height: calc(100vh - 120px);
-  overflow: hidden;
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  color: ${({ theme }) => theme.colors.text.primary};
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: calc(100vh - 120px);
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+`;
+
+const Content = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px 32px 32px;
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  height: calc(100vh - 120px);
+  
+  @media (max-width: 1120px) {
+    padding: 32px 24px 24px 24px;
+  }
+  
+  @media (max-width: 600px) {
+    padding: 24px 16px 16px 16px;
+  }
 `;
 
 const Header = styled.div`
-  margin-bottom: 0.75rem;
+  margin-bottom: 2rem;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 `;
 
 const Title = styled.h1`
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.text.primary};
-  margin: 0 0 0.25rem 0;
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
+  
+  @media (max-width: 1120px) {
+    font-size: 32px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 28px;
+  }
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 0.9rem;
+  color: #64748b;
+  font-size: 1.2rem;
   margin: 0;
+  font-weight: 500;
+  line-height: 1.6;
+  
+  @media (max-width: 1120px) {
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: 1rem;
+  display: flex;
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 20px 20px 0 0;
+  }
+  
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 `;
 
 const ContactInfo = styled.div`
-  background: ${({ theme }) => theme.colors.card.background};
-  border-radius: 12px;
-  padding: 0.75rem;
-  box-shadow: ${({ theme }) => theme.colors.card.shadow};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  width: 350px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  min-height: 160px;
+  position: relative;
   overflow: hidden;
+  border-right: 2px solid rgba(226, 232, 240, 0.8);
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid rgba(226, 232, 240, 0.8);
+  }
 
   /* Style de la scrollbar */
   &::-webkit-scrollbar {
@@ -77,44 +172,56 @@ const ContactInfo = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.border};
+    background: linear-gradient(180deg, #3b82f6, #8b5cf6);
     border-radius: 3px;
     transition: background-color 0.2s ease;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.colors.text.secondary};
+    background: linear-gradient(180deg, #2563eb, #7c3aed);
   }
 
   scroll-behavior: smooth;
 `;
 
 const ContactTitle = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.text.primary};
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 2rem 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  z-index: 1;
 `;
 
 const RefreshButton = styled.button`
-  background: none;
-  border: none;
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  border: 1px solid #e2e8f0;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: background-color 0.2s ease;
+  padding: 0.75rem;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: ${({ theme }) => theme.colors.text.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.surface};
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 `;
 
@@ -154,40 +261,59 @@ const ConversationsList = styled.div`
 const ConversationItem = styled.div<{ $isActive?: boolean; $isRead?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 1rem;
+  padding: 1rem;
   background: ${({ theme, $isActive, $isRead }) => {
-    if ($isActive) return theme.colors.primary;
-    if ($isRead) return "transparent";
-    return theme.colors.surface;
+    if ($isActive) return 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
+    if ($isRead) return 'transparent';
+    return 'linear-gradient(135deg, #f8fafc, #f1f5f9)';
   }};
-  border-radius: 6px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: ${({ theme, $isActive, $isRead }) => {
     if ($isActive) return "white";
     if ($isRead) return theme.colors.text.secondary;
     return theme.colors.text.primary;
   }};
+  border: 1px solid ${({ $isActive, $isRead }) => {
+    if ($isActive) return 'transparent';
+    if ($isRead) return 'transparent';
+    return '#e2e8f0';
+  }};
+  box-shadow: ${({ $isActive }) => 
+    $isActive 
+      ? '0 10px 25px -5px rgba(59, 130, 246, 0.3)' 
+      : '0 2px 4px rgba(0, 0, 0, 0.05)'
+  };
 
   &:hover {
     background: ${({ theme, $isActive }) =>
-      $isActive ? theme.colors.primary : theme.colors.surface};
-    transform: translateY(-1px);
+      $isActive 
+        ? 'linear-gradient(135deg, #2563eb, #7c3aed)' 
+        : 'linear-gradient(135deg, #f1f5f9, #e2e8f0)'};
+    transform: translateY(-2px);
+    box-shadow: ${({ $isActive }) => 
+      $isActive 
+        ? '0 15px 30px -5px rgba(59, 130, 246, 0.4)' 
+        : '0 8px 20px -5px rgba(0, 0, 0, 0.1)'
+    };
   }
 `;
 
 const UserAvatar = styled.div`
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: ${({ theme }) => theme.colors.primary};
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border: 2px solid white;
 `;
 
 const UserInfo = styled.div`
@@ -211,44 +337,47 @@ const LastMessage = styled.div`
 `;
 
 const ChatContainer = styled.div`
-  background: ${({ theme }) => theme.colors.card.background};
-  border-radius: 12px;
-  max-height: calc(100vh - 200px);
-  box-shadow: ${({ theme }) => theme.colors.card.shadow};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  position: relative;
 `;
 
 const ChatHeader = styled.div`
-  padding: 0.5rem;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 28px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: ${({ theme }) => theme.colors.card.background};
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
   flex-shrink: 0;
-  min-height: 35px;
+  min-height: 60px;
+  position: relative;
+  z-index: 1;
 `;
 
 const ChatTitle = styled.h3`
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   margin: 0;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const MessagesContainer = styled.div`
   flex: 1;
-  padding: 0.5rem;
+  padding: 28px;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   min-height: 0;
-  background: ${({ theme }) => theme.colors.card.background};
 
   /* Améliorer le style de la scrollbar */
   &::-webkit-scrollbar {
@@ -312,15 +441,37 @@ const MessageSender = styled.div<{ $isUser: boolean }>`
 
 const MessageBubble = styled.div<{ $isUser: boolean }>`
   max-width: 100%;
-  padding: 0.5rem 0.75rem;
-  border-radius: 10px;
-  background: ${({ theme, $isUser }) =>
-    $isUser ? theme.colors.surface : theme.colors.primary};
-  color: ${({ theme, $isUser }) =>
-    $isUser ? theme.colors.text.primary : "white"};
+  padding: 1rem 1.25rem;
+  border-radius: 20px;
+  background: ${({ $isUser }) =>
+    $isUser 
+      ? 'linear-gradient(135deg, #f1f5f9, #e2e8f0)' 
+      : 'linear-gradient(135deg, #3b82f6, #8b5cf6)'};
+  color: ${({ $isUser }) => $isUser ? '#1e293b' : "white"};
   word-wrap: break-word;
   word-break: break-word;
-  line-height: 1.3;
+  line-height: 1.5;
+  box-shadow: ${({ $isUser }) => 
+    $isUser 
+      ? '0 2px 8px rgba(0, 0, 0, 0.1)' 
+      : '0 4px 12px rgba(59, 130, 246, 0.3)'
+  };
+  border: 1px solid ${({ $isUser }) => 
+    $isUser ? '#e2e8f0' : 'transparent'
+  };
+  transition: all 0.2s ease;
+  animation: messageSlideIn 0.3s ease-out;
+
+  @keyframes messageSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;
 
 const MessageTime = styled.div`
@@ -333,22 +484,38 @@ const MessageTime = styled.div`
 // MessageAvatar component removed as it's not used
 
 const InputContainer = styled.div`
-  padding: 0.5rem;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 28px;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
-  gap: 0.75rem;
-  background: ${({ theme }) => theme.colors.card.background};
+  gap: 1rem;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
   flex-shrink: 0;
-  min-height: 50px;
+  min-height: 80px;
+  position: relative;
+  z-index: 1;
 `;
 
 const MessageInput = styled.input`
   flex: 1;
-  padding: 0.75rem 1rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-size: 0.875rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  font-size: 1rem;
   outline: none;
+  background: white;
+  color: #000000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &::placeholder {
+    color: #94a3b8;
+  }
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary};
@@ -356,25 +523,92 @@ const MessageInput = styled.input`
 `;
 
 const SendButton = styled.button`
-  padding: 0.75rem 1rem;
-  background: ${({ theme }) => theme.colors.primary};
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  min-width: 60px;
+  justify-content: center;
 
   &:hover {
-    opacity: 0.9;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const EmojiButton = styled.button`
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #3b82f6;
+  }
+`;
+
+const EmojiPicker = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  z-index: 1000;
+  max-width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+`;
+
+const EmojiGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.5rem;
+`;
+
+const EmojiItem = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f1f5f9;
+    transform: scale(1.1);
   }
 `;
 
@@ -386,6 +620,32 @@ const EmptyState = styled.div`
   height: 100%;
   color: ${({ theme }) => theme.colors.text.secondary};
   text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 20px;
+  margin: 1rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(180deg);
+    }
+  }
 `;
 
 interface ChatMessage {
@@ -407,6 +667,7 @@ export default function ContactPage() {
   const [newMessage, setNewMessage] = useState("");
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -427,6 +688,21 @@ export default function ContactPage() {
       }
     }
   }, []);
+
+  // Fermer le sélecteur d'emojis quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-emoji-picker]') && !target.closest('[data-emoji-button]')) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showEmojiPicker]);
 
   // Configuration WebSocket pour les messages en temps réel
   useEffect(() => {
@@ -602,6 +878,36 @@ export default function ContactPage() {
     }
   };
 
+  const insertEmoji = (emoji: string) => {
+    setNewMessage(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const emojis = [
+    '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂',
+    '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩',
+    '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪',
+    '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨',
+    '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥',
+    '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕',
+    '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯',
+    '🤠', '🥳', '😎', '🤓', '🧐', '😕', '😟', '🙁',
+    '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧',
+    '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣',
+    '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠',
+    '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹',
+    '👺', '👻', '👽', '👾', '🤖', '😺', '😸', '😹',
+    '😻', '😼', '😽', '🙀', '😿', '😾', '💋', '👋',
+    '🤚', '🖐️', '✋', '🖖', '👌', '🤏', '✌️', '🤞',
+    '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇',
+    '☝️', '👍', '👎', '👊', '✊', '🤛', '🤜', '👏',
+    '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳',
+    '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃',
+    '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄', '💯',
+    '💢', '💥', '💫', '💦', '💨', '🕳️', '💣', '💤',
+    '💨', '💫', '💥', '💢', '💯', '🔥', '💥', '💢'
+  ];
+
   const handleConversationSelect = (conversation: Conversation) => {
     console.log("🔄 Sélection conversation:", conversation);
     setSelectedConversation(conversation);
@@ -611,15 +917,16 @@ export default function ContactPage() {
     <DashboardLayout>
       <GlobalStyles />
       <Container>
-        <Header>
-          <Title>Contact & Support</Title>
-          <Subtitle>
-            Notre équipe est là pour vous aider. Gérez les conversations avec
-            vos clients.
-          </Subtitle>
-        </Header>
+        <Content>
+          <Header>
+            <Title>Contact & Support</Title>
+            <Subtitle>
+              Notre équipe est là pour vous aider. Gérez les conversations avec
+              vos clients.
+            </Subtitle>
+          </Header>
 
-        <Grid>
+          <Grid>
           <ContactInfo>
             <ContactTitle>
               Conversations
@@ -740,13 +1047,37 @@ export default function ContactPage() {
                 </MessagesContainer>
 
                 <InputContainer>
-                  <MessageInput
-                    type="text"
-                    placeholder="Tapez votre réponse..."
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                  />
+                  <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
+                    <MessageInput
+                      type="text"
+                      placeholder="Tapez votre réponse..."
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                    />
+                    <EmojiButton
+                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                      type="button"
+                      data-emoji-button
+                    >
+                      <Smile size={20} />
+                    </EmojiButton>
+                    {showEmojiPicker && (
+                      <EmojiPicker data-emoji-picker>
+                        <EmojiGrid>
+                          {emojis.map((emoji, index) => (
+                            <EmojiItem
+                              key={index}
+                              onClick={() => insertEmoji(emoji)}
+                              type="button"
+                            >
+                              {emoji}
+                            </EmojiItem>
+                          ))}
+                        </EmojiGrid>
+                      </EmojiPicker>
+                    )}
+                  </div>
                   <SendButton
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim()}
@@ -762,7 +1093,8 @@ export default function ContactPage() {
               </EmptyState>
             )}
           </ChatContainer>
-        </Grid>
+          </Grid>
+        </Content>
       </Container>
     </DashboardLayout>
   );

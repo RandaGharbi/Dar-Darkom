@@ -6,7 +6,7 @@ export default function TodaysSpecial() {
   const router = useRouter();
 
   const handlePreOrder = () => {
-    router.push('/product-detail');
+    router.push('/product-detail?id=7000001');
   };
 
   return (

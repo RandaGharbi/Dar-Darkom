@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TextInput, 
+  TouchableOpacity, 
+  ScrollView, 
+  Alert, 
+  ActivityIndicator,
+  Image
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeNavigation } from '../hooks/useSafeNavigation';
-import visaImg from '../assets/images/visa.png';
-import mastercardImg from '../assets/images/masterCard.png';
 import { apiService } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../context/AuthContext';
+import SafeAreaWrapper from '../components/SafeAreaWrapper';
+import { Ionicons } from '@expo/vector-icons';
+import visaImg from '../assets/images/visa.png';
+import mastercardImg from '../assets/images/masterCard.png';
 
 function getCardType(cardNumber: string): 'visa' | 'mastercard' | 'unknown' {
   if (/^4[0-9]{0,}$/.test(cardNumber)) {
@@ -32,7 +44,7 @@ function formatExpiryDate(text: string) {
 
 export default function PaymentScreen() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const { safeBack } = useSafeNavigation();
   const [cardNumber, setCardNumber] = useState('');
   const [cvv, setCvv] = useState('');
@@ -47,179 +59,125 @@ export default function PaymentScreen() {
   
   // États pour la validation
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const [, setTouched] = useState<{[key: string]: boolean}>({});
-  
-  const cardType = getCardType(cardNumber);
+  const [touched, setTouched] = useState<{[key: string]: boolean}>({});
 
-  // Fonctions de validation
-  const validateCardNumber = (number: string): string => {
-    const cleaned = number.replace(/\s/g, '');
-    if (!cleaned) return 'Le numéro de carte est requis';
-    if (cleaned.length < 11 || cleaned.length > 19) return 'Le numéro de carte doit contenir 11 chiffres';
-    if (!/^\d+$/.test(cleaned)) return 'Le numéro de carte ne doit contenir que des chiffres';
-    return '';
-  };
-
-  const validateExpiryDate = (date: string): string => {
-    if (!date) return 'La date d\'expiration est requise';
-    if (!/^\d{2}\/\d{2}$/.test(date)) return '';
-    
-    const [month, year] = date.split('/');
-    const monthNum = parseInt(month);
-    const yearNum = parseInt(year);
-    const currentYear = new Date().getFullYear() % 100;
-    const currentMonth = new Date().getMonth() + 1;
-    
-    if (monthNum < 1 || monthNum > 12) return 'Mois invalide';
-    if (yearNum < currentYear || (yearNum === currentYear && monthNum < currentMonth)) {
-      return 'La carte a expiré';
-    }
-    return '';
-  };
-
-  const validateCVV = (cvv: string): string => {
-    if (!cvv) return 'Le CVV est requis';
-    if (!/^\d{3}$/.test(cvv)) return 'Le CVV doit contenir exactement 3 chiffres';
-    return '';
-  };
-
-  const validateName = (name: string): string => {
-    if (!name.trim()) return 'Le nom est requis';
-    if (name.trim().length < 2) return 'Le nom doit contenir au moins 2 caractères';
-    if (!/^[a-zA-Z\s]+$/.test(name.trim())) return 'Le nom ne doit contenir que des lettres';
-    return '';
-  };
-
-  const validateAddress = (address: string): string => {
-    if (!address.trim()) return 'L\'adresse est requise';
-    if (address.trim().length < 5) return 'L\'adresse doit contenir au moins 5 caractères';
-    return '';
-  };
-
-  const validateCity = (city: string): string => {
-    if (!city.trim()) return 'La ville est requise';
-    if (city.trim().length < 2) return 'La ville doit contenir au moins 2 caractères';
-    return '';
-  };
-
-  const validateState = (state: string): string => {
-    if (!state.trim()) return 'L\'état est requis';
-    if (state.trim().length < 2) return 'L\'état doit contenir au moins 2 caractères';
-    return '';
-  };
-
-  const validateZipCode = (zipCode: string): string => {
-    if (!zipCode.trim()) return 'Le code postal est requis';
-    if (!/^\d{5}(-\d{4})?$/.test(zipCode.trim())) return 'Format de code postal invalide';
-    return '';
-  };
-
-  const validateCountry = (country: string): string => {
-    if (!country.trim()) return 'Le pays est requis';
-    if (country.trim().length < 2) return 'Le pays doit contenir au moins 2 caractères';
-    return '';
-  };
-
-  // Validation complète
-  const validateForm = (): boolean => {
-    const newErrors: {[key: string]: string} = {};
-    
-    newErrors.cardNumber = validateCardNumber(cardNumber);
-    newErrors.expiryDate = validateExpiryDate(expiryDate);
-    newErrors.cvv = validateCVV(cvv);
-    newErrors.nameOnCard = validateName(nameOnCard);
-    newErrors.billingAddress = validateAddress(billingAddress);
-    newErrors.city = validateCity(city);
-    newErrors.state = validateState(state);
-    newErrors.zipCode = validateZipCode(zipCode);
-    newErrors.country = validateCountry(country);
-    
-    setErrors(newErrors);
-    
-    return !Object.values(newErrors).some(error => error !== '');
-  };
-
-  // Validation en temps réel
-  const handleFieldChange = (field: string, value: string) => {
-    let validationError = '';
+  const validateField = (field: string, value: string) => {
+    let error = '';
     
     switch (field) {
       case 'cardNumber':
-        setCardNumber(value);
-        validationError = validateCardNumber(value);
+        if (!value) error = 'Le numéro de carte est requis';
+        else if (value.replace(/\s/g, '').length < 13) error = 'Numéro de carte invalide';
         break;
       case 'expiryDate':
-        setExpiryDate(formatExpiryDate(value));
-        validationError = validateExpiryDate(formatExpiryDate(value));
+        if (!value) error = 'La date d\'expiration est requise';
+        else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(value)) error = 'Format MM/YY requis';
         break;
       case 'cvv':
-        setCvv(value);
-        validationError = validateCVV(value);
+        if (!value) error = 'Le CVV est requis';
+        else if (value.length < 3) error = 'CVV invalide';
         break;
       case 'nameOnCard':
-        setNameOnCard(value);
-        validationError = validateName(value);
+        if (!value) error = 'Le nom sur la carte est requis';
         break;
       case 'billingAddress':
-        setBillingAddress(value);
-        validationError = validateAddress(value);
+        if (!value) error = 'L\'adresse de facturation est requise';
         break;
       case 'city':
-        setCity(value);
-        validationError = validateCity(value);
+        if (!value) error = 'La ville est requise';
         break;
       case 'state':
-        setState(value);
-        validationError = validateState(value);
+        if (!value) error = 'L\'état est requis';
         break;
       case 'zipCode':
-        setZipCode(value);
-        validationError = validateZipCode(value);
+        if (!value) error = 'Le code postal est requis';
         break;
       case 'country':
-        setCountry(value);
-        validationError = validateCountry(value);
+        if (!value) error = 'Le pays est requis';
         break;
     }
     
-    setErrors(prev => ({ ...prev, [field]: validationError }));
-    // Marquer le champ comme touché dès qu'on commence à taper
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setErrors(prev => ({ ...prev, [field]: error }));
+    return !error;
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    if (field === 'expiryDate') {
+      value = formatExpiryDate(value);
+    }
+    
+    // Mettre à jour la valeur
+    switch (field) {
+      case 'cardNumber': setCardNumber(value); break;
+      case 'expiryDate': setExpiryDate(value); break;
+      case 'cvv': setCvv(value); break;
+      case 'nameOnCard': setNameOnCard(value); break;
+      case 'billingAddress': setBillingAddress(value); break;
+      case 'city': setCity(value); break;
+      case 'state': setState(value); break;
+      case 'zipCode': setZipCode(value); break;
+      case 'country': setCountry(value); break;
+    }
+    
+    // Valider le champ si il a été touché
+    if (touched[field]) {
+      validateField(field, value);
+    }
   };
 
   const handleFieldBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
+    const value = field === 'cardNumber' ? cardNumber :
+                  field === 'expiryDate' ? expiryDate :
+                  field === 'cvv' ? cvv :
+                  field === 'nameOnCard' ? nameOnCard :
+                  field === 'billingAddress' ? billingAddress :
+                  field === 'city' ? city :
+                  field === 'state' ? state :
+                  field === 'zipCode' ? zipCode :
+                  field === 'country' ? country : '';
+    validateField(field, value);
   };
 
-  if (authLoading) {
-    return <ActivityIndicator style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-  }
+  const handleSubmit = async () => {
+    // Marquer tous les champs comme touchés
+    const allFields = ['cardNumber', 'expiryDate', 'cvv', 'nameOnCard', 'billingAddress', 'city', 'state', 'zipCode', 'country'];
+    const newTouched: {[key: string]: boolean} = {};
+    allFields.forEach(field => newTouched[field] = true);
+    setTouched(newTouched);
 
-  const handleAddCard = async () => {
-    if (!user?._id) {
-      Alert.alert('Erreur', 'Vous devez être connecté pour ajouter une carte.');
-      return;
-    }
+    // Valider tous les champs
+    const isValid = allFields.every(field => {
+      const value = field === 'cardNumber' ? cardNumber :
+                    field === 'expiryDate' ? expiryDate :
+                    field === 'cvv' ? cvv :
+                    field === 'nameOnCard' ? nameOnCard :
+                    field === 'billingAddress' ? billingAddress :
+                    field === 'city' ? city :
+                    field === 'state' ? state :
+                    field === 'zipCode' ? zipCode :
+                    field === 'country' ? country : '';
+      return validateField(field, value);
+    });
 
-    // Validation complète du formulaire
-    if (!validateForm()) {
-      Alert.alert('Erreur de validation', 'Veuillez corriger les erreurs dans le formulaire.');
+    if (!isValid) {
+      Alert.alert('Erreur', 'Veuillez corriger les erreurs dans le formulaire');
       return;
     }
 
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem('authToken');
-      if (!token) {
-        Alert.alert('Erreur', 'Token d\'authentification manquant');
-        setLoading(false);
+      if (!token || !user?._id) {
+        Alert.alert('Erreur', 'Session expirée, veuillez vous reconnecter');
         return;
       }
+
       const cardData = {
         userId: user._id,
         cardNumber: cardNumber.replace(/\s/g, ''),
-        expiryDate,
-        cvv,
+        expiryDate: expiryDate,
+        cvv: cvv,
         nameOnCard: nameOnCard.trim(),
         billingAddress: billingAddress.trim(),
         city: city.trim(),
@@ -228,12 +186,17 @@ export default function PaymentScreen() {
         country: country.trim()
       };
       
+      console.log('💳 Données de la carte à envoyer:', cardData);
       const response = await apiService.addCard(cardData, token);
+      console.log('📡 Réponse API addCard:', response);
+      
       if (response.success) {
-        Alert.alert('Succès', 'Votre carte a été ajoutée avec succès !', [
-          { text: 'OK', onPress: () => router.replace('/checkout') }
+        console.log('✅ Carte ajoutée avec succès');
+        Alert.alert('Succès', 'Votre carte a été ajoutée avec succès ! Elle apparaîtra dans vos méthodes de paiement.', [
+          { text: 'OK', onPress: () => router.back() }
         ]);
       } else {
+        console.log('❌ Erreur lors de l\'ajout de la carte:', response.error);
         Alert.alert('Erreur', response.error || "Erreur lors de l'ajout de la carte");
       }
     } catch (error) {
@@ -244,229 +207,344 @@ export default function PaymentScreen() {
     }
   };
 
+  const cardType = getCardType(cardNumber);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={safeBack} style={styles.backBtn}>
-          <Text style={styles.backText}>←</Text>
+    <SafeAreaWrapper backgroundColor="#f5f5f5" edges={['top']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={safeBack}>
+          <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.title}>Payment</Text>
-        <View style={{ width: 32 }} />
+        <Text style={styles.headerTitle}>Ajouter une carte</Text>
+        <View style={styles.headerSpacer} />
       </View>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: 100 }} keyboardShouldPersistTaps="handled">
-        <Text style={styles.sectionTitle}>Add a payment method</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TextInput
-            style={[
-              styles.input, 
-              { flex: 1 },
-              errors.cardNumber ? styles.inputError : null
-            ]}
-            value={cardNumber}
-            onChangeText={(value) => handleFieldChange('cardNumber', value)}
-            onBlur={() => handleFieldBlur('cardNumber')}
-            keyboardType="numeric"
-            maxLength={11}
-            placeholder="Numéro de carte"
-          />
-          {cardType === 'visa' && (
-            <Image source={visaImg} style={{ width: 32, height: 20, marginLeft: 8 }} />
-          )}
-          {cardType === 'mastercard' && (
-            <Image source={mastercardImg} style={{ width: 32, height: 20, marginLeft: 8 }} />
-          )}
+
+      {/* Content */}
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Card Preview */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>APERÇU DE LA CARTE</Text>
+          <View style={styles.cardPreview}>
+            <View style={styles.cardHeader}>
+              <View style={styles.cardTypeContainer}>
+                {cardType === 'visa' && (
+                  <Image source={visaImg} style={styles.cardTypeImage} resizeMode="contain" />
+                )}
+                {cardType === 'mastercard' && (
+                  <Image source={mastercardImg} style={styles.cardTypeImage} resizeMode="contain" />
+                )}
+                {cardType === 'unknown' && <Text style={styles.cardTypeText}>CARTE</Text>}
+              </View>
+            </View>
+            <View style={styles.cardNumberPreview}>
+              <Text style={styles.cardNumberText}>
+                {cardNumber || '•••• •••• •••• ••••'}
+              </Text>
+            </View>
+            <View style={styles.cardFooter}>
+              <Text style={styles.cardExpiryText}>
+                {expiryDate || 'MM/YY'}
+              </Text>
+              <Text style={styles.cardNameText}>
+                {nameOnCard || 'NOM SUR LA CARTE'}
+              </Text>
+            </View>
+          </View>
         </View>
-        {errors.cardNumber && (
-          <Text style={styles.errorText}>{errors.cardNumber}</Text>
-        )}
-        
-        <TextInput
-          style={[
-            styles.input, 
-            { marginBottom: 12 },
-            errors.expiryDate ? styles.inputError : null
-          ]}
-          placeholder="MM/YY"
-          value={expiryDate}
-          keyboardType="number-pad"
-          maxLength={5}
-          onChangeText={(text) => handleFieldChange('expiryDate', text)}
-          onBlur={() => handleFieldBlur('expiryDate')}
-        />
-        {errors.expiryDate && (
-          <Text style={styles.errorText}>{errors.expiryDate}</Text>
-        )}
-        
-        <TextInput
-          style={[
-            styles.input, 
-            { marginBottom: 12 },
-            errors.cvv ? styles.inputError : null
-          ]}
-          placeholder="CVV"
-          keyboardType="number-pad"
-          maxLength={3}
-          value={cvv}
-          onChangeText={(value) => handleFieldChange('cvv', value)}
-          onBlur={() => handleFieldBlur('cvv')}
-        />
-        {errors.cvv && (
-          <Text style={styles.errorText}>{errors.cvv}</Text>
-        )}
-        
-        <TextInput 
-          style={[
-            styles.input,
-            errors.nameOnCard ? styles.inputError : null
-          ]} 
-          placeholder="Name on card"
-          value={nameOnCard}
-          onChangeText={(value) => handleFieldChange('nameOnCard', value)}
-          onBlur={() => handleFieldBlur('nameOnCard')}
-        />
-        {errors.nameOnCard && (
-          <Text style={styles.errorText}>{errors.nameOnCard}</Text>
-        )}
-        
-        <TextInput 
-          style={[
-            styles.input,
-            errors.billingAddress ? styles.inputError : null
-          ]} 
-          placeholder="Billing address"
-          value={billingAddress}
-          onChangeText={(value) => handleFieldChange('billingAddress', value)}
-          onBlur={() => handleFieldBlur('billingAddress')}
-        />
-        {errors.billingAddress && (
-          <Text style={styles.errorText}>{errors.billingAddress}</Text>
-        )}
-        <View style={styles.row}>
-          <TextInput 
-            style={[
-              styles.input, 
-              styles.inputHalf,
-              errors.city ? styles.inputError : null
-            ]} 
-            placeholder="City"
-            value={city}
-            onChangeText={(value) => handleFieldChange('city', value)}
-            onBlur={() => handleFieldBlur('city')}
-          />
-          <TextInput 
-            style={[
-              styles.input, 
-              styles.inputHalf, 
-              { marginLeft: 8 },
-              errors.state ? styles.inputError : null
-            ]} 
-            placeholder="State"
-            value={state}
-            onChangeText={(value) => handleFieldChange('state', value)}
-            onBlur={() => handleFieldBlur('state')}
-          />
+
+        {/* Form Fields */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INFORMATIONS DE LA CARTE</Text>
+          <View style={styles.formContainer}>
+            {/* Card Number */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Numéro de carte</Text>
+              <TextInput
+                style={[styles.input, errors.cardNumber && styles.inputError]}
+                value={cardNumber}
+                onChangeText={(text) => handleFieldChange('cardNumber', text)}
+                onBlur={() => handleFieldBlur('cardNumber')}
+                placeholder="1234 5678 9012 3456"
+                keyboardType="numeric"
+                maxLength={19}
+              />
+              {errors.cardNumber && <Text style={styles.errorText}>{errors.cardNumber}</Text>}
+            </View>
+
+            {/* Expiry and CVV */}
+            <View style={styles.row}>
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
+                <TextInput
+                  style={[styles.input, errors.expiryDate && styles.inputError]}
+                  value={expiryDate}
+                  onChangeText={(text) => handleFieldChange('expiryDate', text)}
+                  onBlur={() => handleFieldBlur('expiryDate')}
+                  placeholder="MM/YY"
+                  keyboardType="numeric"
+                  maxLength={5}
+                />
+                {errors.expiryDate && <Text style={styles.errorText}>{errors.expiryDate}</Text>}
+              </View>
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.inputLabel}>CVV</Text>
+                <TextInput
+                  style={[styles.input, errors.cvv && styles.inputError]}
+                  value={cvv}
+                  onChangeText={(text) => handleFieldChange('cvv', text)}
+                  onBlur={() => handleFieldBlur('cvv')}
+                  placeholder="123"
+                  keyboardType="numeric"
+                  maxLength={4}
+                  secureTextEntry
+                />
+                {errors.cvv && <Text style={styles.errorText}>{errors.cvv}</Text>}
+              </View>
+            </View>
+
+            {/* Name on Card */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Nom sur la carte</Text>
+              <TextInput
+                style={[styles.input, errors.nameOnCard && styles.inputError]}
+                value={nameOnCard}
+                onChangeText={(text) => handleFieldChange('nameOnCard', text)}
+                onBlur={() => handleFieldBlur('nameOnCard')}
+                placeholder="Jean Dupont"
+                autoCapitalize="words"
+              />
+              {errors.nameOnCard && <Text style={styles.errorText}>{errors.nameOnCard}</Text>}
+            </View>
+          </View>
         </View>
-        {errors.city && (
-          <Text style={styles.errorText}>{errors.city}</Text>
-        )}
-        {errors.state && (
-          <Text style={styles.errorText}>{errors.state}</Text>
-        )}
-        
-        <View style={styles.row}>
-          <TextInput 
-            style={[
-              styles.input, 
-              styles.inputHalf,
-              errors.zipCode ? styles.inputError : null
-            ]} 
-            placeholder="Zip code" 
-            keyboardType="number-pad"
-            value={zipCode}
-            onChangeText={(value) => handleFieldChange('zipCode', value)}
-            onBlur={() => handleFieldBlur('zipCode')}
-          />
-          <TextInput 
-            style={[
-              styles.input, 
-              styles.inputHalf, 
-              { marginLeft: 8 },
-              errors.country ? styles.inputError : null
-            ]} 
-            placeholder="Country"
-            value={country}
-            onChangeText={(value) => handleFieldChange('country', value)}
-            onBlur={() => handleFieldBlur('country')}
-          />
+
+        {/* Billing Address */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>ADRESSE DE FACTURATION</Text>
+          <View style={styles.formContainer}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Adresse</Text>
+              <TextInput
+                style={[styles.input, errors.billingAddress && styles.inputError]}
+                value={billingAddress}
+                onChangeText={(text) => handleFieldChange('billingAddress', text)}
+                onBlur={() => handleFieldBlur('billingAddress')}
+                placeholder="123 Rue de la Paix"
+              />
+              {errors.billingAddress && <Text style={styles.errorText}>{errors.billingAddress}</Text>}
+            </View>
+
+            <View style={styles.row}>
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.inputLabel}>Ville</Text>
+                <TextInput
+                  style={[styles.input, errors.city && styles.inputError]}
+                  value={city}
+                  onChangeText={(text) => handleFieldChange('city', text)}
+                  onBlur={() => handleFieldBlur('city')}
+                  placeholder="Paris"
+                />
+                {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
+              </View>
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.inputLabel}>État</Text>
+                <TextInput
+                  style={[styles.input, errors.state && styles.inputError]}
+                  value={state}
+                  onChangeText={(text) => handleFieldChange('state', text)}
+                  onBlur={() => handleFieldBlur('state')}
+                  placeholder="Île-de-France"
+                />
+                {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
+              </View>
+            </View>
+
+            <View style={styles.row}>
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.inputLabel}>Code postal</Text>
+                <TextInput
+                  style={[styles.input, errors.zipCode && styles.inputError]}
+                  value={zipCode}
+                  onChangeText={(text) => handleFieldChange('zipCode', text)}
+                  onBlur={() => handleFieldBlur('zipCode')}
+                  placeholder="75001"
+                  keyboardType="numeric"
+                />
+                {errors.zipCode && <Text style={styles.errorText}>{errors.zipCode}</Text>}
+              </View>
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.inputLabel}>Pays</Text>
+                <TextInput
+                  style={[styles.input, errors.country && styles.inputError]}
+                  value={country}
+                  onChangeText={(text) => handleFieldChange('country', text)}
+                  onBlur={() => handleFieldBlur('country')}
+                  placeholder="France"
+                />
+                {errors.country && <Text style={styles.errorText}>{errors.country}</Text>}
+              </View>
+            </View>
+          </View>
         </View>
-        {errors.zipCode && (
-          <Text style={styles.errorText}>{errors.zipCode}</Text>
-        )}
-        {errors.country && (
-          <Text style={styles.errorText}>{errors.country}</Text>
-        )}
+
+        {/* Submit Button */}
+        <View style={styles.submitContainer}>
+          <TouchableOpacity
+            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.submitButtonText}>Ajouter la carte</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </ScrollView>
-      <TouchableOpacity style={styles.addBtn} onPress={handleAddCard} disabled={loading}>
-        {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.addBtnText}>Add card</Text>}
-      </TouchableOpacity>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 40,
-    marginBottom: 12,
-    paddingHorizontal: 16,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: "#fff",
   },
-  backBtn: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
+  backButton: {
+    padding: 8,
   },
-  backText: { fontSize: 20, fontWeight: 'bold' },
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+    textAlign: "center",
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  section: {
+    marginTop: 24,
+  },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 18,
-    marginTop: 8,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#8E8E93",
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  cardPreview: {
+    backgroundColor: "#1a1a1a",
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 8,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginBottom: 20,
+  },
+  cardTypeContainer: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  cardTypeText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  cardTypeImage: {
+    width: 40,
+    height: 24,
+  },
+  cardNumberPreview: {
+    marginBottom: 20,
+  },
+  cardNumberText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+    letterSpacing: 2,
+  },
+  cardFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
+  cardExpiryText: {
+    fontSize: 14,
+    color: "#ccc",
+  },
+  cardNameText: {
+    fontSize: 14,
+    color: "#ccc",
+    textTransform: "uppercase",
+  },
+  formContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000",
+    marginBottom: 8,
   },
   input: {
-    backgroundColor: '#F6F3F2',
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 12,
-    fontSize: 15,
-  },
-  row: { flexDirection: 'row', justifyContent: 'space-between' },
-  inputHalf: { flex: 1 },
-  addBtn: {
-    backgroundColor: '#F6E2C3',
-    borderRadius: 25,
-    padding: 14,
-    alignItems: 'center',
-    marginHorizontal: 20,
-    marginBottom: 40,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 20,
-  },
-  addBtnText: { color: '#000', fontWeight: 'bold', fontSize: 16 },
-  inputError: {
-    borderColor: '#ff4444',
     borderWidth: 1,
+    borderColor: "#E5E5EA",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: "#fff",
+  },
+  inputError: {
+    borderColor: "#FF3B30",
   },
   errorText: {
-    color: '#ff4444',
     fontSize: 12,
-    marginBottom: 8,
-    marginLeft: 4,
+    color: "#FF3B30",
+    marginTop: 4,
   },
-}); 
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  halfWidth: {
+    width: "48%",
+  },
+  submitContainer: {
+    marginTop: 32,
+    marginBottom: 32,
+  },
+  submitButton: {
+    backgroundColor: "#3498DB",
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  submitButtonDisabled: {
+    opacity: 0.6,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
+  },
+});

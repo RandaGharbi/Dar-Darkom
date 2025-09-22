@@ -9,11 +9,24 @@ interface PaymentMethodsTabProps {
 }
 
 const TabContainer = styled.div`
-  padding: 24px;
-  background: ${({ theme }) => theme.colors.card.background};
-  border-radius: 16px;
-  box-shadow: ${({ theme }) => theme.colors.card.shadow};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border-radius: 24px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
 `;
 
 const TabHeader = styled.div`
@@ -21,39 +34,60 @@ const TabHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  position: relative;
+  z-index: 1;
 `;
 
 const TabTitle = styled.h3`
-  font-size: 20px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
 `;
 
 const RefreshButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 16px;
+  color: white;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.border};
-    border-color: ${({ theme }) => theme.colors.text.muted};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
   }
 
   .animate-spin {
@@ -72,7 +106,9 @@ const LoadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 80px 20px;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const ErrorContainer = styled.div`
@@ -82,23 +118,31 @@ const ErrorContainer = styled.div`
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const RetryButton = styled.button`
   margin-top: 20px;
   padding: 12px 24px;
-  background: ${({ theme }) => theme.colors.primary};
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   &:hover {
-    background: ${({ theme }) => theme.colors.secondary};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -109,26 +153,32 @@ const EmptyContainer = styled.div`
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const CardsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
 `;
 
 const CardItem = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: ${({ theme }) => theme.colors.card.shadow};
-  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    box-shadow: ${({ theme }) => theme.shadows.lg};
-    border-color: ${({ theme }) => theme.colors.text.muted};
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
   }
 `;
 
@@ -170,31 +220,37 @@ const CardDetails = styled.div`
 `;
 
 const CardName = styled.span`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const CardNumber = styled.span`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 16px;
+  color: #64748b;
   font-family: 'Courier New', monospace;
+  font-weight: 600;
 `;
 
 const CardExpiry = styled.span`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.text.muted};
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
 `;
 
 const SecurityMessage = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.text.muted};
-  font-size: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(59, 130, 246, 0.2);
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
 `;
 
 const AddCardButton = styled.button`
@@ -202,17 +258,23 @@ const AddCardButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: ${({ theme }) => theme.colors.primary};
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   &:hover {
-    background: ${({ theme }) => theme.colors.secondary};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 

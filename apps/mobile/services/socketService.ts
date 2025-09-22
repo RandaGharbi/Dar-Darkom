@@ -88,6 +88,35 @@ class SocketService {
     }
   }
 
+  // Rejoindre les notifications
+  joinNotifications(userId: string) {
+    if (this.socket) {
+      this.socket.emit('join-notifications', { userId });
+      console.log('🔔 Rejoint les notifications pour:', userId);
+    }
+  }
+
+  // Écouter les mises à jour de commande
+  onOrderUpdate(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.on('order_update', callback);
+    }
+  }
+
+  // Écouter les mises à jour de livraison
+  onDeliveryUpdate(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.on('delivery_update', callback);
+    }
+  }
+
+  // Écouter les promotions
+  onPromotion(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.on('promotion', callback);
+    }
+  }
+
   // Déconnexion
   disconnect() {
     if (this.socket) {

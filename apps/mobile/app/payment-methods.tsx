@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,28 +9,18 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useAuth } from "../context/AuthContext";
 import { useSafeNavigation } from "../hooks/useSafeNavigation";
 import { apiService, Card } from "../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelectedCard } from "../context/PaymentContext";
+import SafeAreaWrapper from "../components/SafeAreaWrapper";
 
 // Images locales
 import VisaIcon from "../assets/images/visa.png";
 import MastercardIcon from "../assets/images/masterCard.png";
 import CardIcon from "../assets/images/card.png";
-
-// Types
-
-// Icônes dynamiques selon type
-const icons = {
-  Visa: VisaIcon,
-  Mastercard: MastercardIcon,
-  Card: CardIcon,
-};
-
-const CHECK_COLOR = "#F2910D";
 
 export default function PaymentMethodsScreen() {
   const router = useRouter();
@@ -40,26 +30,50 @@ export default function PaymentMethodsScreen() {
   const [loadingCards, setLoadingCards] = useState(true);
   const { selectedCardId, setSelectedCardId } = useSelectedCard();
 
-  useEffect(() => {
-    const fetchCards = async () => {
-      setLoadingCards(true);
-      const token = await AsyncStorage.getItem("authToken");
-      if (token && user?._id) {
+  const fetchCards = useCallback(async () => {
+    console.log('🔄 fetchCards appelé');
+    setLoadingCards(true);
+    const token = await AsyncStorage.getItem("authToken");
+    console.log('🔑 Token:', token ? 'présent' : 'manquant');
+    console.log('👤 User ID:', user?._id);
+    
+    if (token && user?._id) {
+      try {
         const res = await apiService.getCards(token, user._id);
+        console.log('📡 Réponse API getCards:', res);
+        
         if (res.success && res.data) {
+          console.log('✅ Cartes récupérées:', res.data);
           setCards(res.data);
           // Si aucune carte n'est sélectionnée et qu'il y a des cartes, sélectionner la dernière
           if (!selectedCardId && res.data.length > 0) {
             setSelectedCardId(res.data[res.data.length - 1]._id!);
           }
         } else {
+          console.log('❌ Aucune carte trouvée ou erreur API');
           setCards([]);
         }
+      } catch (error) {
+        console.error('❌ Erreur lors de la récupération des cartes:', error);
+        setCards([]);
       }
-      setLoadingCards(false);
-    };
-    fetchCards();
+    } else {
+      console.log('❌ Token ou user ID manquant');
+      setCards([]);
+    }
+    setLoadingCards(false);
   }, [user, selectedCardId, setSelectedCardId]);
+
+  useEffect(() => {
+    fetchCards();
+  }, [fetchCards]);
+
+  // Recharger les cartes à chaque fois que l'écran devient actif
+  useFocusEffect(
+    useCallback(() => {
+      fetchCards();
+    }, [fetchCards])
+  );
 
   // Helper pour logo
   const getCardLogo = (number: string) => {
@@ -67,10 +81,6 @@ export default function PaymentMethodsScreen() {
     if (number.startsWith("5")) return MastercardIcon;
     return CardIcon;
   };
-
-  // Toutes les cartes sont dans la section "Saved Payment Methods"
-  const savedCards = cards;
-
 
   const handleGoBack = () => {
     safeBack();
@@ -80,148 +90,238 @@ export default function PaymentMethodsScreen() {
     router.push("/payment");
   };
 
-  const renderSavedCard = (card: Card) => (
+  const renderSavedCard = (card: Card, index: number) => (
     <TouchableOpacity
       key={card._id}
-      style={styles.item}
+      style={[
+        styles.cardItem,
+        selectedCardId === card._id && styles.selectedCard,
+        index === cards.length - 1 && styles.lastCardItem
+      ]}
       onPress={() => setSelectedCardId(card._id!)}
     >
-      <Image source={getCardLogo(card.cardNumber)} style={styles.icon} />
-      <View style={styles.info}>
-        <Text style={styles.label}>
+      <Image source={getCardLogo(card.cardNumber)} style={styles.cardIcon} />
+      <View style={styles.cardInfo}>
+        <Text style={styles.cardNumber}>
           {card.cardNumber ? `•••• ${card.cardNumber.slice(-4)}` : "Carte"}
         </Text>
-        <Text style={styles.subText}>Expires {card.expiryDate}</Text>
+        <Text style={styles.cardExpiry}>Expire le {card.expiryDate}</Text>
       </View>
-      <Ionicons
-        name={selectedCardId === card._id ? "checkmark-circle" : undefined}
-        size={20}
-        color={selectedCardId === card._id ? CHECK_COLOR : "transparent"}
-      />
+      {selectedCardId === card._id && (
+        <Ionicons name="checkmark" size={20} color="#007AFF" />
+      )}
     </TouchableOpacity>
   );
 
   const renderAddMethod = () => {
     return (
       <TouchableOpacity
-        style={[styles.item, loadingCards && styles.disabledItem]}
+        style={styles.addCardButton}
         onPress={!loadingCards ? handleAddCard : undefined}
         disabled={loadingCards}
       >
-        <Image source={icons.Card} style={styles.icon} />
-        <Text style={[styles.label, { marginLeft: 10 }]}>Credit or Debit Card</Text>
+        <View style={styles.addCardIcon}>
+          <Ionicons name="add" size={20} color="#007AFF" />
+        </View>
+        <View style={styles.addCardText}>
+          <Text style={styles.addCardTitle}>Ajouter une carte</Text>
+          <Text style={styles.addCardSubtitle}>Carte de crédit ou de débit</Text>
+        </View>
         {loadingCards ? (
-          <ActivityIndicator
-            size="small"
-            color="#888"
-            style={{ marginLeft: "auto" }}
-          />
+          <ActivityIndicator size="small" color="#007AFF" />
         ) : (
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color="#888"
-            style={{ marginLeft: "auto" }}
-          />
+          <Ionicons name="chevron-forward" size={16} color="#C7C7CC" />
         )}
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaWrapper backgroundColor="#f5f5f5" edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.goBackButton} onPress={handleGoBack}>
+        <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Payment Methods</Text>
+        <Text style={styles.headerTitle}>Méthodes de paiement</Text>
+        <View style={styles.headerSpacer} />
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.content}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Saved Payment Methods */}
-        <Text style={styles.title}>Saved Payment Methods</Text>
-        {loadingCards ? (
-          <ActivityIndicator size="small" color="#888" />
-        ) : savedCards.length > 0 ? (
-          savedCards.map(renderSavedCard)
-        ) : (
-          <Text style={styles.subText}>Aucune carte enregistrée</Text>
-        )}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>CARTES ENREGISTRÉES</Text>
+          
+          {loadingCards ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color="#007AFF" />
+              <Text style={styles.loadingText}>Chargement des cartes...</Text>
+            </View>
+          ) : cards.length > 0 ? (
+            <View style={styles.cardsContainer}>
+              {cards.map(renderSavedCard)}
+            </View>
+          ) : (
+            <View style={styles.emptyState}>
+              <Ionicons name="card-outline" size={48} color="#8E8E93" />
+              <Text style={styles.emptyStateTitle}>Aucune carte enregistrée</Text>
+              <Text style={styles.emptyStateSubtitle}>
+                Ajoutez votre première carte pour faciliter vos achats
+              </Text>
+            </View>
+          )}
+        </View>
+
         {/* Add Payment Method */}
-        <Text style={styles.title}>Add Payment Method</Text>
-        {renderAddMethod()}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>AJOUTER UNE MÉTHODE</Text>
+          <View style={styles.addMethodContainer}>
+            {renderAddMethod()}
+          </View>
+        </View>
       </ScrollView>
-    </View>
+    </SafeAreaWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
-    marginTop: 50,
+    justifyContent: "space-between",
     paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: "#fff",
   },
-  goBackButton: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  goBackText: {
-    fontSize: 16,
-    color: "#000",
-    marginLeft: 6,
+  backButton: {
+    padding: 8,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#000",
-    marginLeft: 20,
+    textAlign: "center",
+  },
+  headerSpacer: {
+    width: 40,
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 8,
+  section: {
+    marginTop: 24,
   },
-  item: {
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#8E8E93",
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  cardsContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  cardItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    marginBottom: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#E5E5EA",
   },
-  disabledItem: {
-    opacity: 0.6,
+  lastCardItem: {
+    borderBottomWidth: 0,
   },
-  icon: {
-    width: 40,
-    height: 26,
+  selectedCard: {
+    backgroundColor: "#F2F2F7",
+  },
+  cardIcon: {
+    width: 32,
+    height: 20,
     resizeMode: "contain",
   },
-  info: {
-    marginLeft: 10,
+  cardInfo: {
     flex: 1,
+    marginLeft: 12,
   },
-  label: {
+  cardNumber: {
     fontSize: 16,
     fontWeight: "500",
+    color: "#000",
+    marginBottom: 2,
   },
-  subText: {
+  cardExpiry: {
     fontSize: 14,
-    color: "#888",
-    marginTop: 2,
+    color: "#8E8E93",
+  },
+  addMethodContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  addCardButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  addCardIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#E3F2FD",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  addCardText: {
+    flex: 1,
+  },
+  addCardTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#000",
+    marginBottom: 2,
+  },
+  addCardSubtitle: {
+    fontSize: 14,
+    color: "#8E8E93",
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: "#8E8E93",
+    marginLeft: 8,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: "#000",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateSubtitle: {
+    fontSize: 14,
+    color: "#8E8E93",
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

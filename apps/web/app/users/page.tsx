@@ -73,9 +73,25 @@ const getAdaptiveColor = (color: string, theme: DefaultTheme) => {
 
 const Container = styled.div`
   padding: 2rem;
-  background: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
   
   @media (max-width: 1120px) {
     padding: 1.5rem;
@@ -105,17 +121,32 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
   
   @media (max-width: 1120px) {
-    font-size: 1.7rem;
+    font-size: 2.4rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 1.4rem;
+    font-size: 2rem;
   }
 `;
 
@@ -135,46 +166,55 @@ const SearchInput = styled.div`
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px 16px 12px 48px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 16px 20px 16px 56px;
+  border-radius: 16px;
+  font-size: 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #1e293b;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
   }
   
   &::placeholder {
-    color: ${({ theme }) => theme.colors.text.muted};
+    color: #64748b;
+    font-weight: 400;
   }
   
   @media (max-width: 1120px) {
-    padding: 10px 14px 10px 44px;
-    font-size: 0.9rem;
+    padding: 14px 18px 14px 52px;
+    font-size: 0.95rem;
   }
   
   @media (max-width: 480px) {
-    padding: 8px 12px 8px 40px;
-    font-size: 0.85rem;
+    padding: 12px 16px 12px 48px;
+    font-size: 0.9rem;
   }
 `;
 
 const SearchIcon = styled.div`
   position: absolute;
-  left: 16px;
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  z-index: 2;
   
   @media (max-width: 1120px) {
-    left: 14px;
+    left: 18px;
   }
   
   @media (max-width: 480px) {
-    left: 12px;
+    left: 16px;
   }
 `;
 
@@ -196,37 +236,57 @@ const FiltersRow = styled.div`
 `;
 
 const FilterButton = styled.button<{ $active?: boolean }>`
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ $active, theme }) => ($active ? theme.colors.surface : 'transparent')};
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 0.9rem;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid ${({ $active }) => 
+    $active 
+      ? 'rgba(59, 130, 246, 0.2)' 
+      : 'rgba(226, 232, 240, 0.8)'
+  };
+  background: ${({ $active }) => 
+    $active 
+      ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))' 
+      : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  color: ${({ $active }) => $active ? '#1e293b' : '#64748b'};
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 1;
   
   &:hover {
-    background: ${({ theme }) => theme.colors.surface};
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    border-color: rgba(59, 130, 246, 0.2);
+    color: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
   
   @media (max-width: 1120px) {
-    padding: 6px 14px;
-    font-size: 0.85rem;
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 5px 12px;
-    font-size: 0.8rem;
+    padding: 8px 14px;
+    font-size: 0.85rem;
   }
 `;
 
 const TableWrapper = styled.div`
-  background: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   overflow-x: auto;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
   
   @media (max-width: 480px) {
-    border-radius: 8px;
+    border-radius: 16px;
   }
 `;
 
@@ -242,37 +302,53 @@ const UsersTable = styled.table`
 
 const Th = styled.th`
   text-align: left;
-  padding: 16px 20px 12px 20px;
-  color: ${({ theme }) => theme.colors.text.muted};
-  font-weight: 400;
+  padding: 20px 24px 16px 24px;
+  color: #64748b;
+  font-weight: 600;
   font-size: 0.95rem;
-  background: transparent;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &:first-child {
+    border-radius: 20px 0 0 0;
+  }
+  
+  &:last-child {
+    border-radius: 0 20px 0 0;
+  }
   
   @media (max-width: 1120px) {
-    padding: 14px 16px 10px 16px;
+    padding: 18px 20px 14px 20px;
     font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 12px 14px 8px 14px;
+    padding: 16px 18px 12px 18px;
     font-size: 0.85rem;
   }
 `;
 
 const Td = styled.td`
-  padding: 16px 20px;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 20px 24px;
+  border-top: 1px solid rgba(226, 232, 240, 0.5);
   font-size: 0.95rem;
-  color: ${({ theme }) => theme.colors.text.primary};
-  background: ${({ theme }) => theme.colors.table.row};
+  color: #1e293b;
+  background: transparent;
+  transition: all 0.2s ease;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.02);
+  }
   
   @media (max-width: 1120px) {
-    padding: 14px 16px;
+    padding: 18px 20px;
     font-size: 0.9rem;
   }
   
   @media (max-width: 480px) {
-    padding: 12px 14px;
+    padding: 16px 18px;
     font-size: 0.85rem;
   }
 `;
@@ -292,61 +368,88 @@ const UserCell = styled.div`
 `;
 
 const UserAvatar = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #b47b48;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: bold;
-  font-size: 1.1rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  }
 `;
 
 const UserName = styled.span`
-  font-weight: 600;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1e293b;
 `;
 
 
-const DateBadge = styled.span`  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 8px;
-  background: ${({ theme }) => theme.colors.surface};
+const DateBadge = styled.span`
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
   font-size: 0.9rem;
-  color: ${({ theme }) => getAdaptiveColor('#333333', theme)}; // Gris foncé → Blanc en mode sombre
+  font-weight: 600;
+  color: #1e293b;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
   
   @media (max-width: 1120px) {
-    padding: 3px 10px;
+    padding: 5px 14px;
     font-size: 0.85rem;
   }
   
   @media (max-width: 480px) {
-    padding: 2px 8px;
+    padding: 4px 12px;
     font-size: 0.8rem;
   }
 `;
 
 const StatusBadge = styled.span<{ active: boolean }>`
   display: inline-block;
-  padding: 0.3em 1em;
-  border-radius: 12px;
-  font-size: 0.95em;
-  font-weight: 500;
-  background: transparent;
-  color: ${({ active, theme }) => {
-    if (active) return '#22c55e'; // Vert reste vert
-    return getAdaptiveColor('#ef4444', theme); // Rouge → Blanc en mode sombre
-  }};
+  padding: 0.4em 1.2em;
+  border-radius: 16px;
+  font-size: 0.9em;
+  font-weight: 600;
+  background: ${({ active }) => 
+    active 
+      ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1))' 
+      : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))'
+  };
+  color: ${({ active }) => (active ? '#059669' : '#dc2626')};
+  border: 1px solid ${({ active }) => 
+    active 
+      ? 'rgba(34, 197, 94, 0.2)' 
+      : 'rgba(239, 68, 68, 0.2)'
+  };
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
   
   @media (max-width: 1120px) {
-    padding: 0.25em 0.8em;
+    padding: 0.3em 1em;
     font-size: 0.85em;
   }
   
   @media (max-width: 480px) {
-    padding: 0.2em 0.6em;
+    padding: 0.25em 0.8em;
     font-size: 0.8em;
   }
 `;
@@ -361,27 +464,47 @@ const Pagination = styled.div`
 `;
 
 const PageBtn = styled.button<{ active?: boolean }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: none;
-  background: ${({ active, theme }) => (active ? theme.colors.surface : 'transparent')};
-  color: ${({ active, theme }) => {
-    if (active) return theme.colors.text.primary;
-    return getAdaptiveColor('#171412', theme); // Gris foncé → Blanc en mode sombre
-  }};
-  font-weight: 500;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid ${({ active }) => 
+    active 
+      ? 'rgba(59, 130, 246, 0.3)' 
+      : 'rgba(226, 232, 240, 0.8)'
+  };
+  background: ${({ active }) => 
+    active 
+      ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' 
+      : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  color: ${({ active }) => (active ? '#fff' : '#1e293b')};
+  font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: none;
-  outline: none;
+  box-shadow: ${({ active }) => 
+    active 
+      ? '0 4px 20px rgba(59, 130, 246, 0.3)' 
+      : '0 2px 8px rgba(0, 0, 0, 0.06)'
+  };
+  position: relative;
+  z-index: 1;
   
-  &:hover {
-    background: ${({ active, theme }) => (active ? theme.colors.surface : theme.colors.surface)};
+  &:hover:not(:disabled) {
+    background: ${({ active }) => 
+      active 
+        ? 'linear-gradient(135deg, #2563eb, #7c3aed)' 
+        : 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))'
+    };
+    transform: translateY(-2px);
+    box-shadow: ${({ active }) => 
+      active 
+        ? '0 8px 32px rgba(59, 130, 246, 0.4)' 
+        : '0 4px 16px rgba(0, 0, 0, 0.1)'
+    };
   }
   
   &:disabled {
@@ -393,7 +516,9 @@ const PageBtn = styled.button<{ active?: boolean }>`
 const EmptyState = styled.div`
   text-align: center;
   padding: 4rem 2rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
   
   @media (max-width: 1120px) {
     padding: 3rem 1.5rem;
@@ -403,6 +528,7 @@ const EmptyState = styled.div`
     padding: 2rem 1rem;
   }
 `;
+
 
 const PAGE_SIZE = 10;
 
@@ -440,8 +566,9 @@ export default function UsersPage() {
       <DashboardLayout hideSidebar>
         <Container>
           <Header>
-            <Title>{t('users.title')}</Title>
+            <Title>CLIENTS</Title>
           </Header>
+
           <SearchInput>
             <SearchIcon>
               <Search size={20} />

@@ -24,7 +24,7 @@ export const CategoriesProvider = ({ children }: { children: ReactNode }) => {
       name: 'Plats Chauds',
       icon: 'flame',
       description: 'Cuisine traditionnelle chaude',
-      color: '#FF6B35'
+      color: '#2E86AB'
     },
     {
       id: 'meats',

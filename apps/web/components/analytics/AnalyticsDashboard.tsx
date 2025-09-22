@@ -12,16 +12,34 @@ import { ScheduledExports } from "./ScheduledExports";
 import { useTranslation } from "../../hooks/useTranslation";
 
 const DashboardContainer = styled.div`
-  background: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   min-height: calc(100vh - 64px);
   padding: 0;
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
 `;
 
 const Content = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 3.5rem 2.5rem 2.5rem 2.5rem;
+  position: relative;
+  z-index: 1;
   
   @media (max-width: 1120px) {
     padding: 3rem 2rem 2rem 2rem;
@@ -49,35 +67,52 @@ const PageHeader = styled.div`
 `;
 
 const PageTitle = styled.h1`
-  font-size: 2.7rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.text.primary};
-  margin: 0 0 0.5rem 0;
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 12px 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
   
   @media (max-width: 900px) {
-    font-size: 2.2rem;
+    font-size: 2.4rem;
   }
   
   @media (max-width: 1120px) {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 `;
 
 const PageDescription = styled.p`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 1.1rem;
+  color: #64748b;
+  font-size: 1.2rem;
   margin: 0;
+  font-weight: 500;
+  line-height: 1.6;
   
   @media (max-width: 1120px) {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 `;
 
@@ -100,6 +135,7 @@ const GridContainer = styled.div`
   }
 `;
 
+
 export function AnalyticsDashboard() {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
@@ -112,11 +148,13 @@ export function AnalyticsDashboard() {
     <DashboardContainer>
       <Content>
         <PageHeader>
-          <PageTitle>{mounted ? t('analytics.title') : ""}</PageTitle>
+          <PageTitle>ANALYSES</PageTitle>
           <PageDescription>
-            {mounted ? t('analytics.subtitle') : ""}
+            Analysez vos performances commerciales avec style tunisien
           </PageDescription>
-        </PageHeader>   
+        </PageHeader>
+
+        
         <GridContainer>
           <SalesTrends />
           <ExportFunctionality />

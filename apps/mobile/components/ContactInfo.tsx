@@ -6,11 +6,11 @@ import EmailIcon from '../assets/images/contact.png';
 const ContactInfo: React.FC = () => {
   return (
     <View>
-      <Text style={styles.title}>We&apos;re here to help</Text>
+      <Text style={styles.title}>Nous sommes là pour vous aider</Text>
       <Text style={styles.subtitle}>
-        If you have any questions or need assistance, please reach out to us.
-        We&apos;re committed to providing exceptional support and ensuring your
-        experience with Nourane is seamless.
+        Si vous avez des questions ou besoin d&apos;assistance, n&apos;hésitez pas à nous contacter.
+        Nous nous engageons à fournir un support exceptionnel et à garantir que votre
+        expérience avec Dar Darkom soit parfaite.
       </Text>
 
       <View style={styles.contactBox}>
@@ -21,9 +21,9 @@ const ContactInfo: React.FC = () => {
           <Text style={styles.label}>Email</Text>
           <Text
             style={styles.link}
-            onPress={() => Linking.openURL("mailto:support@nourane.com")}
+            onPress={() => Linking.openURL("mailto:support@dardarkom.com")}
           >
-                          support@nourane.com
+            support@dardarkom.com
           </Text>
         </View>
       </View>
@@ -33,12 +33,24 @@ const ContactInfo: React.FC = () => {
           <Image source={PhoneIcon} style={styles.icon} />
         </View>
         <View style={styles.info}>
-          <Text style={styles.label}>Phone</Text>
+          <Text style={styles.label}>Téléphone</Text>
           <Text
             style={styles.link}
-            onPress={() => Linking.openURL("tel:+15551234567")}
+            onPress={() => Linking.openURL("tel:+21612345678")}
           >
-            +1 (555) 123-4567
+            +216 12 345 678
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.contactBox}>
+        <View style={styles.iconWrapper}>
+          <Image source={PhoneIcon} style={styles.icon} />
+        </View>
+        <View style={styles.info}>
+          <Text style={styles.label}>Horaires d&apos;ouverture</Text>
+          <Text style={styles.link}>
+            Lun-Ven: 9h-18h
           </Text>
         </View>
       </View>
@@ -53,10 +65,13 @@ const styles = StyleSheet.create({
       fontSize: 20,
       fontWeight: "bold",
       marginBottom: 10,
+      color: "#000",
     },
     subtitle: {
-      color: "#555",
+      color: "#8E8E93",
       marginBottom: 20,
+      fontSize: 14,
+      lineHeight: 20,
     },
     contactBox: {
       flexDirection: "row",
@@ -64,18 +79,18 @@ const styles = StyleSheet.create({
       marginBottom: 15,
     },
     iconWrapper: {
-      backgroundColor: "#F3F0EB",
-      padding: 10,
+      backgroundColor: "#F5F5F5",
+      padding: 12,
       borderRadius: 12,
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 3,
-      elevation: 2, // For Android shadow
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
     },
     icon: {
-      width: 24,
-      height: 24,
+      width: 20,
+      height: 20,
       resizeMode: "contain",
     },
     info: {
@@ -83,10 +98,13 @@ const styles = StyleSheet.create({
     },
     label: {
       fontWeight: "bold",
+      fontSize: 16,
+      color: "#000",
     },
     link: {
-      color: "#8A7861",
+      color: "#8E8E93",
       marginTop: 2,
+      fontSize: 14,
     },
   });
   

@@ -22,7 +22,7 @@ export const OrientalColors = {
   
   // Couleurs d'accentuation
   success: '#228B22', // Vert forêt
-  warning: '#FF8C00', // Orange foncé
+  warning: '#2E86AB', // Bleu foncé
   error: '#DC143C', // Rouge foncé
   
   // Couleurs de bordure et séparateurs

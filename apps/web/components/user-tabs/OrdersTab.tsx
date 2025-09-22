@@ -9,11 +9,24 @@ interface OrdersTabProps {
 }
 
 const TabContainer = styled.div`
-  padding: 24px;
-  background: ${({ theme }) => theme.colors.card.background};
-  border-radius: 16px;
-  box-shadow: ${({ theme }) => theme.colors.card.shadow};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border-radius: 24px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
 `;
 
 const TabHeader = styled.div`
@@ -21,39 +34,60 @@ const TabHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  position: relative;
+  z-index: 1;
 `;
 
 const TabTitle = styled.h3`
-  font-size: 20px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
 `;
 
 const RefreshButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 16px;
+  color: white;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.border};
-    border-color: ${({ theme }) => theme.colors.text.muted};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
   }
 
   .animate-spin {
@@ -72,7 +106,9 @@ const LoadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 80px 20px;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const ErrorContainer = styled.div`
@@ -82,23 +118,31 @@ const ErrorContainer = styled.div`
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const RetryButton = styled.button`
   margin-top: 20px;
   padding: 12px 24px;
-  background: ${({ theme }) => theme.colors.primary};
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   &:hover {
-    background: ${({ theme }) => theme.colors.secondary};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -109,26 +153,32 @@ const EmptyContainer = styled.div`
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.text.muted};
+  color: #64748b;
+  position: relative;
+  z-index: 1;
 `;
 
 const OrdersList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
 `;
 
 const OrderCard = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: ${({ theme }) => theme.colors.card.shadow};
-  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    box-shadow: ${({ theme }) => theme.shadows.lg};
-    border-color: ${({ theme }) => theme.colors.text.muted};
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
   }
 `;
 
@@ -140,44 +190,48 @@ const OrderHeader = styled.div`
 `;
 
 const OrderId = styled.span`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const OrderStatus = styled.span<{ status: string }>`
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   ${props => {
     switch (props.status) {
       case 'completed':
         return `
-          background: #f0fff4;
-          color: #22543d;
-          border: 1px solid #9ae6b4;
+          background: linear-gradient(135deg, #10b981, #059669);
+          color: white;
+          border: none;
         `;
       case 'active':
         return `
-          background: #fffbeb;
-          color: #92400e;
-          border: 1px solid #fcd34d;
+          background: linear-gradient(135deg,  #3b82f6, #8b5cf6);
+          color: white;
+          border: none;
         `;
       case 'cancelled':
         return `
-          background: #fef2f2;
-          color: #991b1b;
-          border: 1px solid #fca5a5;
+          background: linear-gradient(135deg, #ef4444, #dc2626);
+          color: white;
+          border: none;
         `;
       default:
         return `
-          background: ${props.theme.colors.surface};
-          color: ${props.theme.colors.text.secondary};
-          border: 1px solid ${props.theme.colors.border};
+          background: linear-gradient(135deg, #6b7280, #4b5563);
+          color: white;
+          border: none;
         `;
     }
   }}
@@ -186,49 +240,52 @@ const OrderStatus = styled.span<{ status: string }>`
 const OrderDetails = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  gap: 24px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 20px;
   }
 `;
 
 const DetailItem = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 `;
 
 const DetailLabel = styled.span`
   font-size: 12px;
-  color: ${({ theme }) => theme.colors.text.muted};
-  font-weight: 500;
+  color: #64748b;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
 const DetailValue = styled.span`
-  font-size: 14px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const OrderProducts = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 `;
 
 const ProductItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.surface};
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
 
   &:last-child {
     border-bottom: none;
@@ -236,9 +293,9 @@ const ProductItem = styled.div`
 `;
 
 const ProductName = styled.span`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-weight: 500;
+  font-size: 16px;
+  color: #1e293b;
+  font-weight: 600;
   flex: 1;
 `;
 
@@ -249,15 +306,18 @@ const ProductInfo = styled.div`
 `;
 
 const ProductQuantity = styled.span`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.text.muted};
-  font-weight: 500;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 600;
 `;
 
 const ProductPrice = styled.span`
-  font-size: 14px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 export const OrdersTab: React.FC<OrdersTabProps> = ({ userId }) => {

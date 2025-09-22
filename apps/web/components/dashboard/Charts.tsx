@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { DefaultTheme } from 'styled-components';
+import Image from 'next/image';
 import { Product, Order, User } from '../../lib/api';
 
 // Fonction pour convertir RGB en hex
@@ -67,9 +68,31 @@ const getAdaptiveColor = (color: string, theme: DefaultTheme) => {
 };
 
 const ChartCard = styled.div`
-  border: 1px solid #E8DECF;
-  border-radius: 16px;
-  padding: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 20px 20px 0 0;
+  }
+  
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
 `;
 
 const TopRow = styled.div`
@@ -95,46 +118,93 @@ const BottomRow = styled.div`
 `;
 
 const FullWidthCard = styled.div`
-  border: 1px solid #E8DECF;
-  border-radius: 16px;
-  padding: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   grid-column: 1 / -1;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 20px 20px 0 0;
+  }
+  
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
 `;
 
 const ChartTitle = styled.div`
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 1px;
+  }
 `;
 
 const ChartValue = styled.div`
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
-  margin-bottom: 0.5rem;
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
 `;
 
 const ChartPeriod = styled.div`
-  color: #827869;
-  font-size: 0.9rem;
+  color: #64748b;
+  font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 `;
 
 const ChartChange = styled.div`
-  color: #1ca672;
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 1.5rem;
+  color: #059669;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  &::before {
+    content: '↗';
+    font-size: 12px;
+    font-weight: bold;
+  }
 `;
 
 const LineChart = styled.div`
-  height: 120px;
-  background: linear-gradient(135deg, #EDD9BF 0%, #E8DECF 100%);
-  border-radius: 8px;
+  height: 140px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.5);
   
   &::before {
     content: '';
@@ -143,8 +213,13 @@ const LineChart = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent 30%, rgba(130, 119, 105, 0.1) 50%, transparent 70%);
-    animation: shimmer 2s infinite;
+    background: linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+    animation: shimmer 3s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
 `;
 
@@ -158,29 +233,37 @@ const LinePath = styled.svg`
 `;
 
 const BarChart = styled.div`
-  height: 120px;
-  background: linear-gradient(135deg, #EDD9BF 0%, #E8DECF 100%);
-  border-radius: 8px;
+  height: 140px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
   display: flex;
   align-items: end;
   padding: 1rem;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  border: 1px solid rgba(226, 232, 240, 0.5);
 `;
 
 const Bar = styled.div<{ height: number }>`
-  background: #827869;
-  border-radius: 4px 4px 0 0;
-  width: 30px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 6px 6px 0 0;
+  width: 35px;
   height: ${props => props.height}%;
   min-height: 20px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    transform: scaleY(1.05);
+  }
 `;
 
 const CategoryLabels = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 1rem;
-  font-size: 0.8rem;
-  color: #827869;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
 `;
 
 const StatusDistribution = styled.div`
@@ -197,26 +280,49 @@ const StatusItem = styled.div`
 
 const StatusBar = styled.div<{ width: number }>`
   height: 8px;
-  background: #827869;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
   border-radius: 4px;
   width: ${props => props.width}%;
   margin: 0 1rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    transform: scaleY(1.2);
+  }
 `;
 
 const MonthLabels = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 1rem;
-  font-size: 0.7rem;
-  color: #827869;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
 `;
 
 const ChartsTitle = styled.h2`
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
-  margin: 2.5rem 0 1.2rem 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 2.5rem 0 2rem 0;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
 `;
+
 
 interface ChartsProps {
   products: Product[];
@@ -266,6 +372,8 @@ export const Charts = ({ products, orders, users }: ChartsProps) => {
       <ChartsTitle>
         Charts & Analytics
       </ChartsTitle>
+      
+      
       <TopRow>
         <ChartCard>
           <ChartTitle>Revenue Trends</ChartTitle>
@@ -276,10 +384,17 @@ export const Charts = ({ products, orders, users }: ChartsProps) => {
             <LinePath viewBox="0 0 100 100" preserveAspectRatio="none">
               <path
                 d="M0,80 L8,70 L16,60 L24,65 L32,50 L40,45 L48,55 L56,40 L64,35 L72,30 L80,25 L88,20 L96,15 L100,10"
-                stroke="#827869"
-                strokeWidth="2"
+                stroke="url(#gradient1)"
+                strokeWidth="3"
                 fill="none"
               />
+              <defs>
+                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#3b82f6" />
+                  <stop offset="50%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#06b6d4" />
+                </linearGradient>
+              </defs>
             </LinePath>
           </LineChart>
           <MonthLabels>
@@ -336,10 +451,17 @@ export const Charts = ({ products, orders, users }: ChartsProps) => {
             <LinePath viewBox="0 0 100 100" preserveAspectRatio="none">
               <path
                 d="M0,90 L8,85 L16,80 L24,75 L32,70 L40,65 L48,60 L56,55 L64,50 L72,45 L80,40 L88,35 L96,30 L100,25"
-                stroke="#827869"
-                strokeWidth="2"
+                stroke="url(#gradient2)"
+                strokeWidth="3"
                 fill="none"
               />
+              <defs>
+                <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#3b82f6" />
+                  <stop offset="50%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#06b6d4" />
+                </linearGradient>
+              </defs>
             </LinePath>
           </LineChart>
           <MonthLabels>

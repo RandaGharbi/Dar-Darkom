@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Share, Alert } from 'react-native';
+import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ProductCardProps {
   name: string;
@@ -7,16 +9,75 @@ interface ProductCardProps {
   tag: string;
   image?: string;
   onAddToCart: () => void;
+  productId?: string | number;
+  description?: string;
 }
 
-export default function ProductCard({ name, price, tag, image, onAddToCart }: ProductCardProps) {
+export default function ProductCard({ name, price, tag, image, onAddToCart, productId, description }: ProductCardProps) {
+  const handleShare = async () => {
+    try {
+      const shareUrl = productId ? `https://votre-app.com/product/${productId}` : 'https://votre-app.com';
+      await Share.share({
+        message: `Découvrez ${name} - ${price}\n${description || ''}\n${shareUrl}`,
+        url: shareUrl,
+        title: name,
+      });
+    } catch (error) {
+      console.error('Erreur lors du partage:', error);
+    }
+  };
+
+  const handleAddToFavorites = () => {
+    Alert.alert('Favoris', `${name} ajouté aux favoris !`);
+  };
+
+  const handleQuickView = () => {
+    Alert.alert('Aperçu rapide', `Aperçu de ${name}`);
+  };
+
   return (
     <View style={styles.container}>
-      {/* Image du produit */}
+      {/* Image du produit avec Link Preview */}
       <View style={styles.imageContainer}>
-        <View style={styles.productImage}>
-          <Text style={styles.imagePlaceholder}>🍽️</Text>
-        </View>
+        {productId ? (
+          <Link href={`/product-details/${productId}`}>
+            <Link.Trigger>
+              <View style={styles.productImage}>
+                {image ? (
+                  <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
+                ) : (
+                  <Text style={styles.imagePlaceholder}>🍽️</Text>
+                )}
+              </View>
+            </Link.Trigger>
+            <Link.Preview />
+            <Link.Menu>
+              <Link.MenuAction 
+                title="Partager" 
+                icon="square.and.arrow.up" 
+                onPress={handleShare} 
+              />
+              <Link.MenuAction 
+                title="Favoris" 
+                icon="heart" 
+                onPress={handleAddToFavorites} 
+              />
+              <Link.MenuAction 
+                title="Aperçu rapide" 
+                icon="eye" 
+                onPress={handleQuickView} 
+              />
+            </Link.Menu>
+          </Link>
+        ) : (
+          <View style={styles.productImage}>
+            {image ? (
+              <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
+            ) : (
+              <Text style={styles.imagePlaceholder}>🍽️</Text>
+            )}
+          </View>
+        )}
         <View style={styles.tagContainer}>
           <Text style={styles.tagText}>{tag}</Text>
         </View>
@@ -62,6 +123,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
   imagePlaceholder: {
     fontSize: 28,
   },
@@ -69,7 +135,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 6,
     left: 6,
-    backgroundColor: '#8B4513',
+    backgroundColor: '#2E86AB',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
@@ -92,13 +158,13 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#8B4513',
+    color: '#2E86AB',
   },
   buttonContainer: {
     // Plus de positionnement absolu, le bouton sera naturellement en bas
   },
   addButton: {
-    backgroundColor: '#8B4513',
+    backgroundColor: '#2E86AB',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 20,

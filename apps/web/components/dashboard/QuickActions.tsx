@@ -1,72 +1,8 @@
 "use client";
-import styled, { DefaultTheme } from 'styled-components';
-import { useRouter } from 'next/navigation';
-import React from 'react';
-
-// Fonction pour convertir RGB en hex
-const rgbToHex = (r: number, g: number, b: number) => {
-  return '#' + [r, g, b].map(x => {
-    const hex = x.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  }).join('');
-};
-
-// Fonction pour convertir les couleurs hexadécimales en couleurs adaptatives
-const getAdaptiveColor = (color: string, theme: DefaultTheme) => {
-  // Convertir RGB en hex si nécessaire
-  let hexColor = color;
-  if (color.startsWith('rgb(')) {
-    const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-    if (rgbMatch) {
-      const r = parseInt(rgbMatch[1] ?? "0");
-      const g = parseInt(rgbMatch[2] ?? "0");
-      const b = parseInt(rgbMatch[3] ?? "0");
-      hexColor = rgbToHex(r, g, b);
-    }
-  }
-  
-  // Couleurs sombres qui deviennent claires en mode sombre
-  const darkToLightColors = {
-    '#171412': '#827869', // Marron foncé → Marron gris en mode sombre
-    '#000000': theme.colors.text.primary, // Noir → Blanc en mode sombre
-    '#333333': theme.colors.text.primary, // Gris foncé → Blanc en mode sombre
-    '#666666': theme.colors.text.primary, // Gris moyen → Blanc en mode sombre
-    '#444444': theme.colors.text.primary, // Gris foncé → Blanc en mode sombre
-    '#222222': theme.colors.text.primary, // Gris très foncé → Blanc en mode sombre
-    '#1a1a1a': theme.colors.text.primary, // Gris très foncé → Blanc en mode sombre
-    '#2d2d2d': theme.colors.text.primary, // Gris foncé → Blanc en mode sombre
-    '#555555': theme.colors.text.primary, // Gris moyen → Blanc en mode sombre
-    '#777777': theme.colors.text.primary, // Gris moyen → Blanc en mode sombre
-    '#888888': theme.colors.text.primary, // Gris moyen → Blanc en mode sombre
-    '#999999': theme.colors.text.primary, // Gris clair → Blanc en mode sombre
-  };
-  
-  // Couleurs qui restent inchangées
-  const unchangedColors = {
-    '#b47b48': '#b47b48', // Marron clair reste inchangé
-    '#22c55e': '#22c55e', // Vert reste vert
-    '#ffffff': '#ffffff', // Blanc reste blanc
-    '#f5f5f5': '#f5f5f5', // Gris très clair reste inchangé
-    '#EDD9BF': '#EDD9BF', // Beige reste inchangé
-    '#E8DECF': '#E8DECF', // Beige clair reste inchangé
-    '#827869': '#827869', // Marron gris reste inchangé
-    '#f5efe7': '#f5efe7', // Beige très clair reste inchangé
-    '#e3e0de': '#e3e0de', // Gris très clair reste inchangé
-  };
-  
-  // Vérifier d'abord les couleurs inchangées
-  if (unchangedColors[hexColor as keyof typeof unchangedColors]) {
-    return unchangedColors[hexColor as keyof typeof unchangedColors];
-  }
-  
-  // Vérifier les couleurs sombres à convertir
-  if (darkToLightColors[hexColor as keyof typeof darkToLightColors]) {
-    return darkToLightColors[hexColor as keyof typeof darkToLightColors];
-  }
-  
-  // Pour toute autre couleur, utiliser la couleur du thème
-  return theme.colors.text.primary;
-};
+import styled from "styled-components";
+import { useRouter } from "next/navigation";
+import React from "react";
+import Image from "next/image";
 
 const ActionsRow = styled.div`
   display: flex;
@@ -79,44 +15,122 @@ const ActionsRow = styled.div`
 `;
 
 const MainButton = styled.button`
-  background: #f5efe7;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 0.9rem 2rem;
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
-  box-shadow: 0 1px 2px #e3e0de;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+
   &:hover {
-    background: #827869;
-    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 const SecondaryButton = styled.button`
-  background: #f5efe7;
-  color: #827869;
-  border: none;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: #64748b;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 16px;
   padding: 0.9rem 2rem;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
-  box-shadow: 0 1px 2px #e3e0de;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
   &:hover {
-    background: #827869;
-    color: #fff;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 const ActionsTitle = styled.h2`
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: ${({ theme }) => getAdaptiveColor('#171412', theme)};
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 1.2rem 0;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 2px;
+  }
+`;
+
+const ImageSection = styled.div`
+  margin-top: 2rem;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1),
+    rgba(139, 92, 246, 0.1)
+  );
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 16px;
+  overflow: hidden;
+`;
+
+const ImageOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+  padding: 1.5rem;
+  z-index: 2;
+`;
+
+const ImageTitle = styled.h3`
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+const ImageDescription = styled.p`
+  font-size: 0.9rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
 `;
 
 export const QuickActions = () => {
@@ -124,20 +138,37 @@ export const QuickActions = () => {
 
   return (
     <div>
-      <ActionsTitle>
-        Actions Rapides
-      </ActionsTitle>
+      <ActionsTitle>Actions Rapides</ActionsTitle>
       <ActionsRow>
-        <MainButton onClick={() => router.push('/products/addProducts')}>
+        <MainButton onClick={() => router.push("/products/addProducts")}>
           Ajouter un Produit
         </MainButton>
-        <SecondaryButton onClick={() => router.push('/orders')}>
+        <SecondaryButton onClick={() => router.push("/orders")}>
           Voir les Commandes
         </SecondaryButton>
-        <SecondaryButton onClick={() => router.push('/products')}>
+        <SecondaryButton onClick={() => router.push("/products")}>
           Gérer l&apos;Inventaire
         </SecondaryButton>
       </ActionsRow>
+
+      <ImageSection>
+        <ImageContainer>
+          <Image
+            src="https://images.musement.com/cover/0171/77/thumb_17076552_cover_header.jpg"
+            alt="Sidi Bou Saïd, Tunisie - Village bleu et blanc emblématique"
+            fill
+            style={{ objectFit: "cover" }}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+          <ImageOverlay>
+            <ImageTitle>🇹🇳 Sidi Bou Saïd</ImageTitle>
+            <ImageDescription>
+              Le village bleu et blanc emblématique de la Tunisie, source
+              d&apos;inspiration pour vos créations authentiques.
+            </ImageDescription>
+          </ImageOverlay>
+        </ImageContainer>
+      </ImageSection>
     </div>
   );
-}; 
+};
