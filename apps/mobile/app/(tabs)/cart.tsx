@@ -153,7 +153,6 @@ export default function CartScreen() {
         paymentIntentId: order.paymentIntentId
       };
 
-      console.log('Création de la commande:', orderData);
       
       const response = await fetch(`${API_CONFIG.BASE_URL}/api/orders/create`, {
         method: 'POST',
@@ -168,21 +167,17 @@ export default function CartScreen() {
       }
 
       const createdOrder = await response.json();
-      console.log('Commande créée avec succès:', createdOrder);
 
       // Vider le panier après création de la commande
       await clearCart(user._id);
       
-      Alert.alert(
-        'Paiement réussi !',
-        `Votre commande #${createdOrder._id.slice(-8)} a été payée avec Apple Pay.`,
-        [
-          {
-            text: 'OK',
-            onPress: () => router.push('/(tabs)/orders')
-          }
-        ]
-      );
+      // Redirection directe vers l'écran de confirmation
+      router.push({
+        pathname: '/order-confirmation',
+        params: {
+          order: JSON.stringify(createdOrder)
+        }
+      });
     } catch (error) {
       console.error('Erreur lors de la création de la commande:', error);
       Alert.alert(

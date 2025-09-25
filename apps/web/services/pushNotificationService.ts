@@ -7,7 +7,6 @@ class PushNotificationService {
 
   async requestPermission(): Promise<boolean> {
     if (!this.isSupported()) {
-      console.warn('Notifications push non supportées');
       return false;
     }
 

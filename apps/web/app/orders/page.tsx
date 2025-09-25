@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DashboardLayout } from "../../components/layout/DashboardLayout";
 import { GlobalStyles } from "../../components/styled/GlobalStyles";
 import styled from "styled-components";
-import { Search } from "lucide-react";
+import { Search, Check, X } from "lucide-react";
 import { ordersAPI } from "../../lib/api";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "../../hooks/useTranslation";
+import { toast } from "react-hot-toast";
 
 const Container = styled.div`
   padding: 2rem;
@@ -306,9 +307,36 @@ const Td = styled.td`
   }
 `;
 
-const TableRow = styled.tr`
+const TableRow = styled.tr<{ $highlighted?: boolean }>`
   cursor: pointer;
   transition: background-color 0.2s ease;
+  background: ${({ $highlighted }) => 
+    $highlighted 
+      ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))' 
+      : 'transparent'
+  };
+  border: ${({ $highlighted }) => 
+    $highlighted 
+      ? '2px solid rgba(59, 130, 246, 0.3)' 
+      : 'none'
+  };
+  animation: ${({ $highlighted }) => 
+    $highlighted 
+      ? 'pulse 2s ease-in-out' 
+      : 'none'
+  };
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.1);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+  }
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.table.hover};
@@ -329,6 +357,18 @@ const StatusBadge = styled.span<{ status: string }>`
         return 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))';
       case 'cancelled':
         return 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))';
+      case 'confirmed':
+        return 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1))';
+      case 'rejected':
+        return 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))';
+      case 'preparing':
+        return 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))';
+      case 'ready':
+        return 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))';
+      case 'out_for_delivery':
+        return 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1))';
+      case 'delivered':
+        return 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1))';
       default:
         return 'linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.1))';
     }
@@ -341,6 +381,18 @@ const StatusBadge = styled.span<{ status: string }>`
         return '#2563eb';
       case 'cancelled':
         return '#dc2626';
+      case 'confirmed':
+        return '#059669';
+      case 'rejected':
+        return '#dc2626';
+      case 'preparing':
+        return '#d97706';
+      case 'ready':
+        return '#2563eb';
+      case 'out_for_delivery':
+        return '#7c3aed';
+      case 'delivered':
+        return '#059669';
       default:
         return '#6b7280';
     }
@@ -353,6 +405,18 @@ const StatusBadge = styled.span<{ status: string }>`
         return 'rgba(59, 130, 246, 0.2)';
       case 'cancelled':
         return 'rgba(239, 68, 68, 0.2)';
+      case 'confirmed':
+        return 'rgba(34, 197, 94, 0.2)';
+      case 'rejected':
+        return 'rgba(239, 68, 68, 0.2)';
+      case 'preparing':
+        return 'rgba(245, 158, 11, 0.2)';
+      case 'ready':
+        return 'rgba(59, 130, 246, 0.2)';
+      case 'out_for_delivery':
+        return 'rgba(139, 92, 246, 0.2)';
+      case 'delivered':
+        return 'rgba(34, 197, 94, 0.2)';
       default:
         return 'rgba(107, 114, 128, 0.2)';
     }
@@ -371,6 +435,49 @@ const StatusBadge = styled.span<{ status: string }>`
   @media (max-width: 480px) {
     padding: 0.25em 0.8em;
     font-size: 0.8em;
+  }
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+`;
+
+const ActionButton = styled.button<{ variant: 'accept' | 'reject' }>`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  ${({ variant }) => variant === 'accept' ? `
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    
+    &:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-1px);
+    }
+  ` : `
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    
+    &:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-1px);
+    }
+  `}
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
   }
 `;
 
@@ -461,6 +568,7 @@ const formatPrice = (price: number) => {
 export default function OrdersPage() {
   const router = useRouter();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -468,6 +576,26 @@ export default function OrdersPage() {
   const [activeTab, setActiveTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [loadingOrders, setLoadingOrders] = useState<Set<string>>(new Set());
+  const [highlightedOrderId, setHighlightedOrderId] = useState<string | null>(null);
+
+  // Vérifier s'il y a un paramètre de highlight dans l'URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const highlightParam = urlParams.get('highlight');
+      if (highlightParam) {
+        setHighlightedOrderId(highlightParam);
+        // Supprimer le paramètre de l'URL après 3 secondes
+        setTimeout(() => {
+          setHighlightedOrderId(null);
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete('highlight');
+          window.history.replaceState({}, '', newUrl.toString());
+        }, 3000);
+      }
+    }
+  }, []);
 
   // Récupération des vraies données depuis l'API
   const { data: orders = [], isLoading, error } = useQuery({
@@ -488,6 +616,47 @@ export default function OrdersPage() {
 
   const totalPages = Math.ceil(filteredOrders.length / 5);
   const paginatedOrders = filteredOrders.slice((currentPage - 1) * 5, currentPage * 5);
+
+  // Fonction pour accepter une commande
+  const handleAcceptOrder = async (orderId: string) => {
+    setLoadingOrders(prev => new Set(prev).add(orderId));
+    try {
+      await ordersAPI.acceptOrder(orderId);
+      toast.success('Commande acceptée avec succès !');
+      // Rafraîchir les données sans recharger la page
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    } catch (error) {
+      console.error('Erreur lors de l\'acceptation de la commande:', error);
+      toast.error('Erreur lors de l\'acceptation de la commande');
+    } finally {
+      setLoadingOrders(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(orderId);
+        return newSet;
+      });
+    }
+  };
+
+  // Fonction pour rejeter une commande
+  const handleRejectOrder = async (orderId: string) => {
+    const reason = prompt('Raison du rejet (optionnel):');
+    setLoadingOrders(prev => new Set(prev).add(orderId));
+    try {
+      await ordersAPI.rejectOrder(orderId, reason || '');
+      toast.success('Commande rejetée avec succès !');
+      // Rafraîchir les données sans recharger la page
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    } catch (error) {
+      console.error('Erreur lors du rejet de la commande:', error);
+      toast.error('Erreur lors du rejet de la commande');
+    } finally {
+      setLoadingOrders(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(orderId);
+        return newSet;
+      });
+    }
+  };
 
   return (
     <>
@@ -561,27 +730,88 @@ export default function OrdersPage() {
                     <Th>{mounted ? t('orders.table.date') : ""}</Th>
                     <Th>{mounted ? t('orders.table.status') : ""}</Th>
                     <Th>{mounted ? t('orders.table.total') : ""}</Th>
+                    <Th>Actions</Th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedOrders.map((order) => (
                     <TableRow 
                       key={order._id}
-                      onClick={() => router.push(`/orders/${order._id}`)}
+                      $highlighted={highlightedOrderId === order._id}
                     >
-                      <Td>#{order._id.slice(-6)}</Td>
-                      <Td>
+                      <Td onClick={() => router.push(`/orders/${order._id}`)}>#{order._id.slice(-6)}</Td>
+                      <Td onClick={() => router.push(`/orders/${order._id}`)}>
                         {typeof order.userId === 'object' && order.userId?.name 
                           ? order.userId.name 
                           : order.shippingAddress?.fullName || (mounted ? t('orders.table.customer') : "")}
                       </Td>
-                      <Td>{new Date(order.createdAt).toLocaleDateString('en-US')}</Td>
-                      <Td>
+                      <Td onClick={() => router.push(`/orders/${order._id}`)}>{new Date(order.createdAt).toLocaleDateString('en-US')}</Td>
+                      <Td onClick={() => router.push(`/orders/${order._id}`)}>
                         <StatusBadge status={order.status}>
                           {formatStatus(order.status)}
                         </StatusBadge>
                       </Td>
-                      <Td>{formatPrice(order.total)}</Td>
+                      <Td onClick={() => router.push(`/orders/${order._id}`)}>{formatPrice(order.total)}</Td>
+                      <Td>
+                        <ActionButtons>
+                          {order.status === 'active' && (
+                            <>
+                              <ActionButton
+                                variant="accept"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAcceptOrder(order._id);
+                                }}
+                                disabled={loadingOrders.has(order._id)}
+                              >
+                                <Check size={14} />
+                                Accepter
+                              </ActionButton>
+                              <ActionButton
+                                variant="reject"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRejectOrder(order._id);
+                                }}
+                                disabled={loadingOrders.has(order._id)}
+                              >
+                                <X size={14} />
+                                Rejeter
+                              </ActionButton>
+                            </>
+                          )}
+                          {order.status === 'confirmed' && (
+                            <span style={{ color: '#059669', fontSize: '0.9em', fontWeight: '600' }}>
+                              ✓ Acceptée
+                            </span>
+                          )}
+                          {order.status === 'preparing' && (
+                            <span style={{ color: '#d97706', fontSize: '0.9em', fontWeight: '600' }}>
+                              👨‍🍳 En préparation
+                            </span>
+                          )}
+                          {order.status === 'ready' && (
+                            <span style={{ color: '#2563eb', fontSize: '0.9em', fontWeight: '600' }}>
+                              📦 Prête
+                            </span>
+                          )}
+                          {order.status === 'out_for_delivery' && (
+                            <span style={{ color: '#7c3aed', fontSize: '0.9em', fontWeight: '600' }}>
+                              🚚 En route
+                            </span>
+                          )}
+                          {order.status === 'delivered' && (
+                            <span style={{ color: '#059669', fontSize: '0.9em', fontWeight: '600' }}>
+                              ✅ Livrée
+                            </span>
+                          )}
+                          {order.status === 'rejected' && (
+                            <span style={{ color: '#dc2626', fontSize: '0.9em', fontWeight: '600' }}>
+                              ✗ Rejetée
+                            </span>
+                          )}
+                        </ActionButtons>
+                      </Td>
                     </TableRow>
                   ))}
                 </tbody>

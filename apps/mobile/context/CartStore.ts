@@ -92,10 +92,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ loading: true });
     try {
       const res = await httpClient.get(`${API_CONFIG.ENDPOINTS.CART}?userId=${userId}`);
-      console.log('=== PANIER RÉCUPÉRÉ ===');
-      console.log('Structure complète:', JSON.stringify(res.data, null, 2));
-      console.log('Items du panier:', res.data.items);
-      
+     
       // Enrichir les items avec les données des produits populées
       const enrichedItems = res.data.items.map((item: any) => {
         const productData = item.productId; // Données populées du produit
@@ -110,8 +107,7 @@ export const useCartStore = create<CartState>((set, get) => ({
         };
       });
       
-      console.log('=== ITEMS ENRICHIS FINAUX ===');
-      console.log('Tous les items enrichis:', JSON.stringify(enrichedItems, null, 2));
+  
       
       set({ 
         cart: { 
@@ -121,7 +117,6 @@ export const useCartStore = create<CartState>((set, get) => ({
         loading: false 
       });
     } catch (e) {
-      console.error('Erreur récupération panier:', e);
       set({ loading: false });
     }
   },
@@ -133,9 +128,6 @@ export const useCartStore = create<CartState>((set, get) => ({
       return false;
     }
     
-    console.log('addToCart appelé avec:', { userId, productId });
-    console.log('Types:', { userIdType: typeof userId, productIdType: typeof productId });
-    
     set({ loading: true });
     try {
       // D'abord, récupérer le produit pour obtenir ses données complètes
@@ -143,21 +135,13 @@ export const useCartStore = create<CartState>((set, get) => ({
       const product = productRes.data;
       const numericProductId = product.id; // L'ID numérique du produit
       
-      console.log('Produit récupéré:', { productId, numericProductId, product });
       
       const requestBody = {
         userId: userId.toString(),
         productId: numericProductId // Utiliser l'ID numérique
       };
       
-      console.log('Envoi requête au serveur:', {
-        requestBody,
-        endpoint: API_CONFIG.ENDPOINTS.CART_ADD,
-        fullUrl: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CART_ADD}`
-      });
-      
       const response = await httpClient.post(API_CONFIG.ENDPOINTS.CART_ADD, requestBody);
-      console.log('Réponse serveur:', response.data);
       
       // Enrichir les données du panier avec les informations des produits
       const enrichedItems = response.data.items.map((item: any) => {
@@ -204,8 +188,6 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       // Utiliser l'ID numérique du produit depuis les données du panier
       const cart = get().cart;
-      console.log('Cart complet:', cart);
-      console.log('ProductId recherché:', productId);
       
       // Chercher l'item par productId (ObjectId) ou par _id
       const cartItem = cart?.items.find(item => 
@@ -214,7 +196,6 @@ export const useCartStore = create<CartState>((set, get) => ({
         (item.productId && typeof item.productId === 'object' && item.productId._id === productId)
       );
       
-      console.log('Cart item trouvé:', cartItem);
       
       // Vérifier si productId est directement l'objet produit ou si c'est dans product
       let numericId = null;
@@ -222,11 +203,9 @@ export const useCartStore = create<CartState>((set, get) => ({
       if (cartItem?.product && cartItem.product.id) {
         // Si product existe et a un id, utiliser ses données
         numericId = cartItem.product.id;
-        console.log('Utilisation de cartItem.product.id:', numericId);
       } else if (cartItem?.productId && typeof cartItem.productId === 'object' && cartItem.productId.id) {
         // Si productId est directement l'objet produit et a un id
         numericId = cartItem.productId.id;
-        console.log('Utilisation de cartItem.productId.id:', numericId);
       }
       
       if (!numericId) {
@@ -238,16 +217,7 @@ export const useCartStore = create<CartState>((set, get) => ({
         return;
       }
       
-      console.log('Mise à jour quantité:', {
-        productId,
-        numericId,
-        quantity
-      });
-      
-      console.log('Envoi requête updateCartItem:', {
-        endpoint: API_CONFIG.ENDPOINTS.CART_UPDATE,
-        body: { userId, productId: numericId, quantity }
-      });
+
       
       const res = await httpClient.post(API_CONFIG.ENDPOINTS.CART_UPDATE, {
         userId,
@@ -255,7 +225,6 @@ export const useCartStore = create<CartState>((set, get) => ({
         quantity
       });
       
-      console.log('Réponse updateCartItem:', res.data);
       
       // Ne pas remplacer complètement le cart car l'API retourne des données non populées
       // Mettre à jour seulement les quantités dans le state local
@@ -299,8 +268,6 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       // Utiliser l'ID numérique du produit depuis les données du panier
       const cart = get().cart;
-      console.log('Cart complet pour suppression:', cart);
-      console.log('ProductId recherché:', productId);
       
       // Chercher l'item par productId (ObjectId) ou par _id
       const cartItem = cart?.items.find(item => 
@@ -309,7 +276,6 @@ export const useCartStore = create<CartState>((set, get) => ({
         (item.productId && typeof item.productId === 'object' && item.productId._id === productId)
       );
       
-      console.log('Cart item trouvé pour suppression:', cartItem);
       
       // Vérifier si productId est directement l'objet produit ou si c'est dans product
       let numericId = null;
@@ -317,11 +283,9 @@ export const useCartStore = create<CartState>((set, get) => ({
       if (cartItem?.product && cartItem.product.id) {
         // Si product existe et a un id, utiliser ses données
         numericId = cartItem.product.id;
-        console.log('Utilisation de cartItem.product.id:', numericId);
       } else if (cartItem?.productId && typeof cartItem.productId === 'object' && cartItem.productId.id) {
         // Si productId est directement l'objet produit et a un id
         numericId = cartItem.productId.id;
-        console.log('Utilisation de cartItem.productId.id:', numericId);
       }
       
       if (!numericId) {
@@ -333,17 +297,13 @@ export const useCartStore = create<CartState>((set, get) => ({
         return;
       }
       
-      console.log('Suppression produit:', {
-        productId,
-        numericId
-      });
+
       
       const res = await httpClient.post(API_CONFIG.ENDPOINTS.CART_REMOVE, {
         userId,
         productId: numericId // Utiliser l'ID numérique du produit
       });
       
-      console.log('Réponse removeFromCart:', res.data);
       
       // Ne pas remplacer complètement le cart car l'API retourne des données non populées
       // Mettre à jour seulement les items dans le state local

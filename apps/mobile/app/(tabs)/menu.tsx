@@ -34,7 +34,6 @@ export default function MenuScreen() {
     try {
       setLoading(true);
       const response = await apiService.getProducts();
-      console.log('API Response:', response);
       
       // L'API retourne maintenant directement les produits
       if (Array.isArray(response)) {
@@ -65,7 +64,6 @@ export default function MenuScreen() {
       };
       
       const dbCategory = categoryMapping[selectedCategory] || selectedCategory;
-      console.log('Filtrage par catégorie:', selectedCategory, '->', dbCategory);
       
       // Pour "Plats chauds", inclure à la fois "Viandes" et "Poissons" et les mélanger
       if (selectedCategory === 'Plats chauds') {
@@ -113,7 +111,7 @@ export default function MenuScreen() {
     
     try {
       await addToCart(user?._id || '', product.id.toString());
-      Alert.alert('Succès', `${product.name} ajouté au panier !`);
+      // Produit ajouté au panier avec succès (pas d'alert)
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
       Alert.alert('Erreur', 'Erreur lors de l\'ajout au panier');

@@ -499,9 +499,14 @@ export const RecentActivity = ({
     const now = new Date();
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
     
-    const newActivityIds = generateRecentActivity
-      .filter(activity => activity.timestamp > fiveMinutesAgo)
-      .map(activity => activity.id);
+    // Créer une copie des activités sans dépendre de generateRecentActivity
+    const activities = [...products, ...orders, ...users.filter(user => user.role !== 'admin')];
+    const newActivityIds = activities
+      .filter(activity => {
+        const timestamp = new Date(activity.updatedAt || activity.createdAt);
+        return timestamp > fiveMinutesAgo;
+      })
+      .map(activity => `update-${activity._id}`);
     
     if (newActivityIds.length > 0) {
       setNewActivities(new Set(newActivityIds));
@@ -511,7 +516,7 @@ export const RecentActivity = ({
         setNewActivities(new Set());
       }, 10000);
     }
-  }, [generateRecentActivity]); // generateRecentActivity est stable depuis useMemo
+  }, [products, orders, users]); // Dépendances stables
 
   const recentActivity = generateRecentActivity;
 

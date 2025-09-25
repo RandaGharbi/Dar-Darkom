@@ -12,6 +12,7 @@ import { authAPI } from "../../lib/api";
 import { LanguageSelector } from "../LanguageSelector";
 import { useNotifications } from "../../hooks/useNotifications";
 import notificationWebSocket from "../../services/notificationWebSocket";
+import { useWebSocket } from "../../hooks/useWebSocket";
 
 import Image from "next/image";
 import { removeToken } from "../../utils/auth";
@@ -879,19 +880,32 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
   const router = useRouter();
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
+  
+  // WebSocket pour les notifications en temps réel
+  const { connected, onNotification } = useWebSocket();
+  const [websocketNotifications, setWebsocketNotifications] = useState<any[]>([]);
+  
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const { data: user } = useQuery({
+  const { data: user, isLoading: isLoadingUser, error: userError } = useQuery({
     queryKey: ["user"],
     queryFn: () => authAPI.getMe().then((res) => res.data),
   });
 
+  // Debug pour l'authentification
+  console.log('🔐 Auth Debug:', {
+    user,
+    isLoadingUser,
+    userError,
+    token: typeof window !== 'undefined' ? localStorage.getItem('token') : 'N/A'
+  });
+
   // Utiliser le hook de notifications
   const {
-    notifications,
-    unreadCount,
+    notifications: persistentNotifications,
+    unreadCount: persistentUnreadCount,
     isLoading: isLoadingNotifications,
     loadNotifications,
     markAsRead,
@@ -902,6 +916,29 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
     refreshInterval: 30000, // 30 secondes
   });
 
+  // Combiner les notifications persistantes et WebSocket
+  const allNotifications = [...websocketNotifications, ...persistentNotifications];
+  
+  // Compter seulement les notifications WebSocket non lues
+  const unreadWebsocketNotifications = websocketNotifications.filter(n => !n.isRead);
+  const totalUnreadCount = unreadWebsocketNotifications.length + persistentUnreadCount;
+  
+  console.log('🔍 Debug Badge Count:', {
+    websocketTotal: websocketNotifications.length,
+    websocketUnread: unreadWebsocketNotifications.length,
+    persistentUnread: persistentUnreadCount,
+    totalUnread: totalUnreadCount
+  });
+
+
+  // Marquer une notification WebSocket comme lue
+  const markWebsocketNotificationAsRead = (notificationId: string) => {
+    setWebsocketNotifications(prev => 
+      prev.map(n => 
+        n._id === notificationId ? { ...n, isRead: true } : n
+      )
+    );
+  };
 
   // Rafraîchir les notifications quand le dropdown s'ouvre
   const handleNotificationToggle = () => {
@@ -1055,6 +1092,58 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
 
     connectMessageWebSocket();
   }, [user?.id]);
+
+  // Écouter les notifications WebSocket
+  useEffect(() => {
+    if (!connected) return;
+
+    const removeListener = onNotification((notification) => {
+      console.log('🔔 Notification WebSocket reçue dans DashboardLayout:', notification);
+      console.log('🔍 Metadata de la notification:', notification.metadata);
+      
+      // Convertir la notification WebSocket en format compatible avec description améliorée
+      const websocketNotification = {
+        _id: `ws-${Date.now()}`,
+        title: notification.title,
+        message: notification.message,
+        type: notification.type || 'order',
+        isRead: false,
+        createdAt: new Date().toISOString(),
+        metadata: notification.metadata || {
+          orderId: notification.orderId,
+          amount: notification.amount,
+          customerName: notification.customerName
+        },
+        // Description améliorée basée sur le type de notification
+        description: getNotificationDescription(notification)
+      };
+      
+      setWebsocketNotifications(prev => [websocketNotification, ...prev]);
+    });
+
+    return removeListener;
+  }, [connected, onNotification]);
+
+  // Fonction pour générer une description améliorée
+  const getNotificationDescription = (notification: any) => {
+    // Extraire les données du metadata ou directement de la notification
+    const orderId = notification.metadata?.orderId || notification.orderId;
+    const amount = notification.metadata?.amount || notification.amount;
+    const customerName = notification.metadata?.customerName || notification.customerName;
+    
+    switch (notification.type) {
+      case 'new_order':
+        return `Nouvelle commande #${orderId?.slice(-8) || 'N/A'} d'un montant de ${amount || 'N/A'}€ de ${customerName || 'un client'}`;
+      case 'order_accepted':
+        return `Commande #${orderId?.slice(-8) || 'N/A'} acceptée et en préparation`;
+      case 'order_rejected':
+        return `Commande #${orderId?.slice(-8) || 'N/A'} rejetée`;
+      case 'payment':
+        return `Paiement reçu pour la commande #${orderId?.slice(-8) || 'N/A'}`;
+      default:
+        return notification.message || 'Notification reçue';
+    }
+  };
 
   // Surveiller l'état de connexion WebSocket
   useEffect(() => {
@@ -1283,9 +1372,16 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
                 <div style={{ position: 'relative' }} data-notification-dropdown>
                   <NotificationButton onClick={handleNotificationToggle}>
                     <Bell size={20} />
-                    {user?.id && unreadCount > 0 && (
+                    {console.log('🔍 Badge Debug:', { 
+                      userId: user?.id, 
+                      totalUnreadCount, 
+                      websocketNotifications: websocketNotifications.length,
+                      persistentUnreadCount 
+                    })}
+                    {/* Badge - afficher seulement pour les vraies notifications */}
+                    {websocketNotifications.length > 0 && (
                       <NotificationBadge>
-                        {unreadCount > 99 ? '99+' : unreadCount}
+                        {websocketNotifications.length > 99 ? '99+' : websocketNotifications.length}
                       </NotificationBadge>
                     )}
                   </NotificationButton>
@@ -1296,7 +1392,7 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
                         <Bell size={16} />
                         Notifications
                       </NotificationTitle>
-                      {notifications.length > 0 && (
+                      {allNotifications.length > 0 && (
                         <ClearAllButton onClick={clearAllNotifications}>
                           Tout effacer
                         </ClearAllButton>
@@ -1313,12 +1409,24 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
                             Chargement des notifications...
                           </EmptyText>
                         </EmptyState>
-                      ) : notifications.length > 0 ? (
-                        notifications.map((notification) => (
+                      ) : allNotifications.length > 0 ? (
+                        allNotifications.map((notification) => (
                           <NotificationItem
                             key={notification._id}
                             $unread={!notification.isRead}
-                            onClick={() => markAsRead(notification._id)}
+                            onClick={() => {
+                              // Marquer comme lue selon le type de notification
+                              if (notification._id.startsWith('ws-')) {
+                                markWebsocketNotificationAsRead(notification._id);
+                              } else {
+                                markAsRead(notification._id);
+                              }
+                              
+                              // Naviguer vers les détails de la commande si c'est une notification de commande
+                              if (notification.metadata?.orderId) {
+                                router.push(`/orders/${notification.metadata.orderId}`);
+                              }
+                            }}
                           >
                             <NotificationContent>
                               <NotificationIcon $type={mapNotificationType(notification.type)}>
@@ -1333,6 +1441,17 @@ export const DashboardLayout = ({ children, hideSidebar }: DashboardLayoutProps)
                                 <NotificationTime>
                                   {formatTimeAgo(notification.createdAt)}
                                 </NotificationTime>
+                                {/* Description améliorée */}
+                                {notification.description && (
+                                  <div style={{ 
+                                    fontSize: '0.8rem', 
+                                    color: '#64748b', 
+                                    marginTop: '4px',
+                                    lineHeight: '1.3'
+                                  }}>
+                                    {notification.description}
+                                  </div>
+                                )}
                               </NotificationText>
                             </NotificationContent>
                           </NotificationItem>

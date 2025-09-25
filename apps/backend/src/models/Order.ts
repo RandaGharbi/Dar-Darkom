@@ -20,7 +20,7 @@ export interface IOrder extends Document {
   total: number;
   createdAt: Date;
   isOrdered: boolean;
-  status: 'active' | 'completed' | 'cancelled' | 'confirmed';
+  status: 'active' | 'completed' | 'cancelled' | 'confirmed' | 'rejected' | 'preparing' | 'ready' | 'out_for_delivery' | 'delivered' | 'PENDING' | 'READY' | 'CANCELLED';
   shippingAddress: {
     fullName?: string;
     street: string;
@@ -30,6 +30,8 @@ export interface IOrder extends Document {
   };
   paymentMethod?: string;
   paymentIntentId?: string;
+  livreurId?: mongoose.Types.ObjectId;
+  qrCode?: string;
 }
 
 // OrderItemSchema definition removed as it's not used
@@ -55,7 +57,7 @@ const OrderSchema = new Schema<IOrder>({
   total: { type: Number },
   createdAt: { type: Date, default: Date.now },
   isOrdered: { type: Boolean, default: false },
-  status: { type: String, enum: ['active', 'completed', 'cancelled', 'confirmed'], default: 'active' },
+  status: { type: String, enum: ['active', 'completed', 'cancelled', 'confirmed', 'rejected', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'PENDING', 'READY', 'CANCELLED'], default: 'active' },
   shippingAddress: {
     fullName: { type: String },
     street: { type: String },
@@ -65,6 +67,8 @@ const OrderSchema = new Schema<IOrder>({
   },
   paymentMethod: { type: String },
   paymentIntentId: { type: String },
+  livreurId: { type: Schema.Types.ObjectId, ref: 'User' },
+  qrCode: { type: String },
 });
 
 export default mongoose.model<IOrder>('Order', OrderSchema); 

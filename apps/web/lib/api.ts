@@ -28,11 +28,6 @@ api.interceptors.request.use((config) => {
 // Intercepteur pour gérer les erreurs
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ API RESPONSE:', {
-      url: `${response.config.baseURL}${response.config.url}`,
-      status: response.status,
-      timestamp: new Date().toISOString()
-    });
     return response;
   },
   (error) => {
@@ -44,8 +39,12 @@ api.interceptors.response.use(
       timestamp: new Date().toISOString()
     });
     
+    // Afficher le message d'erreur spécifique du serveur
+    if (error.response?.data?.message) {
+      console.error('📝 Message d\'erreur du serveur:', error.response.data.message);
+    }
+    
     if (error.response?.status === 401) {
-      console.log('🔐 401 Unauthorized - Removing token and redirecting to login');
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
@@ -84,7 +83,7 @@ export interface User {
   name: string;
   email: string;
   profileImage?: string;
-  role?: 'admin' | 'user';
+  role?: 'admin' | 'user' | 'EMPLOYE' | 'LIVREUR';
   createdAt: string;
   updatedAt: string;
   status?: 'Active' | 'Inactive';
@@ -95,6 +94,8 @@ export interface User {
   gender?: string;
   preferredLanguage?: string;
   username?: string;
+  isEmailVerified?: boolean;
+  isOnline?: boolean;
 }
 
 export interface Order {
@@ -110,7 +111,7 @@ export interface Order {
   shipping: number;
   tax: number;
   total: number;
-  status: 'active' | 'completed' | 'cancelled';
+  status: 'active' | 'completed' | 'cancelled' | 'confirmed' | 'rejected' | 'preparing' | 'ready' | 'out_for_delivery' | 'delivered' | 'PENDING' | 'READY' | 'CANCELLED';
   shippingAddress: {
     fullName: string;
     street: string;
@@ -121,6 +122,8 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
   isOrdered: boolean;
+  livreurId?: string | User;
+  qrCode?: string;
 }
 
 export interface Discount {
@@ -169,8 +172,11 @@ export const ordersAPI = {
   getByUser: (userId: string) => api.get<Order[]>(`/orders/user/${userId}`),
   getActive: (userId: string) => api.get<Order[]>(`/orders/active/${userId}`),
   getHistory: (userId: string) => api.get<Order[]>(`/orders/history/${userId}`),
+  getPending: () => api.get<Order[]>('/orders/pending'),
   updateStatus: (id: string, status: Order['status']) => 
     api.put<Order>(`/orders/${id}/status`, { status }),
+  acceptOrder: (id: string) => api.put<Order>(`/orders/${id}/accept`),
+  rejectOrder: (id: string, reason?: string) => api.put<Order>(`/orders/${id}/reject`, { reason }),
 };
 
 export const usersAPI = {
@@ -272,4 +278,52 @@ export const activitiesAPI = {
     details?: string;
     metadata?: Record<string, unknown>;
   }) => api.post<Activity>('/activities', data),
+};
+
+// API pour les employés
+export const employeeAPI = {
+  // Authentification employé
+  login: (email: string, password: string) =>
+    api.post('/login', { email, password }),
+  
+  // Inscription employé
+  register: (data: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    password: string;
+    confirmPassword: string;
+  }) =>
+    api.post<{ success: boolean; message: string; data: { user: User; token: string } }>('/employee/register', data),
+  
+  // Confirmer l'email employé
+  confirmEmail: (token: string) =>
+    api.get<{ success: boolean; message: string; data: any }>(`/employee/confirm-email?token=${token}`),
+  
+  // Obtenir les commandes (PENDING, READY)
+  getOrders: (status?: string[]) =>
+    api.get<{ success: boolean; data: Order[]; count: number }>('/employee/orders', {
+      params: status ? { status } : {}
+    }),
+  
+  // Obtenir les détails d'une commande
+  getOrderDetails: (orderId: string) =>
+    api.get<{ success: boolean; data: Order }>(`/employee/orders/${orderId}`),
+  
+  // Accepter une commande
+  acceptOrder: (orderId: string) =>
+    api.put<{ success: boolean; message: string; data: any }>(`/employee/orders/${orderId}/accept`),
+  
+  // Rejeter une commande
+  rejectOrder: (orderId: string, reason?: string) =>
+    api.put<{ success: boolean; message: string; data: any }>(`/employee/orders/${orderId}/reject`, { reason }),
+  
+  // Assigner un livreur
+  assignLivreur: (orderId: string, livreurId: string) =>
+    api.put<{ success: boolean; message: string; data: any }>(`/employee/orders/${orderId}/assign-livreur`, { livreurId }),
+  
+  // Obtenir la liste des livreurs
+  getLivreurs: () =>
+    api.get<{ success: boolean; data: User[]; count: number }>('/employee/livreurs'),
 };

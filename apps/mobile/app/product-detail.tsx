@@ -104,7 +104,7 @@ export default function ProductDetailScreen() {
     try {
       const result = await addToCart(user._id, id, quantity);
       if (result) {
-        Alert.alert('Succès', `${product.name} ajouté au panier !`);
+        // Produit ajouté au panier avec succès (pas d'alert)
       } else {
         Alert.alert('Erreur', 'Impossible d\'ajouter le produit au panier');
       }

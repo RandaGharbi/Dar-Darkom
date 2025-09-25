@@ -46,7 +46,7 @@ export default function ProductDetailsScreen() {
     }
     try {
       await addToCart(user?._id || '', product.id.toString()); // Utilise l'id numérique
-      Alert.alert('Succès', 'Produit ajouté au panier !');
+      // Produit ajouté au panier avec succès (pas d'alert)
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
       Alert.alert('Erreur', 'Erreur serveur');

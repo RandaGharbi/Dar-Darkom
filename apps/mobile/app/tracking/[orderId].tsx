@@ -10,7 +10,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'expo-maps';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSafeNavigation } from '../../hooks/useSafeNavigation';
@@ -174,7 +174,7 @@ export default function TrackingScreen() {
             <View style={styles.mapContainer}>
               <MapView
                 style={styles.map}
-                provider={PROVIDER_GOOGLE}
+                provider="google"
                 initialRegion={{
                   latitude: tracking.currentLocation.latitude,
                   longitude: tracking.currentLocation.longitude,

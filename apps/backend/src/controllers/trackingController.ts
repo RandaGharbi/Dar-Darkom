@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Tracking, { ITracking } from '../models/Tracking';
 import Order from '../models/Order';
 import mongoose from 'mongoose';
+import { smsService } from '../services/smsService'; // 🆕 Import du service SMS
 
 // Récupérer le tracking d'une commande
 export const getOrderTracking = async (req: Request, res: Response) => {
@@ -131,6 +132,41 @@ export const updateTrackingStatus = async (req: Request, res: Response) => {
     // Mettre à jour le statut de la commande si nécessaire
     if (status === 'delivered' && order.status !== 'completed') {
       await Order.findByIdAndUpdate(orderId, { status: 'completed' });
+    }
+
+    // 🆕 Envoyer SMS de notification de livraison au client
+    try {
+      const orderWithUser = await Order.findById(orderId).populate('userId', 'name phoneNumber');
+      if (orderWithUser && orderWithUser.userId) {
+        const user = orderWithUser.userId as any;
+        if (user.phoneNumber && smsService.validatePhoneNumber(user.phoneNumber)) {
+          console.log('📱 [SMS] Envoi de notification de livraison à:', user.phoneNumber);
+          
+          const formattedPhone = smsService.formatPhoneNumber(user.phoneNumber);
+          const smsResult = await smsService.sendOrderNotificationSMS({
+            to: formattedPhone,
+            userName: user.name,
+            orderId: orderId.slice(-8),
+            orderTotal: orderWithUser.total,
+            orderStatus: status === 'delivered' ? 'DELIVERED' : 'out_for_delivery',
+            companyName: 'Dar-Darkom',
+            livreurName: tracking.driverName,
+            estimatedDelivery: tracking.estimatedDeliveryTime ? 
+              new Date(tracking.estimatedDeliveryTime).toLocaleString('fr-FR') : undefined
+          });
+
+          if (smsResult.success) {
+            console.log('✅ [SMS] SMS de livraison envoyé avec succès');
+          } else {
+            console.log('⚠️ [SMS] Échec d\'envoi du SMS:', smsResult.error);
+          }
+        } else {
+          console.log('⚠️ [SMS] Numéro de téléphone invalide ou manquant pour:', user?.email);
+        }
+      }
+    } catch (smsError) {
+      console.error('❌ [SMS] Erreur lors de l\'envoi du SMS de livraison:', smsError);
+      // On continue même si le SMS échoue
     }
 
     res.json({

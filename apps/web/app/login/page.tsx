@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
 import { authAPI } from '../../lib/api';
 import { toast } from 'react-hot-toast';
@@ -242,6 +243,60 @@ const LoadingSpinner = styled(Loader2)`
   }
 `;
 
+const EmployeeButton = styled.button`
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  padding: 12px 20px;
+  margin-top: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  width: 100%;
+
+  &:hover {
+    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #9ca3af;
+  font-size: 14px;
+  
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+  
+  &::before {
+    margin-right: 16px;
+  }
+  
+  &::after {
+    margin-left: 16px;
+  }
+`;
+
 // Images de la Tunisie
 const tunisiaImages = [
   {
@@ -275,7 +330,7 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const router = useRouter();
+  const [isEmployeeMode, setIsEmployeeMode] = useState(false);
 
   // Vérifier si l'utilisateur est déjà connecté une seule fois
   useEffect(() => {
@@ -284,12 +339,48 @@ export default function LoginPage() {
       const authenticated = isAuthenticated();
       console.log('Is authenticated:', authenticated);
       
+      // Vérifier si on est en mode employé via l'URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get('mode');
+      const fromLogout = urlParams.get('fromLogout');
+      
+      if (mode === 'employee') {
+        setIsEmployeeMode(true);
+      }
+      
+      // Si l'utilisateur vient d'une déconnexion, ne pas rediriger automatiquement
+      if (fromLogout === 'true') {
+        console.log('User came from logout, showing login form');
+        setIsChecking(false);
+        return;
+      }
+      
       if (authenticated) {
-        console.log('User is authenticated, redirecting to dashboard');
+        console.log('User is authenticated, checking role for redirection');
         setIsRedirecting(true);
-        // Utiliser window.location pour éviter les problèmes de router
+        
+        // Vérifier le rôle dans le token pour la redirection
         setTimeout(() => {
-          window.location.href = '/';
+          try {
+            const token = localStorage.getItem('token');
+            if (token) {
+              const payload = JSON.parse(atob(token.split('.')[1]));
+              console.log('🔐 Rôle trouvé dans le token (auth check):', payload.role);
+              
+              if (payload.role === 'EMPLOYE') {
+                window.location.href = '/employee/dashboard';
+              } else if (payload.role === 'ADMIN') {
+                window.location.href = '/';
+              } else {
+                window.location.href = '/';
+              }
+            } else {
+              window.location.href = '/';
+            }
+          } catch (e) {
+            console.error('❌ Erreur lors de la vérification du rôle (auth check):', e);
+            window.location.href = '/';
+          }
         }, 100);
       } else {
         console.log('User is not authenticated, showing login form');
@@ -298,7 +389,7 @@ export default function LoginPage() {
     };
 
     checkAuth();
-  }, []);
+  }, [isEmployeeMode]);
 
   // Carrousel d'images automatique
   useEffect(() => {
@@ -316,6 +407,7 @@ export default function LoginPage() {
       console.log('🔐 LOGIN ATTEMPT:', { 
         email, 
         password: '***', 
+        isEmployeeMode,
         timestamp: new Date().toISOString() 
       });
       console.log('🌐 API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
@@ -327,9 +419,26 @@ export default function LoginPage() {
         data: response.data,
         timestamp: new Date().toISOString()
       });
-      const { token } = response.data;
+      const { token, user } = response.data;
       
       try {
+        // Vérifier le rôle de l'utilisateur
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const userRole = payload.role || user?.role;
+        
+        console.log('🔍 User role:', userRole, 'Employee mode:', isEmployeeMode);
+        
+        // Vérifier la correspondance entre le mode et le rôle
+        if (isEmployeeMode && userRole !== 'EMPLOYE') {
+          toast.error('Accès refusé. Rôle employé requis pour cet espace.');
+          return;
+        }
+        
+        if (!isEmployeeMode && userRole === 'EMPLOYE') {
+          toast.error('Veuillez utiliser l\'espace employé pour vous connecter.');
+          return;
+        }
+        
         setToken(token);
         console.log('💾 Token set successfully:', token ? 'Token present' : 'No token');
         toast.success('Connexion réussie !');
@@ -338,9 +447,28 @@ export default function LoginPage() {
         setIsRedirecting(true);
         console.log('🚀 Redirecting immediately...');
         
-        // Utiliser window.location.href pour forcer une navigation complète
+        // Rediriger selon le rôle dans le token
         setTimeout(() => {
-          window.location.href = '/';
+          try {
+            const token = localStorage.getItem('token');
+            if (token) {
+              const payload = JSON.parse(atob(token.split('.')[1]));
+              console.log('🔐 Rôle trouvé dans le token:', payload.role);
+              
+              if (payload.role === 'EMPLOYE') {
+                window.location.href = '/employee/dashboard';
+              } else if (payload.role === 'ADMIN') {
+                window.location.href = '/';
+              } else {
+                window.location.href = '/';
+              }
+            } else {
+              window.location.href = '/';
+            }
+          } catch (e) {
+            console.error('❌ Erreur lors de la vérification du rôle:', e);
+            window.location.href = '/';
+          }
         }, 100);
         
       } catch (error) {
@@ -471,9 +599,19 @@ export default function LoginPage() {
           <Header>
             <Title>DarDarkom</Title>
             <Subtitle>
-              Administration Dashboard
+              {isEmployeeMode ? 'Espace Employé' : 'Administration Dashboard'}
               <span>🇹🇳</span>
             </Subtitle>
+            {isEmployeeMode && (
+              <p style={{ 
+                color: '#6b7280', 
+                fontSize: '14px', 
+                margin: '8px 0 0 0',
+                fontStyle: 'italic'
+              }}>
+                Connectez-vous pour gérer les commandes
+              </p>
+            )}
           </Header>
           
           <Form onSubmit={handleSubmit} noValidate>
@@ -529,6 +667,36 @@ export default function LoginPage() {
                 'Se connecter'
               )}
             </Button>
+            
+            <Divider>ou</Divider>
+            
+            <EmployeeButton 
+              type="button"
+              onClick={() => setIsEmployeeMode(!isEmployeeMode)}
+            >
+              {isEmployeeMode ? '👑 Mode Admin' : '🏢 Espace Employé'}
+            </EmployeeButton>
+            
+            {isEmployeeMode && (
+              <div style={{ 
+                textAlign: 'center', 
+                marginTop: '16px',
+                fontSize: '14px',
+                color: '#6b7280'
+              }}>
+                Pas encore de compte ?{' '}
+                <Link 
+                  href="/employee/register" 
+                  style={{ 
+                    color: '#667eea', 
+                    textDecoration: 'none',
+                    fontWeight: '600'
+                  }}
+                >
+                  Créer un compte employé
+                </Link>
+              </div>
+            )}
           </Form>
         </LoginBox>
       </Container>

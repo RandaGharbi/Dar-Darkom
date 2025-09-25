@@ -16,7 +16,6 @@ export default function TabLayout() {
     const initializeCart = async () => {
       try {
         if (isAuthenticated && user?._id) {
-          console.log('🛒 Initialisation sécurisée du panier pour:', user._id);
           await fetchCart(user._id);
         }
       } catch (error) {

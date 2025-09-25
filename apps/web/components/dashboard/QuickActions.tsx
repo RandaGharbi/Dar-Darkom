@@ -1,6 +1,7 @@
 "use client";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 
@@ -25,6 +26,9 @@ const MainButton = styled.button`
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+  width: 100%;
+  text-decoration: none;
+  display: block;
 
   &:hover {
     transform: translateY(-2px);
@@ -48,6 +52,9 @@ const SecondaryButton = styled.button`
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  text-decoration: none;
+  display: block;
 
   &:hover {
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
@@ -140,15 +147,26 @@ export const QuickActions = () => {
     <div>
       <ActionsTitle>Actions Rapides</ActionsTitle>
       <ActionsRow>
-        <MainButton onClick={() => router.push("/products/addProducts")}>
-          Ajouter un Produit
-        </MainButton>
-        <SecondaryButton onClick={() => router.push("/orders")}>
-          Voir les Commandes
-        </SecondaryButton>
-        <SecondaryButton onClick={() => router.push("/products")}>
-          Gérer l&apos;Inventaire
-        </SecondaryButton>
+        <Link href="/products/addProducts">
+          <MainButton>
+            Ajouter un Produit
+          </MainButton>
+        </Link>
+        <Link href="/orders">
+          <SecondaryButton>
+            Voir les Commandes
+          </SecondaryButton>
+        </Link>
+        <Link href="/products">
+          <SecondaryButton>
+            Gérer l&apos;Inventaire
+          </SecondaryButton>
+        </Link>
+        <Link href="/employee-management">
+          <SecondaryButton>
+            Gérer les Employés
+          </SecondaryButton>
+        </Link>
       </ActionsRow>
 
       <ImageSection>

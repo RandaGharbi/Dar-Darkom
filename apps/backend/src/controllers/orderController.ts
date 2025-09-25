@@ -3,9 +3,10 @@ import Order from "../models/Order";
 import Cart, { ICart } from "../models/Basket";
 import { IProduct } from "../types";
 import mongoose from "mongoose";
-// import { sendNotification } from "../index";
+import { sendNotification, sendOrderNotification, sendAdminNotification } from "../index";
 import { addDynamicNotification } from "./notificationController";
 import User from "../models/User";
+import { smsService } from "../services/smsService"; // 🆕 Import du service SMS
 
 export const createOrder = async (req: Request, res: Response) => {
   const userId = req.body.userId;
@@ -85,7 +86,19 @@ export const createOrder = async (req: Request, res: Response) => {
           }
         };
         
-        // sendNotification((admin._id as string).toString(), notification);
+        // Envoyer notification WebSocket à l'admin
+        sendAdminNotification({
+          title: notification.title,
+          message: notification.message,
+          type: 'new_order',
+          metadata: {
+            orderId: notification.metadata.orderId,
+            amount: notification.metadata.amount,
+            customerName: notification.metadata.customerName
+          }
+        });
+        
+        // Envoyer aussi la notification persistante
         addDynamicNotification(notification);
         console.log("✅ Notification envoyée à l'administrateur");
       } else {
@@ -94,27 +107,52 @@ export const createOrder = async (req: Request, res: Response) => {
     } catch (notificationError) {
       console.error("❌ Erreur lors de l'envoi de la notification:", notificationError);
     }
+
+    // 🆕 Envoyer SMS de confirmation de commande au client
+    try {
+      const user = await User.findById(userId);
+      if (user && user.phoneNumber && smsService.validatePhoneNumber(user.phoneNumber)) {
+        console.log('📱 [SMS] Envoi de confirmation de commande à:', user.phoneNumber);
+        
+        const formattedPhone = smsService.formatPhoneNumber(user.phoneNumber);
+        const smsResult = await smsService.sendOrderNotificationSMS({
+          to: formattedPhone,
+          userName: user.name,
+          orderId: (order._id as string).toString().slice(-8),
+          orderTotal: total,
+          orderStatus: 'PENDING',
+          companyName: 'Dar-Darkom'
+        });
+
+        if (smsResult.success) {
+          console.log('✅ [SMS] SMS de confirmation envoyé avec succès');
+        } else {
+          console.log('⚠️ [SMS] Échec d\'envoi du SMS:', smsResult.error);
+        }
+      } else {
+        console.log('⚠️ [SMS] Numéro de téléphone invalide ou manquant pour:', user?.email);
+      }
+    } catch (smsError) {
+      console.error('❌ [SMS] Erreur lors de l\'envoi du SMS de confirmation:', smsError);
+      // On continue même si le SMS échoue - l'essentiel est que la commande soit créée
+    }
     
     // Vide le panier et marque comme commandé
     cart.items = [];
     cart.set("isOrdered", true);
     await cart.save();
-    console.log("Panier APRÈS update isOrdered:", cart);
     res.status(201).json(order);
   } catch (err) {
-    console.log("Erreur lors de la création de la commande:", err);
     res.status(500).json({ message: "Erreur serveur", error: err });
   }
 };
 
 export const getActiveOrders = async (req: Request, res: Response) => {
   const userId = req.params.userId;
-  console.log('[BACK] getActiveOrders - Récupération des commandes ACTIVES pour:', { userId });
   if (!userId) return res.status(400).json({ message: 'userId requis' });
   try {
     // ✅ Récupérer SEULEMENT les commandes actives de l'utilisateur
     const orders = await Order.find({ userId, status: 'active' }).sort({ createdAt: -1 });
-    console.log('[BACK] Commandes actives trouvées:', orders.length);
     res.json(orders);
   } catch (err) {
     console.error('[BACK] Erreur getActiveOrders:', err);
@@ -193,9 +231,9 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   if (!status) return res.status(400).json({ message: 'Statut requis' });
   
   // Valider que le statut est valide
-  const validStatuses = ['active', 'completed', 'cancelled'];
+  const validStatuses = ['active', 'completed', 'cancelled', 'confirmed', 'rejected'];
   if (!validStatuses.includes(status)) {
-    return res.status(400).json({ message: 'Statut invalide. Valeurs autorisées: active, completed, cancelled' });
+    return res.status(400).json({ message: 'Statut invalide. Valeurs autorisées: active, completed, cancelled, confirmed, rejected' });
   }
   
   try {
@@ -211,6 +249,153 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     
     res.json(order);
   } catch (err) {
+    res.status(500).json({ message: 'Erreur serveur', error: err });
+  }
+};
+
+// Accepter une commande (admin)
+export const acceptOrder = async (req: Request, res: Response) => {
+  const orderId = req.params.id;
+  
+  if (!orderId) return res.status(400).json({ message: 'ID de commande requis' });
+  
+  try {
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { status: 'preparing' },
+      { new: true }
+    ).populate('userId', 'name email phoneNumber');
+    
+    if (!order) {
+      return res.status(404).json({ message: 'Commande non trouvée' });
+    }
+    
+    // Envoyer notification au client via WebSocket
+    const userId = (order.userId as any)._id.toString();
+    console.log('🔍 BACKEND - AcceptOrder - userId:', userId, 'orderId:', orderId);
+    
+    const notification = {
+      title: 'Commande acceptée',
+      message: `Votre commande #${orderId.slice(-8)} a été acceptée et est en préparation`,
+      type: 'order_accepted',
+      orderId: orderId,
+      status: 'preparing'
+    };
+    
+    console.log('🔍 BACKEND - AcceptOrder - Notification à envoyer:', notification);
+    // Envoyer à la room de l'orderId (pas userId)
+    sendOrderNotification(orderId, notification);
+    
+    // Envoyer aussi une notification push au mobile
+    try {
+      const pushNotification = {
+        to: userId, // Utiliser l'userId pour la notification push
+        title: 'Commande acceptée',
+        body: `Votre commande #${orderId.slice(-8)} a été acceptée et est en préparation`,
+        data: {
+          orderId: orderId,
+          status: 'preparing',
+          type: 'order_accepted'
+        }
+      };
+      
+      // Ici vous pouvez ajouter l'envoi de notification push
+      console.log('🔍 BACKEND - AcceptOrder - Notification push à envoyer:', pushNotification);
+    } catch (pushError) {
+      console.error('❌ Erreur lors de l\'envoi de la notification push:', pushError);
+    }
+
+    // 🆕 Envoyer SMS de confirmation d'acceptation au client
+    try {
+      const user = order.userId as any;
+      if (user && user.phoneNumber && smsService.validatePhoneNumber(user.phoneNumber)) {
+        console.log('📱 [SMS] Envoi de confirmation d\'acceptation à:', user.phoneNumber);
+        
+        const formattedPhone = smsService.formatPhoneNumber(user.phoneNumber);
+        const smsResult = await smsService.sendOrderNotificationSMS({
+          to: formattedPhone,
+          userName: user.name,
+          orderId: orderId.slice(-8),
+          orderTotal: order.total,
+          orderStatus: 'READY',
+          companyName: 'Dar-Darkom'
+        });
+
+        if (smsResult.success) {
+          console.log('✅ [SMS] SMS d\'acceptation envoyé avec succès');
+        } else {
+          console.log('⚠️ [SMS] Échec d\'envoi du SMS:', smsResult.error);
+        }
+      } else {
+        console.log('⚠️ [SMS] Numéro de téléphone invalide ou manquant pour:', user?.email);
+      }
+    } catch (smsError) {
+      console.error('❌ [SMS] Erreur lors de l\'envoi du SMS d\'acceptation:', smsError);
+      // On continue même si le SMS échoue
+    }
+    
+    console.log(`✅ Commande ${orderId} acceptée par l'admin`);
+    res.json({ 
+      message: 'Commande acceptée avec succès',
+      order: order 
+    });
+  } catch (err) {
+    console.error('❌ Erreur lors de l\'acceptation de la commande:', err);
+    res.status(500).json({ message: 'Erreur serveur', error: err });
+  }
+};
+
+// Rejeter une commande (admin)
+export const rejectOrder = async (req: Request, res: Response) => {
+  const orderId = req.params.id;
+  const { reason } = req.body;
+  
+  if (!orderId) return res.status(400).json({ message: 'ID de commande requis' });
+  
+  try {
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { status: 'rejected' },
+      { new: true }
+    ).populate('userId', 'name email phoneNumber');
+    
+    if (!order) {
+      return res.status(404).json({ message: 'Commande non trouvée' });
+    }
+    
+    // Envoyer notification au client via WebSocket
+    const userId = (order.userId as any)._id.toString();
+    console.log('🔍 BACKEND - RejectOrder - userId:', userId, 'orderId:', orderId);
+    sendOrderNotification(orderId, {
+      title: 'Commande rejetée',
+      message: `Votre commande #${orderId.slice(-8)} a été rejetée${reason ? `: ${reason}` : ''}`,
+      type: 'order_rejected',
+      orderId: orderId,
+      status: 'rejected',
+      reason: reason
+    });
+    
+    console.log(`❌ Commande ${orderId} rejetée par l'admin`);
+    res.json({ 
+      message: 'Commande rejetée avec succès',
+      order: order 
+    });
+  } catch (err) {
+    console.error('❌ Erreur lors du rejet de la commande:', err);
+    res.status(500).json({ message: 'Erreur serveur', error: err });
+  }
+};
+
+// Obtenir les commandes en attente (admin)
+export const getPendingOrders = async (req: Request, res: Response) => {
+  try {
+    const orders = await Order.find({ status: 'active' })
+      .populate('userId', 'name email phoneNumber')
+      .sort({ createdAt: -1 });
+    
+    res.json(orders);
+  } catch (err) {
+    console.error('❌ Erreur lors de la récupération des commandes en attente:', err);
     res.status(500).json({ message: 'Erreur serveur', error: err });
   }
 };

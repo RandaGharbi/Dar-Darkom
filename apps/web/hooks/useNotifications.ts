@@ -124,7 +124,6 @@ export const useNotifications = ({
     // Obtenir le token d'authentification
     const token = localStorage.getItem('authToken');
     if (!token) {
-      console.warn('Token d\'authentification manquant pour WebSocket');
       return;
     }
 

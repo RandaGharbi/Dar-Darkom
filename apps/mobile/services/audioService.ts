@@ -38,7 +38,6 @@ class AudioService {
     if (AUDIO_SETTINGS.autoPlay) {
       setTimeout(() => {
         if (!this.currentState.isPlaying && !this.currentState.currentTrack) {
-          console.log('🔄 Fallback: Lancement automatique de la musique...');
           this.playTrack('traditional-1');
         }
       }, 2000);
@@ -47,7 +46,6 @@ class AudioService {
 
   private async initializeAudio() {
     try {
-      console.log('🔊 Initialisation du système audio...');
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: true,
@@ -55,9 +53,7 @@ class AudioService {
         shouldDuckAndroid: true,
         playThroughEarpieceAndroid: false,
       });
-      console.log('✅ Système audio initialisé avec succès');
     } catch (error) {
-      console.error('❌ Erreur lors de l\'initialisation audio:', error);
       this.updateState({ error: 'Erreur d\'initialisation audio' });
     }
   }
@@ -156,10 +152,8 @@ class AudioService {
 
       // Attendre que le son soit chargé avant de jouer
       const finalStatus = await sound.getStatusAsync();
-      console.log('📊 État du son:', finalStatus);
       
       if (finalStatus.isLoaded) {
-        console.log('🎵 Démarrage de la lecture...');
         // S'assurer que le volume est correct avant de jouer
         await sound.setVolumeAsync(this.currentState.volume);
         await sound.playAsync();
@@ -168,7 +162,6 @@ class AudioService {
           isPlaying: true,
           isLoading: false
         });
-        console.log('✅ Musique démarrée avec succès:', track.title);
       } else {
         console.error('❌ Le son n\'est pas chargé, statut:', finalStatus);
         this.updateState({
@@ -190,10 +183,8 @@ class AudioService {
 
   // Jouer/Pause
   async togglePlayPause() {
-    console.log('🔄 Toggle play/pause appelé, état actuel:', this.currentState.isPlaying);
     
     if (!this.sound) {
-      console.warn('Aucun son chargé pour toggle, tentative de rechargement...');
       // Essayer de recharger la piste actuelle
       if (this.currentState.currentTrack) {
         await this.playTrack(this.currentState.currentTrack.id);
@@ -205,27 +196,21 @@ class AudioService {
 
     try {
       const status = await this.sound.getStatusAsync();
-      console.log('📊 Statut du son:', status);
       
       if (status.isLoaded) {
         if (this.currentState.isPlaying) {
-          console.log('⏹️ Arrêt de la musique...');
           await this.sound.stopAsync();
           this.updateState({ 
             isPlaying: false,
             position: 0
           });
-          console.log('✅ Musique arrêtée');
         } else {
-          console.log('▶️ Démarrage de la musique...');
           // S'assurer que le volume est correct avant de jouer
           await this.sound.setVolumeAsync(this.currentState.volume);
           await this.sound.playAsync();
           this.updateState({ isPlaying: true });
-          console.log('✅ Musique démarrée');
         }
       } else {
-        console.warn('Le son n\'est pas chargé, rechargement...');
         // Recharger le son
         if (this.currentState.currentTrack) {
           await this.playTrack(this.currentState.currentTrack.id);
@@ -360,9 +345,7 @@ class AudioService {
             { shouldPlay: false, volume: 0 } // Volume 0 pour le préchargement
           );
           this.preloadedSounds.set(track.id, sound);
-          console.log(`✅ Piste préchargée: ${track.title} (Andalous.mp3)`);
         } catch (error) {
-          console.warn(`⚠️ Impossible de précharger ${track.title}:`, error);
         }
       }
     } catch (error) {
@@ -381,7 +364,6 @@ class AudioService {
       try {
         await sound.unloadAsync();
       } catch (error) {
-        console.warn(`Erreur lors du nettoyage de ${trackId}:`, error);
       }
     }
     this.preloadedSounds.clear();

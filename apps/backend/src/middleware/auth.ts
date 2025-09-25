@@ -2,19 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 
-// Étendre l'interface Request pour inclure la propriété user
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        email: string;
-        name: string;
-      };
-    }
-  }
-}
+// L'interface Request est déjà étendue dans types.d.ts
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -25,6 +13,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         (req.path.includes('/notifications') && !authHeader)) {
       req.user = {
         id: 'demo',
+        role: 'user',
         email: 'demo@nourane.com',
         name: 'Demo User'
       };
@@ -54,6 +43,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
 
     req.user = {
       id: user._id?.toString() || '',
+      role: 'user',
       email: user.email,
       name: user.name
     };

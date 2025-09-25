@@ -60,7 +60,7 @@ export default function FavoritesScreen() {
   };
 
   const handleAddToCart = (product: FavoriteProduct) => {
-    Alert.alert('Ajouter au panier', `${product.name} ajouté au panier !`);
+    // Produit ajouté au panier avec succès (pas d'alert)
   };
 
   const renderFavoriteItem = (product: FavoriteProduct) => (

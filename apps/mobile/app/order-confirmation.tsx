@@ -3,18 +3,18 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   SafeAreaView,
   Platform,
+  Image,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeNavigation } from "../hooks/useSafeNavigation";
-import OrderSummary from "../components/OrderSummary";
 import { useAuth } from "../context/AuthContext";
 import { useOrder } from "../context/OrderContext";
+import { StatusBar } from "expo-status-bar";
 
-export default function OrderConfirmationScreen() {
+export default function OrderReceivedScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const { safeBack } = useSafeNavigation();
@@ -23,217 +23,352 @@ export default function OrderConfirmationScreen() {
 
   // Si pas de commande, fallback sur panier (pour dev)
   const order = params.order ? JSON.parse(params.order as string) : lastOrder;
-  const address = order && order.shippingAddress ? order.shippingAddress : {};
-
-  // Log debug pour voir la structure de la commande et des produits
-  console.log('[DEBUG ORDER]', order);
-  console.log('[DEBUG ORDER PRODUCTS]', order?.products);
-
-  // Calcul de la date de livraison estimée
-  const today = new Date();
-  const deliveryStart = new Date(today);
-  deliveryStart.setDate(today.getDate() + 2); // début dans 2 jours
-  const deliveryEnd = new Date(today);
-  deliveryEnd.setDate(today.getDate() + 5); // fin dans 5 jours
-
-  const formatDate = (date: Date) =>
-    date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-  const estimatedDelivery = `${formatDate(deliveryStart)} - ${formatDate(deliveryEnd)}`;
 
   // Si pas de commande, afficher un message d'erreur
   if (!order) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backBtn} onPress={safeBack}>
-              <Text style={styles.backText}>←</Text>
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Order Confirmation</Text>
-            <View style={{ width: 32 }} />
-          </View>
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorTitle}>Aucune commande trouvée</Text>
-            <Text style={styles.errorMessage}>
-              Il semble qu'aucune commande n'ait été trouvée. Veuillez retourner à l'écran précédent.
-            </Text>
-            <TouchableOpacity style={styles.retryButton} onPress={safeBack}>
-              <Text style={styles.retryButtonText}>Retour</Text>
-            </TouchableOpacity>
-          </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>Aucune commande trouvée</Text>
+          <Text style={styles.errorMessage}>
+            Il semble qu&apos;aucune commande n&apos;ait été trouvée. Veuillez retourner à l&apos;écran précédent.
+          </Text>
+          <TouchableOpacity style={styles.retryButton} onPress={safeBack}>
+            <Text style={styles.retryButtonText}>Retour</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
   }
 
-  // Log pour debug
-
-  // Mapping des produits pour OrderSummary
-  const products =
-    order?.products ||
-    (order?.items
-      ? order.items.map((item: any) => {
-          const product = typeof item.productId === 'object' && item.productId !== null ? item.productId : {};
-          return {
-            name: product.title || product.name || '',
-            qty: item.quantity,
-            image: product.image_url || product.image || '',
-            price: typeof product.price === 'number' ? product.price : 0,
-          };
-        })
-      : []);
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={safeBack}>
-            <Text style={styles.backText}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Order Confirmation</Text>
-          <View style={{ width: 32 }} />
-        </View>
-        <Text style={styles.title}>Thank you, {user?.name || 'Guest'}!</Text>
-        <Text style={styles.subtitle}>
-          Your order has been placed and is on its way. You&apos;ll receive a notification when it ships.
-        </Text>
-
-        <OrderSummary
-          products={products}
-          subtotal={typeof order?.subtotal === 'number' ? order.subtotal : 0}
-          shipping={typeof order?.shipping === 'number' ? order.shipping : 0}
-          total={typeof order?.total === 'number' ? order.total : 0}
-        />
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Shipping Address</Text>
-          <Text style={styles.addressName}>{address.fullName || ''}</Text>
-          <Text style={styles.addressText}>{address.street || ''}</Text>
-          <Text style={styles.addressText}>
-            {address.postalCode ? address.postalCode + ', ' : ''}
-            {address.city || ''}
-          </Text>
-          <Text style={styles.addressText}>{address.country || ''}</Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Estimated Delivery</Text>
-          <Text style={styles.delivery}>{estimatedDelivery}</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.detailsBtn}
-          onPress={() => router.push({
-            pathname: '/order-details',
-            params: {
-              order: params.order,
-              card: params.card,
-            }
-          })}
-        >
-          <Text style={styles.detailsBtnText}>View Order Details</Text>
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={safeBack} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
-      </ScrollView>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.shareButton}>
+            <Text style={styles.shareButtonText}>↗</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.helpText}>Help</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Main Content */}
+      <View style={styles.content}>
+        {/* Title Section */}
+        <View style={styles.titleSection}>
+          <Text style={styles.title}>Order received</Text>
+          <Text style={styles.estimatedTime}>Estimated arrival 12:05-12:25</Text>
+        </View>
+
+        {/* Products Section - Reproduire exactement la maquette */}
+        <View style={styles.productsSection}>
+          <View style={styles.productsContainer}>
+            {/* Produit 1 - En haut à gauche (bouteille violette) */}
+            <View style={[styles.productItem, { top: 0, left: 40 }]}>
+              <View style={[styles.productCard, { backgroundColor: '#8A2BE2' }]}>
+                <View style={styles.bottleShape}>
+                  <View style={styles.bottleNeck} />
+                  <View style={styles.bottleBody} />
+                  <View style={styles.bottleCap} />
+                </View>
+              </View>
+            </View>
+            
+            {/* Produit 2 - En bas au centre (boîte café marron) */}
+            <View style={[styles.productItem, { bottom: 0, left: 120 }]}>
+              <View style={[styles.productCard, { backgroundColor: '#8B4513' }]}>
+                <View style={styles.coffeeBox}>
+                  <View style={styles.coffeeLid} />
+                  <View style={styles.coffeeBody} />
+                  <View style={styles.coffeeHandle} />
+                </View>
+              </View>
+            </View>
+            
+            {/* Produit 3 - À droite au milieu (jus orange) */}
+            <View style={[styles.productItem, { top: 30, right: 40 }]}>
+              <View style={[styles.productCard, { backgroundColor: '#FFA500' }]}>
+                <View style={styles.juiceBottle}>
+                  <View style={styles.juiceBody} />
+                  <View style={styles.juiceLabel} />
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Bottom Section */}
+        <View style={styles.bottomSection}>
+          {/* Help Section */}
+          <View style={styles.helpSection}>
+            <View style={styles.helpHeader}>
+              <View style={styles.avatarContainer}>
+                <Image 
+                  source={{ uri: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face' }}
+                  style={styles.avatar}
+                />
+              </View>
+              <Text style={styles.helpTitle}>Need help?</Text>
+            </View>
+            <Text style={styles.helpDescription}>
+              Shop staff will deliver your order, so order tracking isn't as detailed. You can call the shop for more information about your delivery.
+            </Text>
+          </View>
+
+          {/* Call Store Button */}
+          <TouchableOpacity style={styles.callButton}>
+            <Text style={styles.callButtonIcon}>📞</Text>
+            <Text style={styles.callButtonText}>Call store</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   container: {
-    padding: 24,
-    paddingBottom: 40,
-    backgroundColor: '#fff',
+    flex: 1,
+    backgroundColor: '#F0F0F0', // Fond gris clair comme la maquette
   },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: Platform.OS === 'android' ? 32 : 0,
-    marginBottom: 12,
-    paddingHorizontal: 0,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? 10 : 20,
+    paddingBottom: 10,
+    backgroundColor: '#F0F0F0',
   },
-  backBtn: {
-    width: 32,
-    height: 32,
+  closeButton: {
+    width: 30,
+    height: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#222',
-  },
-  headerTitle: {
+  closeButtonText: {
     fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    color: '#000',
+    fontWeight: '300',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  shareButton: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  shareButtonText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  helpText: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '400',
+  },
+  content: {
     flex: 1,
-    marginTop: 8,
+    paddingHorizontal: 0,
+  },
+  titleSection: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 60,
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
-    textAlign: 'left',
-    marginTop: 16,
+    color: '#000',
     marginBottom: 8,
-    color: '#222',
-    paddingHorizontal: 2,
+    textAlign: 'center',
   },
-  subtitle: {
-    fontSize: 14,
-    color: '#222',
-    textAlign: 'left',
-    marginBottom: 28,
-    marginHorizontal: 10,
+  estimatedTime: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
   },
-  section: {
-    marginBottom: 0,
-    padding: 18,
+  productsSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 12,
+  productsContainer: {
+    position: 'relative',
+    width: 300,
+    height: 200,
   },
-  addressName: {
-    fontSize: 14,
-    color: '#222',
+  productItem: {
+    position: 'absolute',
+  },
+  productCard: {
+    width: 80,
+    height: 80,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  // Styles pour la bouteille violette
+  bottleShape: {
+    alignItems: 'center',
+  },
+  bottleNeck: {
+    width: 8,
+    height: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 4,
     marginBottom: 2,
   },
-  addressText: {
-    color: '#222',
-    fontSize: 13,
-    marginBottom: 0,
+  bottleBody: {
+    width: 35,
+    height: 40,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    opacity: 0.9,
   },
-  delivery: {
-    fontSize: 15,
-    color: '#222',
-    marginTop: 2,
+  bottleCap: {
+    position: 'absolute',
+    top: -3,
+    width: 12,
+    height: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
   },
-  detailsBtn: {
-    backgroundColor: '#ED9626',
-    borderRadius: 30,
-    paddingVertical: 16,
+  // Styles pour la boîte café
+  coffeeBox: {
     alignItems: 'center',
-    marginTop: 18,
+    justifyContent: 'center',
+  },
+  coffeeLid: {
+    width: 30,
+    height: 8,
+    backgroundColor: '#654321',
+    borderRadius: 4,
+    marginBottom: 2,
+  },
+  coffeeBody: {
+    width: 35,
+    height: 35,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 6,
+    opacity: 0.9,
+  },
+  coffeeHandle: {
+    position: 'absolute',
+    right: -5,
+    top: 15,
+    width: 8,
+    height: 15,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    borderRadius: 8,
+    backgroundColor: 'transparent',
+  },
+  // Styles pour le jus d'orange
+  juiceBottle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  juiceBody: {
+    width: 35,
+    height: 45,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    opacity: 0.9,
+  },
+  juiceLabel: {
+    position: 'absolute',
+    width: 25,
+    height: 15,
+    backgroundColor: '#FF6B35',
+    borderRadius: 4,
+    top: 15,
+  },
+  bottomSection: {
+    paddingHorizontal: 20,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
+  },
+  helpSection: {
+    marginBottom: 20,
+  },
+  helpHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  avatarContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginRight: 12,
+  },
+  avatar: {
     width: '100%',
-    shadowColor: '#ED9626',
-    shadowOpacity: 0.10,
-    shadowRadius: 8,
-    elevation: 2,
+    height: '100%',
+    borderRadius: 16,
+    resizeMode: 'cover',
   },
-  detailsBtnText: {
-    color: '#111',
+  helpTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-    fontSize: 16,
-    letterSpacing: 0.5,
+    color: '#000',
   },
+  helpDescription: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+    marginLeft: 44,
+  },
+  callButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  callButtonIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  callButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000',
+  },
+  // Error styles
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -266,4 +401,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-}); 
+});

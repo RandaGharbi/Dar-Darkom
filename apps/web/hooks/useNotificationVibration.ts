@@ -6,7 +6,6 @@ export const useNotificationVibration = () => {
       try {
         navigator.vibrate(pattern || 200);
       } catch (error) {
-        console.warn('Impossible de vibrer:', error);
       }
     }
   }, []);

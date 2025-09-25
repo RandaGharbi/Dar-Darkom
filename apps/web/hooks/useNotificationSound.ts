@@ -22,7 +22,6 @@ export const useNotificationSound = () => {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
     } catch (error) {
-      console.warn('Impossible de jouer le son de notification:', error);
     }
   }, []);
 
@@ -45,7 +44,6 @@ export const useNotificationSound = () => {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.4);
     } catch (error) {
-      console.warn('Impossible de jouer le son de succès:', error);
     }
   }, []);
 

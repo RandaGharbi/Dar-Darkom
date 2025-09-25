@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup, login, getMe, logout, appleSignIn, googleSignIn, getAllUsers, getUserById, updateUser, updateUserById, deleteUser } from '../controllers/authController';
+import { signup, login, getMe, logout, appleSignIn, googleSignIn, appleDriverSignIn, getAllUsers, getUserById, updateUser, updateUserById, deleteUser } from '../controllers/authController';
 import multer from 'multer';
 import path from 'path';
 import { importAllProducts } from '../controllers/importProduct';
@@ -16,6 +16,21 @@ import analyticsRoutes from './analytics';
 import messageRoutes from './messages';
 
 const router = express.Router();
+
+// Endpoint de santé
+router.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Dar Darkom Backend is running',
+    timestamp: new Date().toISOString(),
+    routes: {
+      apple: '/api/auth/apple',
+      appleDriver: '/api/auth/apple/driver',
+      google: '/api/auth/google',
+      login: '/api/auth/login'
+    }
+  });
+});
 
 router.post('/signup', signup);
 
@@ -37,6 +52,8 @@ router.put('/update', updateUser);
 router.post('/logout', logout);
 
 router.post('/apple', appleSignIn);
+
+router.post('/apple/driver', appleDriverSignIn);
 
 router.post('/google', googleSignIn);
 

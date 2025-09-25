@@ -259,7 +259,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkAuth = () => {
       if (!isAuthenticated()) {
-        router.replace('/login');
+        router.replace('/login?fromLogout=true');
       } else {
         setIsLoading(false);
       }

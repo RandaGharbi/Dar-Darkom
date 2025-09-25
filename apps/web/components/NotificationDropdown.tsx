@@ -6,6 +6,7 @@ import { Bell, Check, Trash2, ShoppingCart, AlertTriangle, User, Settings, Credi
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import notificationService from '../services/notificationService';
 import { Notification } from '../types/notifications';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 const slideDown = keyframes`
   from {
@@ -278,6 +279,10 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ userId }) =
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  
+  // WebSocket pour les notifications en temps réel
+  const { connected, onNotification } = useWebSocket();
+  const [websocketNotifications, setWebsocketNotifications] = useState<any[]>([]);
 
   // Récupérer les notifications
   const { data: notificationsData, isLoading } = useQuery({
@@ -287,8 +292,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ userId }) =
     refetchInterval: 30000, // Rafraîchir toutes les 30 secondes
   });
 
-  const notifications = notificationsData?.notifications || [];
-  const unreadCount = notificationsData?.unreadCount || 0;
+  const persistentNotifications = notificationsData?.notifications || [];
+  const persistentUnreadCount = notificationsData?.unreadCount || 0;
+  
+  // Combiner les notifications persistantes et WebSocket
+  const allNotifications = [...websocketNotifications, ...persistentNotifications];
+  const totalUnreadCount = websocketNotifications.length + persistentUnreadCount;
 
   // Mutations
   const markAsReadMutation = useMutation({
@@ -311,6 +320,34 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ userId }) =
       queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     },
   });
+
+  // Écouter les notifications WebSocket
+  useEffect(() => {
+    if (!connected) return;
+
+    const removeListener = onNotification((notification) => {
+      console.log('🔔 Notification WebSocket reçue dans dropdown:', notification);
+      
+      // Convertir la notification WebSocket en format compatible
+      const websocketNotification = {
+        _id: `ws-${Date.now()}`,
+        title: notification.title,
+        message: notification.message,
+        type: notification.type || 'order',
+        isRead: false,
+        createdAt: new Date().toISOString(),
+        metadata: {
+          orderId: notification.orderId,
+          amount: notification.amount,
+          customerName: notification.customerName
+        }
+      };
+      
+      setWebsocketNotifications(prev => [websocketNotification, ...prev]);
+    });
+
+    return removeListener;
+  }, [connected, onNotification]);
 
   // Fermer le dropdown en cliquant à l'extérieur
   useEffect(() => {
@@ -399,13 +436,13 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ userId }) =
     <NotificationContainer ref={dropdownRef}>
       <NotificationButton
         onClick={() => setIsOpen(!isOpen)}
-        $hasUnread={unreadCount > 0}
+        $hasUnread={totalUnreadCount > 0}
         title="Notifications"
       >
         <Bell size={20} />
-        {unreadCount > 0 && (
-          <NotificationBadge $count={unreadCount}>
-            {unreadCount > 99 ? '99+' : unreadCount}
+        {totalUnreadCount > 0 && (
+          <NotificationBadge $count={totalUnreadCount}>
+            {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
           </NotificationBadge>
         )}
       </NotificationButton>
@@ -413,9 +450,9 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ userId }) =
       <Dropdown $isOpen={isOpen}>
         <Header>
           <Title>
-            Notifications {unreadCount > 0 && `(${unreadCount})`}
+            Notifications {totalUnreadCount > 0 && `(${totalUnreadCount})`}
           </Title>
-          {unreadCount > 0 && (
+          {totalUnreadCount > 0 && (
             <MarkAllButton onClick={handleMarkAllAsRead}>
               Tout marquer comme lu
             </MarkAllButton>
@@ -425,13 +462,13 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ userId }) =
         <NotificationList>
           {isLoading ? (
             <EmptyState>Chargement...</EmptyState>
-          ) : notifications.length === 0 ? (
+          ) : allNotifications.length === 0 ? (
             <EmptyState>
               <Bell size={32} style={{ opacity: 0.5, marginBottom: 8, color: 'inherit' }} />
               <div>Aucune notification</div>
             </EmptyState>
           ) : (
-            notifications.map((notification) => (
+            allNotifications.map((notification) => (
               <NotificationItem
                 key={notification._id}
                 $isRead={notification.isRead}

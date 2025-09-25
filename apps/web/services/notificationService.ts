@@ -144,7 +144,6 @@ class NotificationService {
     }
 
     const data = await response.json();
-    console.log('🔔 API Response:', data);
     
     // L'API retourne les données dans data.data
     const result = data.data || data;

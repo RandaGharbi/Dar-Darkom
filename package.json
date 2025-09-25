@@ -21,6 +21,7 @@
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@types/express": "^4.17.0",
+    "@types/minimatch": "^6.0.0",
     "@types/multer": "^1.4.7",
     "eslint": "^9.31.0",
     "eslint-import-resolver-typescript": "^4.4.4",

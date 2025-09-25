@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker } from 'expo-maps';
 import { useRouter } from 'expo-router';
 import { TrackingData, getOrderTracking, getStatusText, getStatusColor, getEstimatedTime } from '../services/trackingService';
 import { OrientalColors } from '../constants/Colors';
@@ -142,7 +142,7 @@ export default function TrackingCard({ orderId, onTrackingUpdate }: TrackingCard
           {console.log('📍 Affichage de la carte avec position:', tracking.currentLocation)}
           <MapView
             style={styles.map}
-            provider={PROVIDER_GOOGLE}
+            provider="google"
             initialRegion={{
               latitude: tracking.currentLocation.latitude,
               longitude: tracking.currentLocation.longitude,

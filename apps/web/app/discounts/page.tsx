@@ -673,8 +673,6 @@ export default function DiscountsPage() {
     queryKey: ["discounts"],
     queryFn: async () => {
       const response = await discountsAPI.getAll();
-      console.log('API Response:', response);
-      console.log('Response data:', response.data);
       
       // ✅ Gestion sécurisée de la réponse API avec typage correct
       interface ApiResponse {
@@ -698,7 +696,6 @@ export default function DiscountsPage() {
       }
       
       // Fallback vers un tableau vide
-      console.warn('Structure de réponse API inattendue:', responseData);
       return [];
     },
   });

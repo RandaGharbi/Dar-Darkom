@@ -26,7 +26,9 @@
       },
       "entitlements": {
         "com.apple.developer.apple-pay": {
-          "merchants": ["merchant.com.dar-darkom"]
+          "merchants": [
+            "merchant.com.dar-darkom"
+          ]
         }
       }
     },
@@ -74,7 +76,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Cette application a besoin d'accéder à votre localisation pour afficher la position du livreur sur la carte."
         }
-      ]
+      ],
+      "expo-maps"
     ],
     "experiments": {
       "typedRoutes": true

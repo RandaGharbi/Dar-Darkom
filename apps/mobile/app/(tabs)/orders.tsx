@@ -162,6 +162,18 @@ export default function OrdersScreen() {
     });
   };
 
+  const handleTrackOrder = (orderId: string) => {
+    router.push(`/order-status/${orderId}`);
+  };
+
+  const handleViewQRCode = (orderId: string) => {
+    router.push(`/order-qr/${orderId}`);
+  };
+
+  const handleChatWithDriver = (orderId: string) => {
+    router.push(`/chat/${orderId}`);
+  };
+
   const handleScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
     setIsScrolled(scrollY > 10);
@@ -223,10 +235,9 @@ export default function OrdersScreen() {
         {!loading && !error && orders.length > 0 && (
           <View style={styles.ordersList}>
             {orders.map((order) => (
-              <TouchableOpacity
+              <View
                 key={order._id}
                 style={styles.orderCard}
-                onPress={() => handleOrderPress(order._id)}
               >
                 <View style={styles.orderTopRow}>
                   <Text style={styles.orderNumber}>Commande #{order._id.slice(-8).toUpperCase()}</Text>
@@ -262,9 +273,43 @@ export default function OrdersScreen() {
                       {order.products.length} produit{order.products.length > 1 ? 's' : ''}
                     </Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={16} color="#666" style={styles.chevron} />
+                  <TouchableOpacity 
+                    style={styles.detailsButton}
+                    onPress={() => handleOrderPress(order._id)}
+                  >
+                    <Ionicons name="chevron-forward" size={16} color="#666" />
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
+                
+                {/* Action Buttons */}
+                <View style={styles.actionButtonsContainer}>
+                  <TouchableOpacity 
+                    style={styles.actionButton}
+                    onPress={() => handleViewQRCode(order._id)}
+                  >
+                    <Ionicons name="qr-code" size={16} color="#007AFF" />
+                    <Text style={styles.actionButtonText}>QR Code</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={styles.actionButton}
+                    onPress={() => handleTrackOrder(order._id)}
+                  >
+                    <Ionicons name="location" size={16} color="#007AFF" />
+                    <Text style={styles.actionButtonText}>Track</Text>
+                  </TouchableOpacity>
+                  
+                  {(order.status === 'confirmed' || order.status === 'active') && (
+                    <TouchableOpacity 
+                      style={styles.actionButton}
+                      onPress={() => handleChatWithDriver(order._id)}
+                    >
+                      <Ionicons name="chatbubble" size={16} color="#007AFF" />
+                      <Text style={styles.actionButtonText}>Chat</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
             ))}
           </View>
         )}
@@ -413,6 +458,9 @@ const styles = StyleSheet.create({
   chevron: {
     marginLeft: 8,
   },
+  detailsButton: {
+    padding: 8,
+  },
   // Loading styles
   loadingContainer: {
     flex: 1,
@@ -482,5 +530,30 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#999',
     marginTop: 2,
+  },
+  // Action buttons
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    minWidth: 80,
+    justifyContent: 'center',
+  },
+  actionButtonText: {
+    fontSize: 12,
+    color: '#007AFF',
+    fontWeight: '500',
+    marginLeft: 4,
   },
 });

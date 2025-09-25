@@ -7,11 +7,7 @@ import { FORCE_API_URL } from './api-config';
 const detectEnvironment = () => {
   // Variables d'environnement pour forcer une URL spécifique
   const forcedApiUrl = process.env.EXPO_PUBLIC_API_URL || FORCE_API_URL;
-  console.log('🔧 FORCE_API_URL:', FORCE_API_URL);
-  console.log('🔧 EXPO_PUBLIC_API_URL:', process.env.EXPO_PUBLIC_API_URL);
-  console.log('🔧 forcedApiUrl:', forcedApiUrl);
   if (forcedApiUrl) {
-    console.log('🔧 URL API forcée:', forcedApiUrl);
     return forcedApiUrl;
   }
 

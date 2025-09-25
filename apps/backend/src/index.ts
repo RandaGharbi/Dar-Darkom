@@ -20,6 +20,7 @@ import adminNotificationRoutes from './routes/admin-notifications';
 import audioRoutes from './routes/audioRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import trackingRoutes from './routes/tracking';
+import employeeRoutes from './routes/employee';
 import { connectDB } from './database/connectToDB';
 import { schedulerService } from './services/schedulerService';
 
@@ -60,6 +61,7 @@ connectDB().then(() => {
 
 // Routes
 app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/cards', cardRoutes);
@@ -71,6 +73,7 @@ app.use('/api/admin/notifications', adminNotificationRoutes);
 app.use('/api/audio', audioRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/tracking', trackingRoutes);
+app.use('/api/employee', employeeRoutes);
 
 // WebSocket pour les notifications
 io.on('connection', (socket: Socket) => {
@@ -82,6 +85,12 @@ io.on('connection', (socket: Socket) => {
   socket.on('join-notifications', (userId: string) => {
     socket.join(`notifications-${userId}`);
     console.log(`👥 Utilisateur ${userId} rejoint les notifications`);
+    
+    // Si c'est l'admin, rejoindre aussi la room admin
+    if (userId === 'admin') {
+      socket.join('admin-notifications');
+      console.log('👑 Admin rejoint les notifications admin');
+    }
   });
 
   // Rejoindre une conversation
@@ -130,6 +139,23 @@ io.on('connection', (socket: Socket) => {
     });
     console.log(`📍 Position du driver mise à jour pour la commande ${data.orderId}`);
   });
+
+  // Rejoindre les notifications de commandes
+  socket.on('join-order-notifications', (data: { userId: string }) => {
+    const roomName = `order-notifications-${data.userId}`;
+    socket.join(roomName);
+    console.log(`📦 Utilisateur ${data.userId} rejoint les notifications de commandes`);
+    console.log('🔍 BACKEND - join-order-notifications - Room:', roomName);
+    console.log('🔍 BACKEND - join-order-notifications - Socket ID:', socket.id);
+    console.log('🔍 BACKEND - join-order-notifications - Clients dans la room:', io.sockets.adapter.rooms.get(roomName)?.size || 0);
+    console.log('🔍 BACKEND - join-order-notifications - Toutes les rooms:', Array.from(io.sockets.adapter.rooms.keys()));
+  });
+
+  // Quitter les notifications de commandes
+  socket.on('leave-order-notifications', (data: { userId: string }) => {
+    socket.leave(`order-notifications-${data.userId}`);
+    console.log(`📦 Utilisateur ${data.userId} quitte les notifications de commandes`);
+  });
   
   socket.on('disconnect', () => {
     console.log('🔌 Client WebSocket déconnecté:', socket.id);
@@ -149,6 +175,31 @@ export const sendTrackingUpdate = (orderId: string, trackingData: any) => {
     timestamp: new Date()
   });
   console.log(`📍 Mise à jour de tracking envoyée pour la commande ${orderId}`);
+};
+
+// Fonction pour envoyer une notification de commande
+export const sendOrderNotification = (userId: string, notification: any) => {
+  const roomName = `order-notifications-${userId}`;
+  const payload = {
+    ...notification,
+    timestamp: new Date()
+  };
+  
+  console.log('🔍 BACKEND - sendOrderNotification - Room:', roomName);
+  console.log('🔍 BACKEND - sendOrderNotification - Payload:', payload);
+  console.log('🔍 BACKEND - sendOrderNotification - Clients connectés:', io.sockets.adapter.rooms.get(roomName)?.size || 0);
+  
+  io.to(roomName).emit('order-status-update', payload);
+  console.log(`📦 Notification de commande envoyée à l'utilisateur ${userId}:`, notification.title);
+};
+
+// Fonction pour envoyer une notification aux admins
+export const sendAdminNotification = (notification: any) => {
+  io.to('admin-notifications').emit('new-notification', {
+    ...notification,
+    timestamp: new Date()
+  });
+  console.log(`👑 Notification envoyée aux admins:`, notification.title);
 };
 
 const PORT = Number(process.env.PORT) || 5000;

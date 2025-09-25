@@ -164,7 +164,7 @@ export const login = async (req: Request, res: Response) => {
     await user.save();
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '7d' }
     );
@@ -567,7 +567,7 @@ export const googleSignIn = async (req: Request, res: Response) => {
     user.lastLogin = new Date();
     await user.save();
     
-    const jwtToken = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+    const jwtToken = jwt.sign({ userId: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
     
     // Retourner l'utilisateur sans le mot de passe
     const userObj = user.toObject();
@@ -772,5 +772,164 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
   } catch (err) {
     res.status(500).json({ message: 'Erreur lors de la suppression de l\'utilisateur', error: err });
+  }
+};
+
+// Apple Sign-In spécifique pour les drivers
+export const appleDriverSignIn = async (req: Request, res: Response) => {
+  const { identityToken, authorizationCode, user, email, fullName, realUserStatus } = req.body;
+  
+  console.log('🍎 Apple Driver Sign In - Données reçues:', {
+    identityToken: identityToken ? 'Présent' : 'Manquant',
+    authorizationCode: authorizationCode ? 'Présent' : 'Manquant',
+    user,
+    email,
+    fullName,
+    realUserStatus
+  });
+  
+  try {
+    // Vérifier le token Apple
+    const appleUser = await appleSignin.verifyIdToken(identityToken, {
+      ignoreExpiration: true,
+      ignoreAudience: true,
+    });
+    
+    console.log('🍎 Token Apple Driver décodé:', {
+      sub: appleUser.sub,
+      email: appleUser.email,
+      email_verified: appleUser.email_verified
+    });
+    
+    // Chercher un driver existant avec cet Apple ID
+    let driver = await User.findOne({ 
+      $or: [
+        { appleId: appleUser.sub },
+        { email: email || appleUser.email }
+      ]
+    });
+    
+    // Vérifier que c'est bien un driver
+    if (driver && driver.role !== 'driver') {
+      console.log('🍎 Utilisateur trouvé mais pas un driver, création d\'un nouveau driver...');
+      driver = null;
+    }
+    
+    if (!driver) {
+      console.log('🍎 Nouveau driver - Création en cours...');
+      
+      // Déterminer l'email
+      let driverEmail = email || appleUser.email;
+      if (!driverEmail) {
+        driverEmail = `driver_${appleUser.sub.slice(-8)}@dar-darkom.com`;
+      }
+      
+      // Déterminer le nom
+      let driverName = 'Livreur Apple';
+      if (fullName && (fullName.givenName || fullName.familyName)) {
+        if (fullName.givenName && fullName.familyName) {
+          driverName = `${fullName.givenName} ${fullName.familyName}`;
+        } else if (fullName.givenName) {
+          driverName = fullName.givenName;
+        } else if (fullName.familyName) {
+          driverName = fullName.familyName;
+        }
+      }
+      
+      // Créer le driver
+      try {
+        driver = await User.create({
+          appleId: appleUser.sub,
+          email: driverEmail,
+          name: driverName,
+          role: 'driver',
+          status: 'Active',
+          isOnline: false,
+          profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(driverName)}&size=200&background=2E86AB&color=ffffff&format=png&bold=true&rounded=true&font-size=0.6`
+        });
+      } catch (error: any) {
+        if (error.code === 11000) {
+          // Driver existe déjà, le récupérer
+          console.log('🍎 Driver existe déjà, récupération...');
+          driver = await User.findOne({ appleId: appleUser.sub });
+          if (!driver) {
+            throw new Error('Driver existe mais ne peut pas être récupéré');
+          }
+        } else {
+          throw error;
+        }
+      }
+      
+      console.log('🍎 Driver créé:', {
+        name: driver.name,
+        email: driver.email,
+        appleId: driver.appleId,
+        role: driver.role
+      });
+    } else {
+      console.log('🍎 Driver existant trouvé');
+      
+      // Mettre à jour les informations si nécessaire
+      let needsUpdate = false;
+      
+      if (fullName && (fullName.givenName || fullName.familyName)) {
+        let newName = '';
+        if (fullName.givenName && fullName.familyName) {
+          newName = `${fullName.givenName} ${fullName.familyName}`;
+        } else if (fullName.givenName) {
+          newName = fullName.givenName;
+        } else if (fullName.familyName) {
+          newName = fullName.familyName;
+        }
+        
+        if (newName && driver.name === 'Livreur Apple') {
+          driver.name = newName;
+          needsUpdate = true;
+        }
+      }
+      
+      if (needsUpdate) {
+        await driver.save();
+        console.log('🍎 Profil driver mis à jour');
+      }
+    }
+    
+    // Mettre à jour la dernière connexion
+    driver.lastLogin = new Date();
+    await driver.save();
+    
+    // Générer le token JWT
+    const jwtToken = jwt.sign(
+      { userId: driver._id, email: driver.email, role: 'driver' }, 
+      process.env.JWT_SECRET || 'secret', 
+      { expiresIn: '7d' }
+    );
+    
+    // Retourner les données du driver
+    const driverObj = driver.toObject();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...driverWithoutPassword } = driverObj;
+    
+    console.log('🍎 Connexion driver réussie:', {
+      name: driverWithoutPassword.name,
+      email: driverWithoutPassword.email,
+      role: driverWithoutPassword.role,
+      isOnline: driverWithoutPassword.isOnline
+    });
+    
+    res.json({ 
+      success: true,
+      token: jwtToken, 
+      user: driverWithoutPassword,
+      message: 'Connexion driver réussie'
+    });
+    
+  } catch (error) {
+    console.error('🍎 Erreur Apple Driver Sign In:', error);
+    res.status(401).json({ 
+      success: false,
+      error: 'Token Apple invalide',
+      message: 'Erreur lors de la connexion avec Apple'
+    });
   }
 }; 

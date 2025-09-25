@@ -154,7 +154,7 @@ export default function FishScreen() {
     try {
       await addToCart(user?._id || '', productId.toString());
       const product = products.find(p => p.id === productId);
-      Alert.alert('Succès', `${product?.name} ajouté au panier !`);
+      // Produit ajouté au panier avec succès (pas d'alert)
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
       Alert.alert('Erreur', 'Erreur lors de l\'ajout au panier');

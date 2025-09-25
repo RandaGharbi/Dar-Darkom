@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DashboardLayout } from "../../../components/layout/DashboardLayout";
 import { GlobalStyles } from "../../../components/styled/GlobalStyles";
 import styled from "styled-components";
-import { ArrowLeft, Truck, Package, CheckCircle, Circle, MapPin, CreditCard, User, Clock, ChevronDown, Check } from "lucide-react";
+import { ArrowLeft, Truck, Package, CheckCircle, Circle, MapPin, CreditCard, User, Clock, ChevronDown, Check, CheckCircle2, X } from "lucide-react";
 import { ordersAPI, Order } from "../../../lib/api";
 import { useState, useEffect, useRef } from "react";
 import Modal from "../../../components/ui/Modal";
@@ -476,6 +476,56 @@ const BackButton = styled.button`
   }
 `;
 
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 12px;
+  }
+`;
+
+const ActionButton = styled.button<{ variant: 'accept' | 'reject' }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  
+  ${({ variant }) => variant === 'accept' ? `
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    
+    &:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+  ` : `
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    
+    &:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+  `}
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
 
 interface OrderProduct {
   name?: string;
@@ -499,7 +549,7 @@ export default function OrderDetailsPage() {
   const updateStatusMutation = useMutation({
     mutationFn: async (statusUpdate: string) => {
       // Valider que le statut est valide
-      const validStatuses: Order['status'][] = ['active', 'completed', 'cancelled'];
+      const validStatuses: Order['status'][] = ['active', 'completed', 'cancelled', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'rejected'];
       if (!validStatuses.includes(statusUpdate as Order['status'])) {
         throw new Error('Statut invalide');
       }
@@ -516,6 +566,34 @@ export default function OrderDetailsPage() {
     },
   });
 
+  // Mutation pour accepter une commande
+  const acceptOrderMutation = useMutation({
+    mutationFn: () => {
+      console.log('🌐 WEB - AcceptOrder - Appel API pour orderId:', orderId);
+      return ordersAPI.acceptOrder(orderId);
+    },
+    onSuccess: (data) => {
+      console.log('🌐 WEB - AcceptOrder - Succès:', data);
+      queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+      showSuccess('Commande acceptée avec succès !');
+    },
+    onError: (error) => {
+      console.error('🌐 WEB - AcceptOrder - Erreur:', error);
+    },
+  });
+
+  // Mutation pour rejeter une commande
+  const rejectOrderMutation = useMutation({
+    mutationFn: (reason?: string) => ordersAPI.rejectOrder(orderId, reason || ''),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+      showSuccess('Commande rejetée avec succès !');
+    },
+    onError: (error) => {
+      console.error('Erreur lors du rejet:', error);
+    },
+  });
+
   const [statusUpdate, setStatusUpdate] = useState("");
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -524,8 +602,14 @@ export default function OrderDetailsPage() {
   const statusOptions = [
     { value: "", label: "Sélectionner un statut...", disabled: true },
     { value: "active", label: "Active" },
-    { value: "completed", label: "Completed" },
-    { value: "cancelled", label: "Cancelled" }
+    { value: "confirmed", label: "Confirmée" },
+    { value: "preparing", label: "En préparation" },
+    { value: "ready", label: "Prête" },
+    { value: "out_for_delivery", label: "En route" },
+    { value: "delivered", label: "Livrée" },
+    { value: "completed", label: "Terminée" },
+    { value: "cancelled", label: "Annulée" },
+    { value: "rejected", label: "Rejetée" }
   ];
 
   // Fonction pour gérer la sélection
@@ -645,28 +729,28 @@ export default function OrderDetailsPage() {
 
       const timelineSteps = [
       {
-        title: "Order Placed",
+        title: "Commande passée",
         date: dates.orderPlaced,
         icon: <Circle size={16} />,
         completed: true
       },
       {
-        title: "Order Shipped",
-        date: dates.orderShipped,
-        icon: <Truck size={16} />,
-        completed: order.status === "completed" || order.status === "cancelled"
-      },
-      {
-        title: "Out for Delivery",
+        title: "En préparation",
         date: dates.outForDelivery,
         icon: <Package size={16} />,
-        completed: order.status === "completed"
+        completed: ['preparing', 'ready', 'out_for_delivery', 'delivered', 'completed'].includes(order.status)
       },
       {
-        title: "Delivered",
+        title: "En route",
+        date: dates.delivered,
+        icon: <Truck size={16} />,
+        completed: ['out_for_delivery', 'delivered', 'completed'].includes(order.status)
+      },
+      {
+        title: "Livrée",
         date: dates.delivered,
         icon: <CheckCircle size={16} />,
-        completed: order.status === "completed"
+        completed: order.status === "completed" || order.status === "delivered"
       }
     ];
 
@@ -692,6 +776,32 @@ export default function OrderDetailsPage() {
               </OrderDate>
             </Header>
 
+            {/* Boutons d'action pour les commandes en attente */}
+            {order.status === 'active' && (
+              <ActionButtons>
+                <ActionButton
+                  variant="accept"
+                  onClick={() => acceptOrderMutation.mutate()}
+                  disabled={acceptOrderMutation.isPending}
+                >
+                  <CheckCircle2 size={16} />
+                  {acceptOrderMutation.isPending ? 'Acceptation...' : 'Accepter la commande'}
+                </ActionButton>
+                <ActionButton
+                  variant="reject"
+                  onClick={() => {
+                    const reason = prompt('Raison du rejet (optionnel):');
+                    if (reason !== null) { // Si l'utilisateur n'a pas annulé
+                      rejectOrderMutation.mutate(reason);
+                    }
+                  }}
+                  disabled={rejectOrderMutation.isPending}
+                >
+                  <X size={16} />
+                  {rejectOrderMutation.isPending ? 'Rejet...' : 'Rejeter la commande'}
+                </ActionButton>
+              </ActionButtons>
+            )}
 
             <Grid>
               <div>

@@ -47,11 +47,12 @@ function AppContent() {
                   <Stack.Screen name="(tabs)" />
                   <Stack.Screen name="login" options={{ headerShown: false }} />
                   <Stack.Screen name="signup" options={{ headerShown: false }} />
-                  <Stack.Screen name="cart" options={{ headerShown: false }} />
                   <Stack.Screen name="order-confirmation" options={{ headerShown: false }} />
-                  <Stack.Screen name="profile" options={{ headerShown: false }} />
+                  <Stack.Screen name="order-received/[orderId]" options={{ headerShown: false }} />
                   <Stack.Screen name="order-history" options={{ headerShown: false }} />
-                  <Stack.Screen name="order-details/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="order-details[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="chat/[orderId]" options={{ headerShown: false }} />
+                  <Stack.Screen name="order-qr/[orderId]" options={{ headerShown: false }} />
                   <Stack.Screen name="payment-methods" options={{ headerShown: false }} />
                   <Stack.Screen name="personal-info" options={{ headerShown: false }} />
                   <Stack.Screen name="contact-us" options={{ headerShown: false }} />
