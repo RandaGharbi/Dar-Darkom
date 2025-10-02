@@ -1,14 +1,286 @@
-# Nourane - Plateforme E-commerce Nourane
+# 🏛️ **Dar-Darkom** - Plateforme E-commerce Complète
 
-Une plateforme e-commerce complète pour les produits Nourane, comprenant une application web, une API backend et une application mobile.
+## 📋 **Vue d'ensemble**
 
-## 🏗️ Architecture
+**Dar-Darkom** est une plateforme e-commerce complète et moderne spécialisée dans les produits alimentaires traditionnels, inspirée de la culture tunisienne. Le projet utilise une architecture monorepo avec **4 applications principales** :
 
-Ce projet utilise une architecture monorepo avec trois applications principales :
+### 🏗️ **Architecture du Projet**
 
-- **🌐 Web** (`apps/web`) - Interface d'administration Next.js
-- **🔧 Backend** (`apps/backend`) - API REST Node.js/Express
-- **📱 Mobile** (`apps/mobile`) - Application mobile React Native/Expo
+```
+Dar-Darkom/
+├── 🌐 Web (Next.js) - Interface d'administration
+├── 📱 Mobile (React Native/Expo) - Application client
+├── 🚚 Mobile-Driver (React Native/Expo) - Application livreur
+└── 🔧 Backend (Node.js/Express) - API REST
+```
+
+---
+
+## 🎯 **Applications Principales**
+
+### 1. **🌐 Application Web** (`apps/web`)
+**Interface d'administration Next.js avec design moderne**
+
+**Fonctionnalités principales :**
+- **Tableau de bord** avec analytics et statistiques
+- **Gestion des produits** (CRUD complet)
+- **Gestion des commandes** et suivi en temps réel
+- **Gestion des utilisateurs** et employés
+- **Analytics avancées** avec exports planifiés
+- **Système de notifications** en temps réel
+- **Interface multilingue** (i18n)
+
+**Pages principales :**
+- Dashboard avec métriques en temps réel
+- Gestion des produits avec filtres avancés
+- Suivi des commandes avec statuts détaillés
+- Analytics avec graphiques et exports
+- Gestion des employés et tâches
+
+### 2. **📱 Application Mobile Client** (`apps/mobile`)
+**Application React Native/Expo pour les clients**
+
+**Fonctionnalités principales :**
+- **Catalogue produits** avec recherche et filtres
+- **Panier intelligent** avec gestion des quantités
+- **Système de favoris** personnalisé
+- **Commandes en temps réel** avec suivi
+- **Paiements intégrés** (Stripe, Apple Pay)
+- **Audio traditionnel** avec musique tunisienne
+- **Chat en temps réel** avec support
+- **Notifications push** pour les mises à jour
+
+**Écrans principaux :**
+- **Accueil** : Spécialités du jour, catégories
+- **Menu** : Catalogue complet avec filtres
+- **Panier** : Gestion des commandes
+- **Commandes** : Historique et suivi
+- **Profil** : Informations personnelles
+
+### 3. **🚚 Application Mobile Driver** (`apps/mobile-driver`)
+**Application dédiée aux livreurs**
+
+**Fonctionnalités principales :**
+- **Authentification Apple Sign-In** sécurisée
+- **Gestion des livraisons** en temps réel
+- **Scanner QR Code** pour validation
+- **Navigation GPS** intégrée
+- **Chat avec clients** et support
+- **Statistiques de performance**
+
+### 4. **🔧 Backend API** (`apps/backend`)
+**API REST Node.js/Express avec MongoDB**
+
+**Fonctionnalités principales :**
+- **Authentification JWT** avec Google/Apple OAuth
+- **Gestion des produits** avec catégories
+- **Système de commandes** complet
+- **Paiements Stripe** intégrés
+- **Notifications SMS** automatiques
+- **Exports planifiés** avec email
+- **Audio streaming** YouTube
+- **WebSocket** pour temps réel
+
+---
+
+## 🛍️ **Fonctionnalités E-commerce**
+
+### **Gestion des Produits**
+- **Catégories** : Plats chauds, viandes, entrées, pâtisserie, poissons, végétarien
+- **Types de produits** : Spécialités du jour, produits réguliers
+- **Gestion des stocks** et disponibilité
+- **Images et descriptions** détaillées
+- **Prix et promotions** dynamiques
+
+### **Système de Commandes**
+- **Workflow complet** : Pending → Confirmed → Preparing → Ready → Out for Delivery → Delivered
+- **Gestion des statuts** en temps réel
+- **Notifications automatiques** à chaque étape
+- **Codes QR** pour validation
+- **Historique détaillé** des commandes
+
+### **Paiements**
+- **Stripe** intégré pour cartes bancaires
+- **Apple Pay** pour iOS
+- **Google Pay** pour Android
+- **Gestion des remboursements**
+- **Codes de réduction** et promotions
+
+---
+
+## 🎵 **Fonctionnalités Audio Traditionnelles**
+
+### **Système Audio Intégré**
+- **Musique traditionnelle** tunisienne (Andalouse, Berbère, Gnawa)
+- **Streaming YouTube** pour éviter le stockage local
+- **Lecteur intégré** avec contrôles complets
+- **Playlist personnalisable**
+- **Mode hors-ligne** avec pistes locales
+- **API backend** pour gestion centralisée
+
+### **Interface Audio**
+- **Bouton flottant** dans l'header
+- **Mini lecteur** en bas d'écran
+- **Modal de sélection** des pistes
+- **Contrôles** : Play/Pause/Stop/Volume
+- **Indicateurs visuels** animés
+
+---
+
+## 🔐 **Authentification et Sécurité**
+
+### **Méthodes d'Authentification**
+- **JWT** avec refresh tokens
+- **Google OAuth** (gratuit)
+- **Apple Sign-In** (iOS)
+- **Authentification traditionnelle** email/mot de passe
+- **Rôles utilisateurs** : User, Admin, Driver, Employee
+
+### **Sécurité**
+- **Middleware d'authentification** sur toutes les routes protégées
+- **Validation des données** avec Joi
+- **CORS** configuré
+- **Variables d'environnement** sécurisées
+- **Hachage des mots de passe** avec bcrypt
+
+---
+
+## 📱 **Intégrations et Services**
+
+### **Paiements**
+- **Stripe** : Cartes bancaires, Apple Pay, Google Pay
+- **Webhooks** pour synchronisation
+- **Gestion des remboursements**
+
+### **Notifications**
+- **SMS** : TextBelt, MessageBird, Vonage
+- **Email** : Nodemailer avec templates HTML
+- **Push** : Expo Notifications
+- **WebSocket** : Socket.io pour temps réel
+
+### **Médias**
+- **Upload d'images** avec Multer
+- **Streaming audio** YouTube
+- **Gestion des fichiers** centralisée
+
+### **Analytics**
+- **Exports CSV/Excel** planifiés
+- **Métriques en temps réel**
+- **Graphiques interactifs**
+- **Rapports automatisés**
+
+---
+
+## 🗄️ **Base de Données**
+
+### **Modèles Principaux**
+- **Users** : Clients, admins, livreurs, employés
+- **Products** : Catalogue avec catégories et types
+- **Orders** : Commandes avec statuts détaillés
+- **Basket** : Panier utilisateur
+- **Favorites** : Produits favoris
+- **AudioTracks** : Pistes audio traditionnelles
+- **Discounts** : Codes de réduction
+- **Activities** : Logs d'activité
+
+### **Relations**
+- Utilisateurs → Commandes (1:N)
+- Commandes → Produits (N:M)
+- Utilisateurs → Favoris (N:M)
+- Commandes → Livreurs (N:1)
+
+---
+
+## 🚀 **Déploiement et DevOps**
+
+### **Docker**
+- **Images optimisées** pour production
+- **Multi-stage builds** pour performance
+- **Scripts automatisés** de build et test
+- **Docker Compose** pour développement
+
+### **CI/CD**
+- **GitHub Actions** configuré
+- **Tests automatisés** (Jest, Cypress)
+- **Build et déploiement** automatiques
+- **Registry GitHub** pour les images
+
+### **Monitoring**
+- **Health checks** intégrés
+- **Logs structurés**
+- **Métriques de performance**
+
+---
+
+## 🎨 **Design et UX**
+
+### **Thème Tunisien**
+- **Couleurs inspirées** de la Tunisie
+- **Design moderne** avec éléments traditionnels
+- **Interface responsive** sur tous les appareils
+- **Animations fluides** et transitions
+
+### **Accessibilité**
+- **Support multilingue** (FR/EN/AR)
+- **Interface adaptative** aux préférences
+- **Navigation intuitive**
+- **Feedback utilisateur** en temps réel
+
+---
+
+## 📊 **Métriques et Analytics**
+
+### **Tableau de Bord**
+- **Ventes en temps réel**
+- **Produits populaires**
+- **Statistiques utilisateurs**
+- **Performance des livreurs**
+
+### **Exports**
+- **Rapports CSV/Excel** planifiés
+- **Emails automatiques** avec pièces jointes
+- **Filtres personnalisables**
+- **Historique des exports**
+
+---
+
+## 🔧 **Technologies Utilisées**
+
+### **Frontend**
+- **Next.js 15** (Web)
+- **React Native/Expo** (Mobile)
+- **TypeScript** pour la sécurité des types
+- **Tailwind CSS** pour le styling
+- **React Query** pour la gestion des données
+
+### **Backend**
+- **Node.js/Express** pour l'API
+- **MongoDB/Mongoose** pour la base de données
+- **Socket.io** pour le temps réel
+- **JWT** pour l'authentification
+- **Stripe** pour les paiements
+
+### **Mobile**
+- **Expo SDK 54** pour le développement
+- **React Navigation** pour la navigation
+- **Expo AV** pour l'audio
+- **React Native Maps** pour la géolocalisation
+
+---
+
+## 🎯 **Points Forts du Projet**
+
+1. **Architecture moderne** avec monorepo et microservices
+2. **Expérience utilisateur** exceptionnelle avec audio traditionnel
+3. **Sécurité robuste** avec authentification multi-facteurs
+4. **Scalabilité** avec Docker et CI/CD
+5. **Fonctionnalités avancées** : temps réel, analytics, exports
+6. **Design culturel** inspiré de la Tunisie
+7. **Intégrations complètes** : paiements, notifications, médias
+
+---
+
+## 🚀 Installation et démarrage
 
 ## 🚀 Installation et démarrage
 
